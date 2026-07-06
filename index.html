@@ -46,7 +46,7 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ====== HOME SCREEN ====== */
-        #homeScreen { display: none; flex: 1; justify-content: center; align-items: center; background: linear-gradient(135deg, #004d40 0%, #00796b 100%); padding: 20px; }
+        #homeScreen { display: none; flex: 1; justify-content: center; align-items: center; background: linear-gradient(135deg, #004d40 0%, #00796b 100%); padding: 20px; overflow-y: auto; }
         .home-container { text-align: center; max-width: 500px; width: 100%; }
         .home-title { color: var(--gold); font-size: 28px; margin-bottom: 5px; }
         .home-subtitle { color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 40px; }
@@ -58,6 +58,30 @@
         .home-card-title { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
         .home-card-desc { font-size: 12px; color: #777; }
         .home-settings-btn { margin-top: 30px; }
+
+        /* ====== DASHBOARD VIEW ====== */
+        #dashboardScreen { display: none; flex: 1; flex-direction: column; overflow: hidden; background: #f0f2f5; }
+        .dashboard-header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .dashboard-header h1 { margin: 0; font-size: 20px; }
+        .dashboard-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .dashboard-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .dashboard-card-title { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px; }
+        .dashboard-card-value { font-size: 32px; font-weight: bold; color: var(--primary); margin: 0 0 8px; }
+        .dashboard-card-change { font-size: 12px; color: #999; margin: 0; }
+        .dashboard-card.accent1 { border-left: 5px solid var(--danger); }
+        .dashboard-card.accent2 { border-left: 5px solid var(--success); }
+        .dashboard-card.accent3 { border-left: 5px solid var(--secondary); }
+        .dashboard-card.accent4 { border-left: 5px solid var(--gold); }
+        .dashboard-section-title { font-size: 18px; font-weight: bold; color: #333; margin: 30px 0 15px; }
+        .dashboard-table-container { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .dashboard-table { width: 100%; border-collapse: collapse; }
+        .dashboard-table th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; font-weight: 600; color: #666; border-bottom: 2px solid #eee; }
+        .dashboard-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .dashboard-table tr:hover { background: #f8f9fa; }
+        .dashboard-empty { text-align: center; color: #999; padding: 40px 20px; font-size: 14px; }
+        .install-btn-header { background: var(--gold); color: #004d40; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; transition: transform 0.1s; }
+        .install-btn-header:active { transform: scale(0.95); }
 
         /* ====== HEADER ====== */
         header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; flex-wrap: wrap; gap: 5px; }
@@ -225,6 +249,11 @@
         <h1 class="home-title">HH BOOK CENTER</h1>
         <p class="home-subtitle">Customer Ledger Management System</p>
         <div class="home-options">
+            <div class="home-card" onclick="showView('dashboard')">
+                <div class="home-card-icon">📊</div>
+                <div class="home-card-title">Dashboard</div>
+                <div class="home-card-desc">Business analytics aur stats dekhein</div>
+            </div>
             <div class="home-card" onclick="openKhatta()">
                 <div class="home-card-icon">📒</div>
                 <div class="home-card-title">Khatta</div>
@@ -238,6 +267,97 @@
         </div>
         <div class="home-settings-btn">
             <button class="btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:10px 20px; font-size:13px;" onclick="openSettings()">Cloudinary Settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== DASHBOARD SCREEN ====== -->
+<div id="dashboardScreen">
+    <div class="dashboard-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
+            <h1>📊 Dashboard</h1>
+        </div>
+        <button class="install-btn-header" id="headerInstallBtn" style="display:none;" onclick="installPWA()">📲 Install App</button>
+    </div>
+    <div class="dashboard-content">
+        <!-- Stats Cards -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card accent1">
+                <div class="dashboard-card-title">Total Udhaar (Debt)</div>
+                <div class="dashboard-card-value" id="dashTotalUdhaar">₹0</div>
+                <div class="dashboard-card-change" id="dashUdhaarChange">Updated now</div>
+            </div>
+            <div class="dashboard-card accent2">
+                <div class="dashboard-card-title">Total Collected</div>
+                <div class="dashboard-card-value" id="dashTotalPaid">₹0</div>
+                <div class="dashboard-card-change" id="dashPaidChange">Updated now</div>
+            </div>
+            <div class="dashboard-card accent3">
+                <div class="dashboard-card-title">Active Customers</div>
+                <div class="dashboard-card-value" id="dashActiveCustomers">0</div>
+                <div class="dashboard-card-change" id="dashCustomerChange">customers</div>
+            </div>
+            <div class="dashboard-card accent4">
+                <div class="dashboard-card-title">Total Transactions</div>
+                <div class="dashboard-card-value" id="dashTotalTransactions">0</div>
+                <div class="dashboard-card-change" id="dashTransactionChange">entries recorded</div>
+            </div>
+        </div>
+
+        <!-- Top Debtors -->
+        <div class="dashboard-section-title">Top Debtors 🔴</div>
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Pending Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="dashTopDebtors">
+                    <tr><td colspan="4" class="dashboard-empty">Koi data nahi hai</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Creditors -->
+        <div class="dashboard-section-title">Top Creditors 🟢</div>
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Phone</th>
+                        <th>Amount Paid</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="dashTopCreditors">
+                    <tr><td colspan="4" class="dashboard-empty">Koi data nahi hai</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="dashboard-section-title">Recent Transactions 📝</div>
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Item</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody id="dashRecentTransactions">
+                    <tr><td colspan="5" class="dashboard-empty">Koi data nahi hai</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -453,15 +573,24 @@
         e.preventDefault();
         deferredPrompt = e;
         document.getElementById('installBanner').style.display = 'block';
+        const headerBtn = document.getElementById('headerInstallBtn');
+        if (headerBtn) headerBtn.style.display = 'block';
     });
 
     function installPWA() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    showToast('✅ App install ho gaya!');
+                }
                 deferredPrompt = null;
                 document.getElementById('installBanner').style.display = 'none';
+                const headerBtn = document.getElementById('headerInstallBtn');
+                if (headerBtn) headerBtn.style.display = 'none';
             });
+        } else {
+            showToast('App already installed ya supported nahi hai');
         }
     }
 
@@ -471,7 +600,9 @@
 
     window.addEventListener('appinstalled', () => {
         document.getElementById('installBanner').style.display = 'none';
-        showToast('App install ho gaya!');
+        const headerBtn = document.getElementById('headerInstallBtn');
+        if (headerBtn) headerBtn.style.display = 'none';
+        showToast('✅ App install ho gaya! Home screen pe dekh sakte ho');
     });
 
     if ('serviceWorker' in navigator) {
@@ -504,10 +635,14 @@
     function showView(view) {
         currentView = view;
         document.getElementById('homeScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'none';
         document.getElementById('khattaView').style.display = 'none';
         document.getElementById('recordView').style.display = 'none';
         if (view === 'home') {
             document.getElementById('homeScreen').style.display = 'flex';
+        } else if (view === 'dashboard') {
+            document.getElementById('dashboardScreen').style.display = 'flex';
+            updateDashboard();
         } else if (view === 'khatta') {
             document.getElementById('khattaView').style.display = 'flex';
             renderCustomers();
@@ -526,6 +661,74 @@
 
     function openKhatta() { showView('khatta'); }
     function openRecordCard() { showView('record'); }
+
+    // ====== Dashboard Logic ======
+    function updateDashboard() {
+        // Calculate totals
+        let totalUdhaar = 0, totalPaid = 0;
+        customers.forEach(cust => {
+            const udhaarTotal = transactions.filter(t => t.customerId === cust.id && t.type === 'Udhaar').reduce((sum, t) => sum + (t.total || 0), 0);
+            const paidTotal = transactions.filter(t => t.customerId === cust.id && t.type === 'Payment').reduce((sum, t) => sum + (t.total || 0), 0);
+            totalUdhaar += udhaarTotal;
+            totalPaid += paidTotal;
+        });
+
+        // Update stat cards
+        document.getElementById('dashTotalUdhaar').textContent = '₹' + totalUdhaar.toLocaleString('en-IN');
+        document.getElementById('dashTotalPaid').textContent = '₹' + totalPaid.toLocaleString('en-IN');
+        document.getElementById('dashActiveCustomers').textContent = customers.length;
+        document.getElementById('dashTotalTransactions').textContent = transactions.length;
+
+        // Calculate top debtors (customers with highest udhaar balance)
+        const customerBalances = customers.map(cust => {
+            const udhaarTotal = transactions.filter(t => t.customerId === cust.id && t.type === 'Udhaar').reduce((sum, t) => sum + (t.total || 0), 0);
+            const paidTotal = transactions.filter(t => t.customerId === cust.id && t.type === 'Payment').reduce((sum, t) => sum + (t.total || 0), 0);
+            return { ...cust, balance: udhaarTotal - paidTotal };
+        }).sort((a, b) => b.balance - a.balance);
+
+        // Top debtors (positive balance)
+        const debtorsHTML = customerBalances.filter(c => c.balance > 0).slice(0, 5).map(cust => 
+            `<tr>
+                <td><strong>${cust.name || 'Unknown'}</strong></td>
+                <td>${cust.phone || '-'}</td>
+                <td style="color: var(--danger); font-weight: bold;">₹${cust.balance.toLocaleString('en-IN')}</td>
+                <td><button class="btn" style="background:var(--secondary); padding:5px 10px; font-size:11px;" onclick="selectCustomer('${cust.id}'); showView('khatta');">View</button></td>
+            </tr>`
+        ).join('');
+        document.getElementById('dashTopDebtors').innerHTML = debtorsHTML || '<tr><td colspan="4" class="dashboard-empty">Koi debt nahi!</td></tr>';
+
+        // Top creditors (negative balance / paid more)
+        const creditorsHTML = customerBalances.filter(c => c.balance < 0).slice(0, 5).map(cust => 
+            `<tr>
+                <td><strong>${cust.name || 'Unknown'}</strong></td>
+                <td>${cust.phone || '-'}</td>
+                <td style="color: var(--success); font-weight: bold;">₹${Math.abs(cust.balance).toLocaleString('en-IN')}</td>
+                <td><button class="btn" style="background:var(--secondary); padding:5px 10px; font-size:11px;" onclick="selectCustomer('${cust.id}'); showView('khatta');">View</button></td>
+            </tr>`
+        ).join('');
+        document.getElementById('dashTopCreditors').innerHTML = creditorsHTML || '<tr><td colspan="4" class="dashboard-empty">Koi credit nahi!</td></tr>';
+
+        // Recent transactions (last 10)
+        const recentHTML = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10).map(trans => {
+            const cust = customers.find(c => c.id === trans.customerId);
+            return `<tr>
+                <td>${trans.date || '-'}</td>
+                <td>${cust?.name || 'Unknown'}</td>
+                <td>${trans.itemType || trans.item || '-'}</td>
+                <td>₹${(trans.total || 0).toLocaleString('en-IN')}</td>
+                <td><span style="padding:3px 8px; border-radius:4px; font-size:11px; font-weight:bold; ${trans.type === 'Udhaar' ? 'background:#ffebee; color:var(--danger);' : 'background:#e8f5e9; color:var(--success);'}">${trans.type}</span></td>
+            </tr>`;
+        }).join('');
+        document.getElementById('dashRecentTransactions').innerHTML = recentHTML || '<tr><td colspan="5" class="dashboard-empty">Koi transactions nahi!</td></tr>';
+    }
+
+    function selectCustomer(custId) {
+        activeCustId = custId;
+        renderCustomers();
+        renderTransactions();
+        updateCustomerHeader();
+        document.getElementById('ledgerArea').style.display = 'block';
+    }
 
     // ====== Toast Notification ======
     function showToast(msg) {
