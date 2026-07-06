@@ -285,12 +285,12 @@
         <div class="dashboard-grid">
             <div class="dashboard-card accent1">
                 <div class="dashboard-card-title">Total Udhaar (Debt)</div>
-                <div class="dashboard-card-value" id="dashTotalUdhaar">₹0</div>
+                <div class="dashboard-card-value" id="dashTotalUdhaar">Rs. 0</div>
                 <div class="dashboard-card-change" id="dashUdhaarChange">Updated now</div>
             </div>
             <div class="dashboard-card accent2">
                 <div class="dashboard-card-title">Total Collected</div>
-                <div class="dashboard-card-value" id="dashTotalPaid">₹0</div>
+                <div class="dashboard-card-value" id="dashTotalPaid">Rs. 0</div>
                 <div class="dashboard-card-change" id="dashPaidChange">Updated now</div>
             </div>
             <div class="dashboard-card accent3">
@@ -674,8 +674,8 @@
         });
 
         // Update stat cards
-        document.getElementById('dashTotalUdhaar').textContent = '₹' + totalUdhaar.toLocaleString('en-IN');
-        document.getElementById('dashTotalPaid').textContent = '₹' + totalPaid.toLocaleString('en-IN');
+        document.getElementById('dashTotalUdhaar').textContent = 'Rs. ' + totalUdhaar.toLocaleString('en-IN');
+        document.getElementById('dashTotalPaid').textContent = 'Rs. ' + totalPaid.toLocaleString('en-IN');
         document.getElementById('dashActiveCustomers').textContent = customers.length;
         document.getElementById('dashTotalTransactions').textContent = transactions.length;
 
@@ -691,7 +691,7 @@
             `<tr>
                 <td><strong>${cust.name || 'Unknown'}</strong></td>
                 <td>${cust.phone || '-'}</td>
-                <td style="color: var(--danger); font-weight: bold;">₹${cust.balance.toLocaleString('en-IN')}</td>
+                <td style="color: var(--danger); font-weight: bold;">Rs. ${cust.balance.toLocaleString('en-IN')}</td>
                 <td><button class="btn" style="background:var(--secondary); padding:5px 10px; font-size:11px;" onclick="selectCustomer('${cust.id}'); showView('khatta');">View</button></td>
             </tr>`
         ).join('');
@@ -702,7 +702,7 @@
             `<tr>
                 <td><strong>${cust.name || 'Unknown'}</strong></td>
                 <td>${cust.phone || '-'}</td>
-                <td style="color: var(--success); font-weight: bold;">₹${Math.abs(cust.balance).toLocaleString('en-IN')}</td>
+                <td style="color: var(--success); font-weight: bold;">Rs. ${Math.abs(cust.balance).toLocaleString('en-IN')}</td>
                 <td><button class="btn" style="background:var(--secondary); padding:5px 10px; font-size:11px;" onclick="selectCustomer('${cust.id}'); showView('khatta');">View</button></td>
             </tr>`
         ).join('');
@@ -715,7 +715,7 @@
                 <td>${trans.date || '-'}</td>
                 <td>${cust?.name || 'Unknown'}</td>
                 <td>${trans.itemType || trans.item || '-'}</td>
-                <td>₹${(trans.total || 0).toLocaleString('en-IN')}</td>
+                <td>Rs. ${(trans.total || 0).toLocaleString('en-IN')}</td>
                 <td><span style="padding:3px 8px; border-radius:4px; font-size:11px; font-weight:bold; ${trans.type === 'Udhaar' ? 'background:#ffebee; color:var(--danger);' : 'background:#e8f5e9; color:var(--success);'}">${trans.type}</span></td>
             </tr>`;
         }).join('');
@@ -754,6 +754,9 @@
             if (currentView === 'record') {
                 renderRecordCustomers();
                 if (recordActiveCustId) renderRecordCard(recordActiveCustId);
+            }
+            if (currentView === 'dashboard') {
+                updateDashboard();
             }
         }
     });
