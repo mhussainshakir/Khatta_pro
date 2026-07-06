@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HH Book Center - Pro Edition</title>
+    <meta name="description" content="Customer Ledger Management System for Hassan Hussain Book Center">
+    <meta name="theme-color" content="#004d40">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HH Book Center">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <style>
+        :root { --primary: #004d40; --secondary: #00796b; --danger: #d32f2f; --success: #388e3c; --gold: #FFD700; --whatsapp: #25D366; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* Splash Screen */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
+        .spinner { width: 60px; height: 60px; border: 6px solid rgba(255,255,255,0.2); border-top: 6px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Login Overlay */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 15000; display: flex; justify-content: center; align-items: center; color: white; }
+
+        /* Notifications */
+        #notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
+        .toast { background: #333; color: white; padding: 12px 20px; border-radius: 8px; margin-top: 10px; border-left: 5px solid var(--success); display: flex; gap: 10px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* PWA Install Banner */
+        #installBanner { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; padding: 15px 20px; z-index: 11000; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
+        #installBanner .banner-content { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; gap: 10px; }
+        #installBanner .banner-text { font-size: 14px; }
+        #installBanner .banner-text strong { color: var(--gold); }
+
+        /* Common */
+        .btn { padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; transition: transform 0.1s, opacity 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ====== HOME SCREEN ====== */
+        #homeScreen { display: none; flex: 1; justify-content: center; align-items: center; background: linear-gradient(135deg, #004d40 0%, #00796b 100%); padding: 20px; }
+        .home-container { text-align: center; max-width: 500px; width: 100%; }
+        .home-title { color: var(--gold); font-size: 28px; margin-bottom: 5px; }
+        .home-subtitle { color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 40px; }
+        .home-options { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .home-card { background: white; border-radius: 20px; padding: 40px 30px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 200px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .home-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,0,0,0.3); }
+        .home-card:active { transform: scale(0.97); }
+        .home-card-icon { font-size: 50px; margin-bottom: 15px; }
+        .home-card-title { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        .home-card-desc { font-size: 12px; color: #777; }
+        .home-settings-btn { margin-top: 30px; }
+
+        /* ====== HEADER ====== */
+        header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; flex-wrap: wrap; gap: 5px; }
+
+        /* ====== KHATTA VIEW ====== */
+        #khattaView { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+        .content { flex: 1; padding: 15px; overflow-y: auto; background: #fff; }
+        @media (max-width: 768px) { .main-container { flex-direction: column; } .sidebar { width: 100%; height: 250px; } }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .card { padding: 10px; border-radius: 10px; color: white; text-align: center; }
+        .card.udhaar { background: var(--danger); } .card.wasooli { background: var(--success); } .card.balance { background: #263238; }
+        .input-group { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }
+        .cust-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
+        .cust-item:hover { background: #f5f5f5; }
+        .active-cust { background: #e0f2f1; border-left: 5px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th { background: #f8f9fa; font-weight: bold; color: #555; position: sticky; top: 0; }
+
+        /* Clear All Entries Button */
+        .clear-all-section { padding: 20px; text-align: center; border-top: 2px dashed #ddd; margin-top: 20px; }
+        .clear-all-btn { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 14px 30px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(211,47,47,0.3); transition: transform 0.2s; }
+        .clear-all-btn:hover { transform: scale(1.03); }
+        .clear-all-btn:active { transform: scale(0.97); }
+
+        /* ====== RECORD CARD VIEW ====== */
+        #recordView { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+        .record-container { display: flex; flex: 1; overflow: hidden; }
+        .record-sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+        .record-content { flex: 1; padding: 20px; overflow-y: auto; background: #f0f2f5; }
+        @media (max-width: 768px) { .record-container { flex-direction: column; } .record-sidebar { width: 100%; height: 250px; } }
+        .record-card { background: white; border-radius: 15px; padding: 25px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .record-card-header { text-align: center; padding-bottom: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+        .record-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px; }
+        .record-name { font-size: 22px; color: var(--primary); margin: 5px 0; }
+        .record-phone { color: #777; font-size: 14px; }
+        .record-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .record-stat { text-align: center; padding: 15px 10px; border-radius: 10px; }
+        .record-stat.udhaar { background: #ffebee; color: var(--danger); }
+        .record-stat.paid { background: #e8f5e9; color: var(--success); }
+        .record-stat.balance { background: #eceff1; color: #263238; }
+        .record-stat h4 { margin: 0 0 5px; font-size: 12px; text-transform: uppercase; opacity: 0.8; }
+        .record-stat p { margin: 0; font-size: 20px; font-weight: bold; }
+        .record-transactions { margin-top: 15px; }
+        .record-transactions h3 { color: var(--primary); margin-bottom: 10px; font-size: 16px; }
+        .record-tx-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .record-tx-left { display: flex; align-items: center; gap: 10px; }
+        .record-tx-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .record-tx-icon.debit { background: #ffebee; }
+        .record-tx-icon.credit { background: #e8f5e9; }
+        .record-no-selection { text-align: center; color: #999; margin-top: 80px; }
+        .record-no-selection-icon { font-size: 60px; margin-bottom: 15px; }
+
+        /* Photo proof */
+        .photo-thumb { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; cursor: pointer; border: 2px solid #ddd; transition: border-color 0.2s; }
+        .photo-thumb:hover { border-color: var(--secondary); }
+        #photoViewModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; }
+        #photoViewModal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
+
+        /* Upload progress */
+        .upload-progress { display: none; align-items: center; gap: 8px; }
+        .upload-bar { flex: 1; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+        .upload-bar-fill { height: 100%; background: var(--success); border-radius: 3px; transition: width 0.3s; width: 0%; }
+
+        /* PDF Modal */
+        #pdfModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; overflow-y:auto; padding:10px; }
+        .pdf-controls { background:white; padding:15px; margin-bottom:10px; border-radius:8px; display:flex; flex-wrap:wrap; gap:10px; position:sticky; top:0; align-items:center; }
+        .pdf-paper { background:white; width: 210mm; min-height:297mm; margin:0 auto; padding: 10mm; font-family: Arial; box-sizing: border-box; font-size: 12px; color: black; }
+        .signature-section { margin-top: 30px; display: flex; justify-content: space-between; }
+        .sig-box { border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px; font-weight: bold; }
+
+        /* Date filter */
+        .date-filter { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .date-filter label { font-size: 12px; font-weight: bold; color: #555; }
+        .date-filter input[type="date"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; }
+
+        /* Settings Modal */
+        #settingsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 12000; justify-content: center; align-items: center; }
+        .settings-box { background: white; border-radius: 15px; padding: 25px; width: 90%; max-width: 400px; }
+        .settings-box h3 { color: var(--primary); margin-top: 0; }
+        .settings-box input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
+        .settings-box label { font-size: 13px; color: #555; font-weight: bold; display: block; margin-bottom: 4px; }
+
+        /* Confirm Modal */
+        #confirmModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 13000; justify-content: center; align-items: center; }
+        .confirm-box { background: white; border-radius: 15px; padding: 30px; width: 90%; max-width: 380px; text-align: center; }
+        .confirm-box h3 { color: var(--danger); margin-top: 0; }
+        .confirm-box p { color: #555; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash">
+    <div class="spinner"></div>
+    <h1 style="color:white; margin-top: 20px;">HH BOOK CENTER</h1>
+    <p style="color:var(--gold);">Powering Your Business</p>
+</div>
+
+<div id="notification-container"></div>
+
+<!-- PWA Install Banner -->
+<div id="installBanner">
+    <div class="banner-content">
+        <div class="banner-text">
+            <strong>HH Book Center</strong> ko apne phone mein install karein!
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn" style="background:var(--gold); color:#000; padding:8px 16px;" onclick="installPWA()">Install</button>
+            <button class="btn" style="background:transparent; border:1px solid white; padding:8px 12px;" onclick="dismissInstall()">Baad mein</button>
+        </div>
+    </div>
+</div>
+
+<!-- Photo View Modal -->
+<div id="photoViewModal" onclick="this.style.display='none'">
+    <img id="photoViewImg" src="" alt="Proof Photo">
+    <button class="btn" style="background:var(--danger); margin-top:15px; padding:10px 30px;" onclick="event.stopPropagation(); document.getElementById('photoViewModal').style.display='none'">Close</button>
+</div>
+
+<!-- Settings Modal (Cloudinary) -->
+<div id="settingsModal">
+    <div class="settings-box">
+        <h3>Cloudinary Settings</h3>
+        <p style="font-size:12px; color:#999; margin-top:0;">Photo proof ke liye Cloudinary setup karein</p>
+        <label>Cloud Name</label>
+        <input type="text" id="settCloudName" placeholder="e.g. my-cloud-name">
+        <label>Upload Preset (Unsigned)</label>
+        <input type="text" id="settUploadPreset" placeholder="e.g. my_unsigned_preset">
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn" style="background:var(--success); flex:1; padding:12px;" onclick="saveCloudinarySettings()">Save</button>
+            <button class="btn" style="background:#999; flex:1; padding:12px;" onclick="closeSettings()">Cancel</button>
+        </div>
+        <p style="font-size:11px; color:#aaa; margin-bottom:0; margin-top:12px;">Cloudinary.com pe free account banayein, phir Settings &gt; Upload &gt; Upload presets mein unsigned preset create karein.</p>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal">
+    <div class="confirm-box">
+        <h3 id="confirmTitle">Confirm</h3>
+        <p id="confirmMsg">Are you sure?</p>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn" style="background:var(--danger); flex:1; padding:12px;" id="confirmYes">Haan, Clear Karein</button>
+            <button class="btn" style="background:#999; flex:1; padding:12px;" id="confirmNo">Nahi</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== LOGIN OVERLAY ====== -->
+<div id="loginOverlay">
+    <div style="text-align: center; background: #333; padding: 30px; border-radius: 15px; width: 85%; max-width: 300px;">
+        <h2 style="color:var(--gold); margin:0 0 5px;">HH BOOK CENTER</h2>
+        <p style="color:#aaa; font-size:12px; margin:0 0 15px;">Enter PIN to unlock</p>
+        <input type="password" id="pinInput" placeholder="ENTER PIN" style="width: 100%; margin: 10px 0; text-align: center; font-size: 20px; padding: 12px; border-radius: 8px; border: 2px solid #555; background: #444; color: white;" onkeydown="if(event.key==='Enter') checkPin()">
+        <button class="btn" style="background:var(--secondary); width:100%; padding:14px; font-size:16px;" onclick="checkPin()">UNLOCK</button>
+    </div>
+</div>
+
+<!-- ====== HOME SCREEN ====== -->
+<div id="homeScreen">
+    <div class="home-container">
+        <h1 class="home-title">HH BOOK CENTER</h1>
+        <p class="home-subtitle">Customer Ledger Management System</p>
+        <div class="home-options">
+            <div class="home-card" onclick="openKhatta()">
+                <div class="home-card-icon">📒</div>
+                <div class="home-card-title">Khatta</div>
+                <div class="home-card-desc">Customer ka udhaar aur payments manage karein</div>
+            </div>
+            <div class="home-card" onclick="openRecordCard()">
+                <div class="home-card-icon">📋</div>
+                <div class="home-card-title">Record Card</div>
+                <div class="home-card-desc">Customer ki complete details dekhein</div>
+            </div>
+        </div>
+        <div class="home-settings-btn">
+            <button class="btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:10px 20px; font-size:13px;" onclick="openSettings()">Cloudinary Settings</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== KHATTA VIEW ====== -->
+<div id="khattaView">
+    <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
+            <h1 style="margin:0; font-size:18px;">Khatta <span id="syncStatus" style="font-size: 10px; color: #90EE90;">● Loading...</span></h1>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" style="background:#1D6F42; padding: 5px 10px;" onclick="exportToExcel()">Backup</button>
+            <button class="btn" style="background:var(--danger); padding: 5px 10px;" onclick="goHome()">Back</button>
+        </div>
+    </header>
+    <div class="main-container">
+        <div class="sidebar">
+            <div style="padding: 10px; background: #f1f1f1;">
+                <input type="text" id="searchCust" placeholder="Search customer..." onkeyup="renderCustomers()" style="width: 100%; padding: 8px; border-radius: 5px; border:1px solid #ccc;">
+                <button class="btn" style="background:var(--success); width: 100%; margin-top:5px;" onclick="showAddCustomer()">+ New Customer</button>
+            </div>
+            <div id="customerList" style="flex:1; overflow-y: auto;"></div>
+        </div>
+        <div class="content" id="ledgerArea" style="display:none;">
+            <div style="display:flex; justify-content: space-between; margin-bottom: 15px; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <h2 id="activeCustName" style="margin:0; color:var(--primary);"></h2>
+                    <small id="activeCustPhoneDisplay" style="color: #666;"></small>
+                </div>
+                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                    <button class="btn" style="background:var(--whatsapp); padding: 8px 15px;" onclick="sendWhatsAppKhata()">WhatsApp</button>
+                    <button class="btn" style="background:var(--secondary); padding: 8px 15px;" onclick="editCustomerDetails()">Edit</button>
+                    <button class="btn" style="background:#e65100; padding: 8px 15px;" onclick="openPdfPreview()">PDF</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="card udhaar"><h5 style="margin:0 0 5px;">Udhaar</h5><p id="sumUdhaar" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
+                <div class="card wasooli"><h5 style="margin:0 0 5px;">Paid</h5><p id="sumPaid" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
+                <div class="card balance"><h5 style="margin:0 0 5px;">Balance</h5><p id="sumBalance" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
+            </div>
+            <div class="input-group">
+                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                    <select id="itemType" onchange="handleItemTypeChange()" style="flex:1; min-width:100px; padding:8px; border-radius:5px; border:1px solid #ccc;"></select>
+                    <input type="text" id="entryDesc" placeholder="Details (Remarks)" style="flex:2; min-width:120px; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="date" id="manualDate" style="flex:1; min-width:120px; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                </div>
+                <div id="customCategoryRow" style="display:none; margin-bottom:8px;">
+                    <input type="text" id="customCategoryInput" placeholder="Nayi category ka naam likhen (e.g. Copy, Pens)" style="width:100%; padding:8px; border-radius:5px; border:1px solid var(--secondary);">
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                    <input type="number" id="entryQty" placeholder="Qty" oninput="calcTotal()" style="flex:1; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="number" id="entryRate" placeholder="Rate" oninput="calcTotal()" style="flex:1; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                    <input type="number" id="entryTotal" placeholder="0" readonly style="flex:1; background:#eee; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
+                </div>
+                <!-- Photo Proof Upload with Cloudinary -->
+                <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
+                    <label style="font-size:12px; font-weight:bold; color:#555;">Proof Photo:</label>
+                    <input type="file" id="proofPhoto" accept="image/*" capture="environment" style="flex:1; font-size:12px;">
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="upload-bar"><div class="upload-bar-fill" id="uploadBarFill"></div></div>
+                        <span id="uploadPercent" style="font-size:11px; color:#555;">0%</span>
+                    </div>
+                    <span id="photoStatus" style="font-size:11px; color:#999;"></span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn" style="background:var(--danger); flex:1; padding:12px;" onclick="addTransaction('Udhaar')">+ Add Udhaar</button>
+                    <button class="btn" style="background:var(--success); flex:1; padding:12px;" onclick="addTransaction('Payment')">Cash Payment</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+                <input type="text" id="searchEntryBox" placeholder="🔍 Is customer ki entries mein search karein (item, detail, date)..." oninput="renderTransactions()" style="flex:1; padding:9px 12px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
+                <button class="btn" style="background:#999; padding:9px 14px;" onclick="document.getElementById('searchEntryBox').value=''; renderTransactions();">Clear</button>
+            </div>
+            <table>
+                <thead><tr><th>Date</th><th>Item & Details</th><th>Calc</th><th>Total</th><th>Proof</th><th>Action</th></tr></thead>
+                <tbody id="transBody"></tbody>
+            </table>
+            <p id="searchEntryNoResult" style="display:none; text-align:center; color:#999; padding:15px;">Koi entry nahi mili is search ke liye.</p>
+            <!-- Clear All Entries Button -->
+            <div class="clear-all-section" id="clearAllSection" style="display:none;">
+                <p style="color:#999; font-size:12px; margin-bottom:10px;">Sab entries clear karne ke liye neeche button dabayein</p>
+                <button class="clear-all-btn" onclick="clearAllEntries()">Clear All Entries</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== RECORD CARD VIEW ====== -->
+<div id="recordView">
+    <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
+            <h1 style="margin:0; font-size:18px;">Record Card</h1>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button class="btn" style="background:var(--danger); padding: 5px 10px;" onclick="goHome()">Back</button>
+        </div>
+    </header>
+    <div class="record-container">
+        <div class="record-sidebar">
+            <div style="padding: 10px; background: #f1f1f1;">
+                <input type="text" id="recordSearchCust" placeholder="Search customer..." onkeyup="renderRecordCustomers()" style="width: 100%; padding: 8px; border-radius: 5px; border:1px solid #ccc;">
+            </div>
+            <div id="recordCustomerList" style="flex:1; overflow-y: auto;"></div>
+        </div>
+        <div class="record-content" id="recordArea">
+            <div class="record-no-selection" id="recordPlaceholder">
+                <div class="record-no-selection-icon">📋</div>
+                <h3 style="color:#aaa;">Customer Select Karein</h3>
+                <p style="color:#bbb; font-size:13px;">Left side se customer choose karein to uski details dekhein</p>
+            </div>
+            <div id="recordCardArea" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== PDF MODAL ====== -->
+<div id="pdfModal">
+    <div class="pdf-controls">
+        <button class="btn" style="background:var(--danger)" onclick="document.getElementById('pdfModal').style.display='none'">Close</button>
+        <div class="date-filter" style="margin-left:10px;">
+            <label>From:</label>
+            <input type="date" id="pdfDateFrom" onchange="refreshPdfPreview()">
+            <label>To:</label>
+            <input type="date" id="pdfDateTo" onchange="refreshPdfPreview()">
+            <button class="btn" style="background:var(--secondary); padding:6px 12px;" onclick="clearDateFilter()">Clear Filter</button>
+        </div>
+        <button class="btn" style="background:var(--success); margin-left:auto;" onclick="downloadPdf()">Download PDF</button>
+    </div>
+    <div id="printableArea" class="pdf-paper">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">
+            <h2 style="margin:0; color:#004d40;">HASSAN HUSSAIN BOOK CENTER</h2>
+            <p style="margin:5px 0;">Customer Statement / Ledger</p>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:15px;">
+            <div id="pdfCustInfo"></div>
+            <div id="pdfDate"></div>
+        </div>
+        <table style="width:100%; border-collapse:collapse; margin-top:15px; border: 1px solid #000;">
+            <thead><tr style="background:#eee;">
+                <th style="border:1px solid #000; padding:5px;">Date</th>
+                <th style="border:1px solid #000; padding:5px;">Item</th>
+                <th style="border:1px solid #000; padding:5px;">Details</th>
+                <th style="border:1px solid #000; padding:5px;">Qty</th>
+                <th style="border:1px solid #000; padding:5px;">Rate</th>
+                <th style="border:1px solid #000; padding:5px;">Amount</th>
+                <th style="border:1px solid #000; padding:5px;">Proof</th>
+            </tr></thead>
+            <tbody id="pdfRows" style="text-align:center;"></tbody>
+        </table>
+        <div id="pdfSummary" style="float:right; width:200px; margin-top:15px; border:1px solid #000; padding:8px;"></div>
+        <div style="clear:both;"></div>
+        <div class="signature-section">
+            <div class="sig-box">Customer Signature</div>
+            <div class="sig-box">Shop Signature</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====== Firebase Config ======
+    const firebaseConfig = {
+        apiKey: "AIzaSyBsAmYuS2kxo7r3MB35XczP1I7lqr-8hEM",
+        authDomain: "h-h-book-center.firebaseapp.com",
+        databaseURL: "https://h-h-book-center-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "h-h-book-center"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let customers = [], transactions = [], activeCustId = null, recordActiveCustId = null;
+    let customCategories = []; // user-added custom categories, saved permanently via Firebase
+    const baseCategories = ['Photocopy', 'Books', 'Stationery', 'Uniform'];
+    let currentView = 'home'; // 'home', 'khatta', 'record'
+
+    // ====== Cloudinary Config (server-side via Netlify Blobs + localStorage fallback) ======
+    let cloudinaryConfigCache = {
+        cloudName: localStorage.getItem('cloudinary_cloud_name') || '',
+        uploadPreset: localStorage.getItem('cloudinary_upload_preset') || ''
+    };
+
+    // Load config from server on startup
+    (async function loadCloudinaryConfig() {
+        try {
+            const resp = await fetch('/.netlify/functions/cloudinary-config');
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data.cloudName) {
+                    cloudinaryConfigCache.cloudName = data.cloudName;
+                    cloudinaryConfigCache.uploadPreset = data.uploadPreset;
+                    localStorage.setItem('cloudinary_cloud_name', data.cloudName);
+                    localStorage.setItem('cloudinary_upload_preset', data.uploadPreset);
+                }
+            }
+        } catch (e) { /* offline - use localStorage cache */ }
+    })();
+
+    function getCloudinaryConfig() {
+        return {
+            cloudName: cloudinaryConfigCache.cloudName,
+            uploadPreset: cloudinaryConfigCache.uploadPreset
+        };
+    }
+
+    function isCloudinaryConfigured() {
+        const c = getCloudinaryConfig();
+        return c.cloudName && c.uploadPreset;
+    }
+
+    // ====== PWA Install Logic ======
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBanner').style.display = 'block';
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                document.getElementById('installBanner').style.display = 'none';
+            });
+        }
+    }
+
+    function dismissInstall() {
+        document.getElementById('installBanner').style.display = 'none';
+    }
+
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('installBanner').style.display = 'none';
+        showToast('App install ho gaya!');
+    });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    // ====== Splash Screen ======
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash');
+            splash.style.transition = 'opacity 0.5s';
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500);
+        }, 2000);
+        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+    });
+
+    // ====== PIN Lock ======
+    function checkPin() {
+        if (document.getElementById('pinInput').value === "4546") {
+            document.getElementById('loginOverlay').style.display = 'none';
+            showView('home');
+        } else {
+            alert("Wrong PIN!");
+            document.getElementById('pinInput').value = '';
+        }
+    }
+
+    // ====== Navigation ======
+    function showView(view) {
+        currentView = view;
+        document.getElementById('homeScreen').style.display = 'none';
+        document.getElementById('khattaView').style.display = 'none';
+        document.getElementById('recordView').style.display = 'none';
+        if (view === 'home') {
+            document.getElementById('homeScreen').style.display = 'flex';
+        } else if (view === 'khatta') {
+            document.getElementById('khattaView').style.display = 'flex';
+            renderCustomers();
+        } else if (view === 'record') {
+            document.getElementById('recordView').style.display = 'flex';
+            renderRecordCustomers();
+        }
+    }
+
+    function goHome() {
+        activeCustId = null;
+        recordActiveCustId = null;
+        document.getElementById('ledgerArea').style.display = 'none';
+        showView('home');
+    }
+
+    function openKhatta() { showView('khatta'); }
+    function openRecordCard() { showView('record'); }
+
+    // ====== Toast Notification ======
+    function showToast(msg) {
+        const container = document.getElementById('notification-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ====== Firebase Data Sync ======
+    db.ref('hh_data').on('value', (snap) => {
+        const data = snap.val();
+        if (data) {
+            customers = data.customers || [];
+            transactions = data.transactions || [];
+            document.getElementById('syncStatus').innerText = "● Online";
+            if (currentView === 'khatta') {
+                renderCustomers();
+                if (activeCustId) { renderTransactions(); updateCustomerHeader(); }
+            }
+            if (currentView === 'record') {
+                renderRecordCustomers();
+                if (recordActiveCustId) renderRecordCard(recordActiveCustId);
+            }
+        }
+    });
+
+    function sync() { db.ref('hh_data').set({ customers, transactions }); }
+
+    // ====== Cloudinary Upload ======
+    async function uploadToCloudinary(file) {
+        const config = getCloudinaryConfig();
+        if (!config.cloudName || !config.uploadPreset) {
+            return await fileToBase64Fallback(file);
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', config.uploadPreset);
+
+        const progressEl = document.getElementById('uploadProgress');
+        const barFill = document.getElementById('uploadBarFill');
+        const percentEl = document.getElementById('uploadPercent');
+        progressEl.style.display = 'flex';
+
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + encodeURIComponent(config.cloudName) + '/image/upload');
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 100);
+                    barFill.style.width = pct + '%';
+                    percentEl.innerText = pct + '%';
+                }
+            };
+            xhr.onload = () => {
+                progressEl.style.display = 'none';
+                barFill.style.width = '0%';
+                if (xhr.status === 200) {
+                    const resp = JSON.parse(xhr.responseText);
+                    resolve(resp.secure_url);
+                } else {
+                    showToast('Cloudinary upload failed, saving locally');
+                    fileToBase64Fallback(file).then(resolve).catch(reject);
+                }
+            };
+            xhr.onerror = () => {
+                progressEl.style.display = 'none';
+                barFill.style.width = '0%';
+                showToast('Upload error, saving locally');
+                fileToBase64Fallback(file).then(resolve).catch(reject);
+            };
+            xhr.send(formData);
+        });
+    }
+
+    // Fallback: compress and convert to base64
+    function fileToBase64Fallback(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 400;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX_SIZE) { h = h * MAX_SIZE / w; w = MAX_SIZE; } }
+                    else { if (h > MAX_SIZE) { w = w * MAX_SIZE / h; h = MAX_SIZE; } }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+                };
+                img.src = reader.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function viewPhoto(url) {
+        const modal = document.getElementById('photoViewModal');
+        document.getElementById('photoViewImg').src = url;
+        modal.style.display = 'flex';
+    }
+
+    // ====== Settings ======
+    function openSettings() {
+        const config = getCloudinaryConfig();
+        document.getElementById('settCloudName').value = config.cloudName;
+        document.getElementById('settUploadPreset').value = config.uploadPreset;
+        document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettings() {
+        document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    async function saveCloudinarySettings() {
+        const cn = document.getElementById('settCloudName').value.trim();
+        const up = document.getElementById('settUploadPreset').value.trim();
+        // Update local cache and localStorage
+        cloudinaryConfigCache.cloudName = cn;
+        cloudinaryConfigCache.uploadPreset = up;
+        localStorage.setItem('cloudinary_cloud_name', cn);
+        localStorage.setItem('cloudinary_upload_preset', up);
+        // Save to server (Netlify Blobs) for persistence across devices
+        try {
+            await fetch('/.netlify/functions/cloudinary-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cloudName: cn, uploadPreset: up })
+            });
+        } catch (e) { /* offline - localStorage fallback is already saved */ }
+        closeSettings();
+        showToast(cn ? 'Cloudinary settings saved (server + local)!' : 'Cloudinary settings cleared');
+    }
+
+    // ====== Confirm Dialog ======
+    function showConfirm(title, message, onConfirm) {
+        document.getElementById('confirmTitle').innerText = title;
+        document.getElementById('confirmMsg').innerText = message;
+        document.getElementById('confirmModal').style.display = 'flex';
+        document.getElementById('confirmYes').onclick = () => {
+            document.getElementById('confirmModal').style.display = 'none';
+            onConfirm();
+        };
+        document.getElementById('confirmNo').onclick = () => {
+            document.getElementById('confirmModal').style.display = 'none';
+        };
+    }
+
+    // ====== Customer Management ======
+    function showAddCustomer() {
+        const n = prompt("Customer Name:");
+        if (n) {
+            const p = prompt("WhatsApp Number (e.g. 03001234567):");
+            if (p) {
+                customers.push({ id: Date.now(), name: n, phone: p });
+                sync();
+                showToast('Customer add ho gaya!');
+            } else {
+                alert("WhatsApp number zaroori hai!");
+            }
+        }
+    }
+
+    function editCustomerDetails() {
+        const c = customers.find(x => x.id === activeCustId);
+        const n = prompt("Edit Name:", c.name);
+        const p = prompt("Edit WhatsApp:", c.phone || "");
+        if (n) {
+            c.name = n;
+            c.phone = p;
+            sync();
+            selectCustomer(activeCustId);
+        }
+    }
+
+    function renderCustomers() {
+        const list = document.getElementById('customerList');
+        const term = document.getElementById('searchCust').value.toLowerCase();
+        list.innerHTML = '';
+        customers.forEach(c => {
+            if (c.name.toLowerCase().includes(term)) {
+                let u = 0, p = 0;
+                transactions.filter(t => t.custId === c.id && !t.cleared).forEach(t => {
+                    if (t.type === 'Udhaar') u += t.total; else p += t.total;
+                });
+                const bal = u - p;
+                list.innerHTML += '<div class="cust-item ' + (activeCustId === c.id ? 'active-cust' : '') + '" onclick="selectCustomer(' + c.id + ')">' +
+                    '<div style="display:flex; justify-content:space-between;">' +
+                    '<strong>' + escHtml(c.name) + '</strong>' +
+                    '<span style="font-size:11px; color:' + (bal > 0 ? 'red' : 'green') + '">Rs. ' + bal + '</span>' +
+                    '</div></div>';
+            }
+        });
+    }
+
+    function escHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function updateCustomerHeader() {
+        const cust = customers.find(c => c.id === activeCustId);
+        if (!cust) return;
+        document.getElementById('activeCustName').innerText = cust.name;
+        document.getElementById('activeCustPhoneDisplay').innerText = cust.phone ? "WhatsApp: " + cust.phone : "WhatsApp: Not Set";
+    }
+
+    function selectCustomer(id) {
+        activeCustId = id;
+        document.getElementById('ledgerArea').style.display = 'block';
+        const searchBox = document.getElementById('searchEntryBox');
+        if (searchBox) searchBox.value = '';
+        updateCustomerHeader();
+        renderTransactions();
+        renderCustomers();
+    }
+
+    // ====== Transactions ======
+    async function addTransaction(type) {
+        const mDate = document.getElementById('manualDate').value;
+        const qty = parseFloat(document.getElementById('entryQty').value) || 0;
+        const rate = parseFloat(document.getElementById('entryRate').value) || 0;
+        const total = type === 'Payment' ? rate : (qty * rate);
+        if (!total || !mDate) return alert("Please fill in all details!");
+
+        let photoData = '';
+        const photoInput = document.getElementById('proofPhoto');
+        if (photoInput.files && photoInput.files[0]) {
+            document.getElementById('photoStatus').innerText = 'Uploading...';
+            try {
+                photoData = await uploadToCloudinary(photoInput.files[0]);
+            } catch (e) {
+                document.getElementById('photoStatus').innerText = 'Upload failed';
+            }
+            document.getElementById('photoStatus').innerText = '';
+        }
+
+        const d = mDate.split('-');
+        transactions.push({
+            id: Date.now(), custId: activeCustId,
+            date: d[2] + '/' + d[1] + '/' + d[0],
+            rawDate: mDate,
+            item: type === 'Payment' ? 'Cash Received' : document.getElementById('itemType').value,
+            desc: document.getElementById('entryDesc').value, qty, rate, total, type,
+            photo: photoData
+        });
+        sync();
+        document.getElementById('entryQty').value = '';
+        document.getElementById('entryRate').value = '';
+        document.getElementById('entryDesc').value = '';
+        document.getElementById('entryTotal').value = '';
+        photoInput.value = '';
+        showToast(type === 'Udhaar' ? 'Udhaar entry add ho gai!' : 'Payment record ho gai!');
+    }
+
+    function editTrans(id) {
+        const t = transactions.find(x => x.id === id);
+        const newRate = prompt("Naya Rate:", t.rate);
+        if (newRate !== null) {
+            t.rate = parseFloat(newRate);
+            t.total = t.type === 'Payment' ? t.rate : (t.qty * t.rate);
+            sync();
+        }
+    }
+
+    function deleteTrans(id) {
+        showConfirm('Delete Entry', 'Kya aap ye entry delete karna chahte hain?', () => {
+            transactions = transactions.filter(t => t.id !== id);
+            sync();
+            showToast('Entry delete ho gai!');
+        });
+    }
+
+    function renderTransactions() {
+        const body = document.getElementById('transBody');
+        body.innerHTML = '';
+        let u = 0, p = 0;
+        const allCustTrans = transactions.filter(t => t.custId === activeCustId && !t.cleared);
+        let custTrans = allCustTrans;
+
+        // Search filter (item, description, date, qty, rate, total) - filters the visible list only
+        const searchBox = document.getElementById('searchEntryBox');
+        const term = searchBox ? searchBox.value.trim().toLowerCase() : '';
+        if (term) {
+            custTrans = custTrans.filter(t =>
+                (t.item || '').toLowerCase().includes(term) ||
+                (t.desc || '').toLowerCase().includes(term) ||
+                (t.date || '').toLowerCase().includes(term) ||
+                String(t.qty || '').includes(term) ||
+                String(t.rate || '').includes(term) ||
+                String(t.total || '').includes(term)
+            );
+        }
+
+        document.getElementById('searchEntryNoResult').style.display = (term && custTrans.length === 0) ? 'block' : 'none';
+
+        // Totals always reflect ALL active entries, not just the search results
+        allCustTrans.forEach(t => { if (t.type === 'Udhaar') u += t.total; else p += t.total; });
+
+        custTrans.slice().reverse().forEach(t => {
+            const photoCell = t.photo
+                ? '<img src="' + escHtml(t.photo) + '" class="photo-thumb" data-txid="' + t.id + '" title="Click to view proof">'
+                : '<span style="color:#ccc; font-size:11px;">No proof</span>';
+            body.innerHTML += '<tr>' +
+                '<td>' + escHtml(t.date) + '</td>' +
+                '<td><b>' + escHtml(t.item) + '</b><br><small>' + escHtml(t.desc || '-') + '</small></td>' +
+                '<td>' + (t.qty || '-') + ' x ' + t.rate + '</td>' +
+                '<td style="color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '; font-weight:bold;">Rs. ' + t.total + '</td>' +
+                '<td>' + photoCell + '</td>' +
+                '<td><button class="btn" style="background:var(--secondary); padding:4px 8px; font-size:11px; margin:2px;" onclick="editTrans(' + t.id + ')">Edit</button>' +
+                '<button class="btn" style="background:var(--danger); padding:4px 8px; font-size:11px; margin:2px;" onclick="deleteTrans(' + t.id + ')">Del</button></td>' +
+                '</tr>';
+        });
+
+        // Attach click handlers for photo thumbnails
+        body.querySelectorAll('.photo-thumb').forEach(img => {
+            img.addEventListener('click', function () {
+                const txId = parseInt(this.getAttribute('data-txid'));
+                const tx = transactions.find(t => t.id === txId);
+                if (tx && tx.photo) viewPhoto(tx.photo);
+            });
+        });
+
+        document.getElementById('sumUdhaar').innerText = 'Rs. ' + u;
+        document.getElementById('sumPaid').innerText = 'Rs. ' + p;
+        document.getElementById('sumBalance').innerText = 'Rs. ' + (u - p);
+
+        // Show/hide Clear All Entries button (based on full list, not search results)
+        const clearSection = document.getElementById('clearAllSection');
+        clearSection.style.display = allCustTrans.length > 0 ? 'block' : 'none';
+    }
+
+    // ====== CLEAR ALL ENTRIES (Soft Delete - marks as cleared, keeps in Record) ======
+    function clearAllEntries() {
+        if (!activeCustId) return;
+        const cust = customers.find(c => c.id === activeCustId);
+        showConfirm(
+            'Clear All Entries',
+            cust.name + ' ki SAARI entries khatte se clear ho jayengi. Record Card mein entries safe rahengi. Kya aap sure hain?',
+            () => {
+                const clearDate = new Date().toISOString();
+                transactions.forEach(t => {
+                    if (t.custId === activeCustId && !t.cleared) {
+                        t.cleared = true;
+                        t.clearDate = clearDate;
+                    }
+                });
+                sync();
+                renderTransactions();
+                showToast(cust.name + ' ka khatta clear ho gaya! Record safe hai.');
+            }
+        );
+    }
+
+    // ====== RECORD CARD ======
+    function renderRecordCustomers() {
+        const list = document.getElementById('recordCustomerList');
+        const term = document.getElementById('recordSearchCust').value.toLowerCase();
+        list.innerHTML = '';
+        customers.forEach(c => {
+            if (c.name.toLowerCase().includes(term)) {
+                let u = 0, p = 0;
+                transactions.filter(t => t.custId === c.id).forEach(t => {
+                    if (t.type === 'Udhaar') u += t.total; else p += t.total;
+                });
+                const bal = u - p;
+                list.innerHTML += '<div class="cust-item ' + (recordActiveCustId === c.id ? 'active-cust' : '') + '" onclick="selectRecordCustomer(' + c.id + ')">' +
+                    '<div style="display:flex; justify-content:space-between;">' +
+                    '<strong>' + escHtml(c.name) + '</strong>' +
+                    '<span style="font-size:11px; color:' + (bal > 0 ? 'red' : 'green') + '">Rs. ' + bal + '</span>' +
+                    '</div></div>';
+            }
+        });
+    }
+
+    function selectRecordCustomer(id) {
+        recordActiveCustId = id;
+        renderRecordCustomers();
+        renderRecordCard(id);
+    }
+
+    function renderRecordCard(custId) {
+        const cust = customers.find(c => c.id === custId);
+        if (!cust) return;
+
+        document.getElementById('recordPlaceholder').style.display = 'none';
+        const area = document.getElementById('recordCardArea');
+        area.style.display = 'block';
+
+        let totalU = 0, totalP = 0, activeU = 0, activeP = 0;
+        const custTrans = transactions.filter(t => t.custId === custId);
+        custTrans.forEach(t => {
+            if (t.type === 'Udhaar') totalU += t.total; else totalP += t.total;
+            if (!t.cleared) {
+                if (t.type === 'Udhaar') activeU += t.total; else activeP += t.total;
+            }
+        });
+        const totalBal = totalU - totalP;
+        const activeBal = activeU - activeP;
+        const initial = cust.name.charAt(0).toUpperCase();
+        const hasClearedEntries = custTrans.some(t => t.cleared);
+
+        let txHtml = '';
+        custTrans.slice().reverse().forEach(t => {
+            const isDebit = t.type === 'Udhaar';
+            const photoHtml = t.photo
+                ? '<img src="' + escHtml(t.photo) + '" style="width:30px; height:30px; border-radius:4px; object-fit:cover; cursor:pointer; margin-left:8px;" onclick="viewPhoto(\'' + escHtml(t.photo).replace(/'/g, "\\'") + '\')">'
+                : '';
+            const clearedBadge = t.cleared
+                ? '<span style="background:#ff9800; color:#fff; font-size:9px; padding:1px 6px; border-radius:8px; margin-left:6px;">Cleared</span>'
+                : '';
+            const clearedStyle = t.cleared ? ' opacity:0.6;' : '';
+            txHtml += '<div class="record-tx-item" style="' + clearedStyle + '">' +
+                '<div class="record-tx-left">' +
+                '<div class="record-tx-icon ' + (isDebit ? 'debit' : 'credit') + '">' + (isDebit ? '📕' : '📗') + '</div>' +
+                '<div><strong style="font-size:13px;">' + escHtml(t.item) + clearedBadge + '</strong><br><small style="color:#999;">' + escHtml(t.date) + ' - ' + escHtml(t.desc || 'No details') + '</small></div>' +
+                '</div>' +
+                '<div style="display:flex; align-items:center;">' +
+                '<strong style="color:' + (isDebit ? 'var(--danger)' : 'var(--success)') + ';">' + (isDebit ? '-' : '+') + ' Rs. ' + t.total + '</strong>' +
+                photoHtml +
+                '</div></div>';
+        });
+
+        if (custTrans.length === 0) {
+            txHtml = '<div style="text-align:center; padding:30px; color:#ccc;"><p>Koi transaction nahi hai</p></div>';
+        }
+
+        let statsHtml =
+            '<div class="record-stats">' +
+            '<div class="record-stat udhaar"><h4>Total Udhaar</h4><p>Rs. ' + totalU + '</p></div>' +
+            '<div class="record-stat paid"><h4>Total Paid</h4><p>Rs. ' + totalP + '</p></div>' +
+            '<div class="record-stat balance"><h4>All-Time Balance</h4><p>Rs. ' + totalBal + '</p></div>' +
+            '</div>';
+        if (hasClearedEntries) {
+            statsHtml +=
+                '<div class="record-stats" style="margin-top:6px;">' +
+                '<div class="record-stat udhaar" style="background:#fff3e0;"><h4>Active Udhaar</h4><p>Rs. ' + activeU + '</p></div>' +
+                '<div class="record-stat paid" style="background:#e8f5e9;"><h4>Active Paid</h4><p>Rs. ' + activeP + '</p></div>' +
+                '<div class="record-stat balance" style="background:#e3f2fd;"><h4>Active Balance</h4><p>Rs. ' + activeBal + '</p></div>' +
+                '</div>';
+        }
+
+        const clearedCount = custTrans.filter(t => t.cleared).length;
+        const activeCount = custTrans.length - clearedCount;
+
+        area.innerHTML =
+            '<div class="record-card">' +
+            '<div class="record-card-header">' +
+            '<div class="record-avatar">' + initial + '</div>' +
+            '<h2 class="record-name">' + escHtml(cust.name) + '</h2>' +
+            '<p class="record-phone">' + (cust.phone ? 'WhatsApp: ' + escHtml(cust.phone) : 'Phone not set') + '</p>' +
+            '</div>' +
+            statsHtml +
+            '<div class="record-transactions">' +
+            '<h3>All Transactions (' + custTrans.length + ')' +
+            (clearedCount > 0 ? ' <small style="color:#ff9800; font-weight:normal;">(' + clearedCount + ' cleared, ' + activeCount + ' active)</small>' : '') +
+            '</h3>' +
+            txHtml +
+            '</div>' +
+            '</div>';
+    }
+
+    // ====== WhatsApp ======
+    function sendWhatsAppKhata() {
+        const cust = customers.find(c => c.id === activeCustId);
+        if (!cust.phone) return alert("WhatsApp number missing!");
+        let u = 0, p = 0;
+        transactions.filter(t => t.custId === activeCustId && !t.cleared).forEach(t => {
+            if (t.type === 'Udhaar') u += t.total; else p += t.total;
+        });
+        const balance = u - p;
+        const msg = '*HASSAN HUSSAIN BOOK CENTER*%0A------------------------------%0A*Customer:* ' + cust.name + '%0A*Total Udhaar:* Rs. ' + u + '%0A*Total Paid:* Rs. ' + p + '%0A------------------------------%0A*Net Balance:* Rs. ' + balance + '%0A------------------------------%0A_Kindly apna balance jald az jald clear karwaein. Shukriya!_';
+        window.open('https://wa.me/92' + cust.phone.replace(/^0/, '') + '?text=' + msg, '_blank');
+    }
+
+    // ====== Excel Export ======
+    function exportToExcel() {
+        if (transactions.length === 0) return alert("No data to export!");
+        const exportData = transactions.map(t => {
+            const cust = customers.find(c => c.id === t.custId);
+            return {
+                "Date": t.date,
+                "Customer Name": cust ? cust.name : "Unknown",
+                "Item": t.item,
+                "Description": t.desc || "-",
+                "Qty": t.qty || 1,
+                "Rate": t.rate,
+                "Total Amount": t.total,
+                "Type": t.type,
+                "Status": t.cleared ? "Cleared" : "Active"
+            };
+        });
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "BookCenter_Backup");
+        XLSX.writeFile(wb, 'HH_BookCenter_Backup_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    }
+
+    // ====== PDF with Date Filter ======
+    function getFilteredTransactions() {
+        const fromDate = document.getElementById('pdfDateFrom').value;
+        const toDate = document.getElementById('pdfDateTo').value;
+        let list = transactions.filter(t => t.custId === activeCustId && !t.cleared).sort((a, b) => a.id - b.id);
+        if (fromDate) list = list.filter(t => t.rawDate >= fromDate);
+        if (toDate) list = list.filter(t => t.rawDate <= toDate);
+        return list;
+    }
+
+    function buildPdfContent(list) {
+        const cust = customers.find(c => c.id === activeCustId);
+        document.getElementById('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + escHtml(cust.name) + '<br><b>Phone:</b> ' + escHtml(cust.phone || '-');
+        const fromDate = document.getElementById('pdfDateFrom').value;
+        const toDate = document.getElementById('pdfDateTo').value;
+        let dateLabel = '<b>Statement Date:</b> ' + new Date().toLocaleDateString();
+        if (fromDate || toDate) {
+            const fmtFrom = fromDate ? new Date(fromDate).toLocaleDateString() : 'Start';
+            const fmtTo = toDate ? new Date(toDate).toLocaleDateString() : 'Today';
+            dateLabel += '<br><b>Period:</b> ' + fmtFrom + ' - ' + fmtTo;
+        }
+        document.getElementById('pdfDate').innerHTML = dateLabel;
+
+        let h = '', tu = 0, tp = 0;
+        list.forEach(t => {
+            const isUdhaar = t.type === 'Udhaar';
+            if (isUdhaar) tu += t.total; else tp += t.total;
+            const proofImg = t.photo
+                ? '<img src="' + escHtml(t.photo) + '" style="width:50px; height:50px; object-fit:cover; border-radius:3px;">'
+                : '-';
+            h += '<tr>' +
+                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.date) + '</td>' +
+                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.item) + '</td>' +
+                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.desc || '-') + '</td>' +
+                '<td style="border:1px solid #000; padding:4px;">' + (t.qty || '-') + '</td>' +
+                '<td style="border:1px solid #000; padding:4px;">' + t.rate + '</td>' +
+                '<td style="border:1px solid #000; padding:4px; font-weight:bold; color:' + (isUdhaar ? 'red' : 'green') + '">' + t.total + '</td>' +
+                '<td style="border:1px solid #000; padding:4px;">' + proofImg + '</td>' +
+                '</tr>';
+        });
+        document.getElementById('pdfRows').innerHTML = h;
+        document.getElementById('pdfSummary').innerHTML = 'Total Bill: ' + tu + '<br>Total Paid: ' + tp + '<hr><b>Net Balance: ' + (tu - tp) + '</b>';
+    }
+
+    function openPdfPreview() {
+        document.getElementById('pdfDateFrom').value = '';
+        document.getElementById('pdfDateTo').value = '';
+        buildPdfContent(getFilteredTransactions());
+        document.getElementById('pdfModal').style.display = 'block';
+    }
+
+    function refreshPdfPreview() { buildPdfContent(getFilteredTransactions()); }
+
+    function clearDateFilter() {
+        document.getElementById('pdfDateFrom').value = '';
+        document.getElementById('pdfDateTo').value = '';
+        refreshPdfPreview();
+    }
+
+    function downloadPdf() {
+        html2pdf().set({
+            margin: 0,
+            filename: 'Ledger.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(document.getElementById('printableArea')).save();
+    }
+
+    function calcTotal() {
+        document.getElementById('entryTotal').value = (document.getElementById('entryQty').value || 0) * (document.getElementById('entryRate').value || 0);
+    }
+</script>
+</body>
+</html>
