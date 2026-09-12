@@ -1,0 +1,26 @@
+{
+  "name": "H-H Book Photo State & Book Center",
+  "short_name": "HH Book Center",
+  "description": "Cloud file management app for H-H Book Photo State & Book Center — photos, documents, search, print & download.",
+  "id": "/",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F1E4",
+  "theme_color": "#1F4D3A",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
