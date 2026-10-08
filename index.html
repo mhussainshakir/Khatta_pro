@@ -148,6 +148,23 @@
         .confirm-box { background: white; border-radius: 15px; padding: 30px; width: 90%; max-width: 380px; text-align: center; }
         .confirm-box h3 { color: var(--danger); margin-top: 0; }
         .confirm-box p { color: #555; font-size: 14px; }
+    .secbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+        .sec-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--secondary);background:#fff;color:var(--primary);font-size:13px;cursor:pointer}
+        .sec-chip.on{background:var(--primary);color:#fff}
+        .prof-box{display:flex;gap:12px;align-items:center;background:#f5faf8;border:1px solid #d6e6e0;border-radius:10px;padding:10px;margin-bottom:12px;font-size:13px;color:#444}
+        .prof-av{width:56px;height:56px;border-radius:50%;background:var(--secondary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;overflow:hidden;flex:none}
+        .prof-av img{width:100%;height:100%;object-fit:cover}
+        .pmi{width:100%;padding:9px;margin-bottom:8px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
+        .dash-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
+        .dash-card{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 14px;color:#fff;text-align:center;min-width:110px}
+        .dash-card small{display:block;font-size:11px;opacity:.8}.dash-card b{font-size:16px}
+        #archiveView { display:none; flex-direction:column; flex:1; overflow:hidden; }
+        #archiveView .dash-card { background:#e0f2f1; border-color:#b2dfdb; color:var(--primary); }
+        #archiveView .dash-row { justify-content:flex-start; }
+        .arch-filter { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; background:#f8f9fa; border:1px solid #eee; border-radius:10px; padding:10px; margin-bottom:12px; }
+        .arch-filter label { font-size:11px; font-weight:bold; color:#555; display:block; margin-bottom:3px; }
+        .arch-filter input { padding:7px 9px; border:1px solid #ccc; border-radius:6px; font-size:12px; }
+        #archPdfModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; overflow:auto; padding:10px; }
     </style>
 </head>
 <body>
@@ -239,6 +256,11 @@
                 <div class="home-card-icon">☁️</div>
                 <div class="home-card-title">Cloud</div>
                 <div class="home-card-desc">Photos aur files cloud pe upload/search karein</div>
+            </div>
+            <div class="home-card" onclick="openArchive()">
+                <div class="home-card-icon">🗂️</div>
+                <div class="home-card-title">Lifetime Record</div>
+                <div class="home-card-desc">Clear ki hui purani entries, dashboard, date search aur PDF</div>
             </div>
             <div class="home-card" onclick="openInventory()">
                 <div class="home-card-icon">📦</div>
@@ -362,12 +384,14 @@
                     <h2 id="activeCustName" style="margin:0; color:var(--primary);"></h2>
                     <small id="activeCustPhoneDisplay" style="color: #666;"></small>
                 </div>
-                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
                     <button class="btn" style="background:var(--whatsapp); padding: 8px 15px;" onclick="sendWhatsAppKhata()">WhatsApp</button>
                     <button class="btn" style="background:var(--secondary); padding: 8px 15px;" onclick="editCustomerDetails()">Edit</button>
                     <button class="btn" style="background:#e65100; padding: 8px 15px;" onclick="openPdfPreview()">PDF</button>
                 </div>
             </div>
+            <div id="secBar" class="secbar" style="margin-bottom:10px;"></div>
+            <div id="profBox"></div>
             <div class="stats-grid">
                 <div class="card udhaar"><h5 style="margin:0 0 5px;">Udhaar</h5><p id="sumUdhaar" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
                 <div class="card wasooli"><h5 style="margin:0 0 5px;">Paid</h5><p id="sumPaid" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
@@ -420,6 +444,52 @@
     </div>
 </div>
 
+<!-- ====== LIFETIME RECORD (ARCHIVE) VIEW ====== -->
+<div id="archiveView">
+    <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
+            <h1 style="margin:0; font-size:18px;">Lifetime Record</h1>
+        </div>
+        <button class="btn" style="background:#e65100; padding:5px 12px;" onclick="openArchPdf()">PDF</button>
+    </header>
+    <div class="record-container">
+        <div class="record-sidebar">
+            <div style="padding:10px; background:#f1f1f1;">
+                <input type="text" id="archSearchCust" placeholder="Search customer..." onkeyup="renderArchCustomers()" style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc;">
+            </div>
+            <div id="archCustomerList" style="flex:1; overflow-y:auto;"></div>
+        </div>
+        <div class="record-content" style="background:#fff;">
+            <div id="dashBox"></div>
+            <h3 id="archTitle" style="margin:6px 0 10px; color:var(--primary); font-size:16px;"></h3>
+            <div class="arch-filter">
+                <div><label>From</label><input type="date" id="archFrom" onchange="renderArchive()"></div>
+                <div><label>To</label><input type="date" id="archTo" onchange="renderArchive()"></div>
+                <div style="flex:1; min-width:140px;"><label>Search</label><input type="text" id="archText" oninput="renderArchive()" placeholder="item, detail, naam, amount..." style="width:100%;"></div>
+                <button class="btn" style="background:#999; padding:9px 14px;" onclick="clearArchFilters()">Clear</button>
+            </div>
+            <div class="stats-grid" id="archStats"></div>
+            <div style="overflow-x:auto;">
+                <table style="min-width:640px;">
+                    <thead><tr><th>Date</th><th>Customer</th><th>Section</th><th>Item & Details</th><th>Total</th><th>Proof</th><th>Cleared On</th></tr></thead>
+                    <tbody id="archBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== ARCHIVE PDF MODAL ====== -->
+<div id="archPdfModal">
+    <div class="pdf-controls">
+        <button class="btn" style="background:var(--danger)" onclick="document.getElementById('archPdfModal').style.display='none'">Close</button>
+        <span style="font-size:12px; color:#555;">Filters (customer / date / search) wahi hain jo Lifetime Record mein laga rakhe hain</span>
+        <button class="btn" style="background:var(--success); margin-left:auto;" onclick="downloadArchPdf()">Download PDF</button>
+    </div>
+    <div id="archPrintable" class="pdf-paper"></div>
+</div>
+
 <!-- ====== RECORD CARD VIEW ====== -->
 <div id="recordView">
     <header>
@@ -449,10 +519,21 @@
     </div>
 </div>
 
+<div id="profModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:6000;align-items:center;justify-content:center;padding:12px;">
+  <div style="background:#fff;border-radius:12px;padding:18px;width:100%;max-width:420px;max-height:92vh;overflow:auto;">
+    <h3 id="pmTitle" style="margin:0 0 10px;color:var(--primary);"></h3>
+    <input type="file" id="pmPhoto" accept="image/*" style="width:100%;margin-bottom:8px;font-size:12px;">
+    <input id="pmName" placeholder="Customer Name *" class="pmi"><input id="pmPhone" placeholder="WhatsApp Number *" class="pmi">
+    <input id="pmOrg" placeholder="School / Business Name" class="pmi"><input id="pmOwner" placeholder="Owner / Principal Name" class="pmi">
+    <input id="pmAddr" placeholder="Address" class="pmi"><input id="pmNote" placeholder="Notes" class="pmi">
+    <div style="display:flex;gap:8px;margin-top:10px;"><button class="btn" id="pmSave" style="background:var(--success);flex:1;" onclick="saveProfile()">Save</button><button class="btn" style="background:#999;" onclick="document.getElementById('profModal').style.display='none'">Cancel</button></div>
+  </div></div>
+
 <!-- ====== PDF MODAL ====== -->
 <div id="pdfModal">
     <div class="pdf-controls">
         <button class="btn" style="background:var(--danger)" onclick="document.getElementById('pdfModal').style.display='none'">Close</button>
+        <select id="pdfSec" onchange="refreshPdfPreview()" style="padding:6px;border-radius:5px;margin-left:10px;"></select>
         <div class="date-filter" style="margin-left:10px;">
             <label>From:</label>
             <input type="date" id="pdfDateFrom" onchange="refreshPdfPreview()">
@@ -503,7 +584,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let customers = [], transactions = [], items = [], activeCustId = null, recordActiveCustId = null;
-    let customCategories = []; // user-added custom categories, saved permanently via Firebase
+    let loaded = false, sid = 'main'; let customCategories = []; // user-added custom categories, saved permanently via Firebase
     const baseCategories = ['Photocopy', 'Books', 'Stationery', 'Uniform'];
     let currentView = 'home'; // 'home', 'khatta', 'record'
 
@@ -613,14 +694,18 @@
         document.getElementById('recordView').style.display = 'none';
         document.getElementById('cloudView').style.display = 'none';
         document.getElementById('inventoryView').style.display = 'none';
+        document.getElementById('archiveView').style.display = 'none';
         if (view === 'home') {
-            document.getElementById('homeScreen').style.display = 'flex';
+            document.getElementById('homeScreen').style.display = 'flex'; renderDash();
         } else if (view === 'khatta') {
             document.getElementById('khattaView').style.display = 'flex';
             renderCustomers();
         } else if (view === 'record') {
             document.getElementById('recordView').style.display = 'flex';
             renderRecordCustomers();
+        } else if (view === 'archive') {
+            document.getElementById('archiveView').style.display = 'flex';
+            renderDash(); renderArchCustomers(); renderArchive();
         }
     }
 
@@ -633,6 +718,7 @@
 
     function openKhatta() { showView('khatta'); }
     function openRecordCard() { showView('record'); }
+    function openArchive() { showView('archive'); }
 
     // ====== Cloud (embedded sub-app) ======
     // Loaded lazily into an iframe on first open, then left alone (not reloaded)
@@ -644,6 +730,7 @@
         document.getElementById('khattaView').style.display = 'none';
         document.getElementById('recordView').style.display = 'none';
         document.getElementById('inventoryView').style.display = 'none';
+        document.getElementById('archiveView').style.display = 'none';
         document.getElementById('cloudView').style.display = 'flex';
         if (!cloudLoaded) {
             document.getElementById('cloudFrame').src = 'cloud/index.html';
@@ -658,6 +745,7 @@
         document.getElementById('khattaView').style.display = 'none';
         document.getElementById('recordView').style.display = 'none';
         document.getElementById('cloudView').style.display = 'none';
+        document.getElementById('archiveView').style.display = 'none';
         document.getElementById('inventoryView').style.display = 'flex';
         calcInventoryRate();
         renderInventory();
@@ -808,14 +896,70 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
+    // ====== Sections / Dashboard / Profile ======
+    const tOf = (cid, s) => transactions.filter(t => t.custId === cid && !t.cleared && (s == null || (t.sectionId || 'main') === s));
+    const secs = c => [{ id: 'main', name: 'Main Khatta' }].concat((c && c.sections) || []);
+    const secName = (c, s) => (secs(c).find(x => x.id === s) || { name: 'Main Khatta' }).name;
+    const sumT = l => { let u = 0, p = 0; l.forEach(t => t.type === 'Udhaar' ? u += t.total : p += t.total); return { u, p, b: u - p }; };
+    function renderSecBar() {
+        const c = customers.find(x => x.id === activeCustId); if (!c) return;
+        document.getElementById('secBar').innerHTML = secs(c).map(x => '<div class="sec-chip ' + (x.id === sid ? 'on' : '') + '" onclick="setSec(\'' + x.id + '\')">' + escHtml(x.name) + '</div>').join('') +
+            '<div class="sec-chip" onclick="addSection()">+ Naya Section</div>' + (sid !== 'main' ? '<div class="sec-chip" onclick="renameSection()">✎ Rename</div>' : '');
+    }
+    function setSec(s) { sid = s; renderTransactions(); }
+    function addSection() {
+        const n = prompt('Naye section ka naam (e.g. Session 2026):'); if (!n || !n.trim()) return;
+        const c = customers.find(x => x.id === activeCustId); c.sections = c.sections || [];
+        const s = { id: 's' + Date.now(), name: n.trim() }; c.sections.push(s); sid = s.id;
+        if (sync()) renderTransactions();
+    }
+    function renameSection() {
+        const c = customers.find(x => x.id === activeCustId), s = (c.sections || []).find(x => x.id === sid); if (!s) return;
+        const n = prompt('Section ka naya naam:', s.name); if (n && n.trim()) { s.name = n.trim(); if (sync()) renderTransactions(); }
+    }
+    function renderDash() {
+        const el = document.getElementById('dashBox'); if (!el) return;
+        const all = transactions.filter(t => !t.cleared), a = sumT(all);
+        const m = sumT(all.filter(t => !t.sectionId || t.sectionId === 'main')), o = sumT(all.filter(t => t.sectionId && t.sectionId !== 'main'));
+        const card = (l, v) => '<div class="dash-card"><small>' + l + '</small><b>Rs. ' + Math.round(v) + '</b></div>';
+        el.innerHTML = '<div class="dash-row">' + card('Kul Baqaya', a.b) + card('Total Udhaar', a.u) + card('Total Wasool', a.p) + '</div><div class="dash-row">' + card('Main Khatta', m.b) + card('Doosre Sections', o.b) + '<div class="dash-card"><small>Customers</small><b>' + customers.length + '</b></div></div>' +
+            (function () { const z = sumT(transactions.filter(t => t.cleared)); return '<div class="dash-row">' + card('Clear Shuda Udhaar', z.u) + card('Clear Shuda Wasool', z.p) + card('Lifetime Baqaya', sumT(transactions).b) + '</div>'; })();
+    }
+    function dailyBackup(d) {
+        try { const k = 'hh_backup/' + new Date().toISOString().slice(0, 10);
+            db.ref(k).once('value').then(s => { if (!s.exists() && d) db.ref(k).set(d); }).catch(() => {}); } catch (e) {}
+    }
+    let profEditId = null;
+    function openProfile(id) {
+        profEditId = id; const c = id ? customers.find(x => x.id === id) : {};
+        document.getElementById('pmTitle').innerText = id ? 'Profile Edit' : 'Naya Customer';
+        [['pmName', 'name'], ['pmPhone', 'phone'], ['pmOrg', 'org'], ['pmOwner', 'owner'], ['pmAddr', 'addr'], ['pmNote', 'note']].forEach(f => document.getElementById(f[0]).value = c[f[1]] || '');
+        document.getElementById('pmPhoto').value = ''; document.getElementById('profModal').style.display = 'flex';
+    }
+    async function saveProfile() {
+        const n = document.getElementById('pmName').value.trim(), p = document.getElementById('pmPhone').value.trim();
+        if (!n || !p) return alert('Name aur WhatsApp number zaroori hain!');
+        const b = document.getElementById('pmSave'); b.disabled = true; b.innerText = 'Saving...';
+        let photo = ''; const f = document.getElementById('pmPhoto').files[0];
+        if (f) { try { photo = await uploadToCloudinary(f); } catch (e) { showToast('Photo upload fail'); } }
+        const d = { name: n, phone: p, org: document.getElementById('pmOrg').value.trim(), owner: document.getElementById('pmOwner').value.trim(), addr: document.getElementById('pmAddr').value.trim(), note: document.getElementById('pmNote').value.trim() };
+        let c;
+        if (profEditId) { c = customers.find(x => x.id === profEditId); Object.assign(c, d); } else { c = Object.assign({ id: Date.now() }, d); customers.push(c); }
+        if (photo) c.photo = photo;
+        b.disabled = false; b.innerText = 'Save';
+        if (sync()) { document.getElementById('profModal').style.display = 'none'; showToast('Save ho gaya!'); if (profEditId) selectCustomer(profEditId); }
+    }
+
     // ====== Firebase Data Sync ======
     db.ref('hh_data').on('value', (snap) => {
         const data = snap.val();
+        if (!loaded) { loaded = true; dailyBackup(data); }
         if (data) {
             customers = data.customers || [];
             transactions = data.transactions || [];
             items = data.items || [];
             document.getElementById('syncStatus').innerText = "● Online";
+            if (currentView === 'home') renderDash();
             if (currentView === 'khatta') {
                 renderCustomers();
                 if (activeCustId) { renderTransactions(); updateCustomerHeader(); }
@@ -827,10 +971,16 @@
             if (currentView === 'inventory') {
                 renderInventory();
             }
+            if (currentView === 'archive') {
+                renderDash(); renderArchCustomers(); renderArchive();
+            }
         }
     });
 
-    function sync() { db.ref('hh_data').set({ customers, transactions, items }); }
+    function sync() {
+        if (!loaded) { showToast('Data load ho raha hai, thora ruko'); return false; }
+        db.ref('hh_data').update({ customers, transactions, items }); return true;
+    }
 
     // ====== Cloudinary Upload ======
     async function uploadToCloudinary(file) {
@@ -955,31 +1105,8 @@
     }
 
     // ====== Customer Management ======
-    function showAddCustomer() {
-        const n = prompt("Customer Name:");
-        if (n) {
-            const p = prompt("WhatsApp Number (e.g. 03001234567):");
-            if (p) {
-                customers.push({ id: Date.now(), name: n, phone: p });
-                sync();
-                showToast('Customer add ho gaya!');
-            } else {
-                alert("WhatsApp number zaroori hai!");
-            }
-        }
-    }
-
-    function editCustomerDetails() {
-        const c = customers.find(x => x.id === activeCustId);
-        const n = prompt("Edit Name:", c.name);
-        const p = prompt("Edit WhatsApp:", c.phone || "");
-        if (n) {
-            c.name = n;
-            c.phone = p;
-            sync();
-            selectCustomer(activeCustId);
-        }
-    }
+    function showAddCustomer() { openProfile(null); }
+    function editCustomerDetails() { openProfile(activeCustId); }
 
     function renderCustomers() {
         const list = document.getElementById('customerList');
@@ -1012,10 +1139,12 @@
         if (!cust) return;
         document.getElementById('activeCustName').innerText = cust.name;
         document.getElementById('activeCustPhoneDisplay').innerText = cust.phone ? "WhatsApp: " + cust.phone : "WhatsApp: Not Set";
+        document.getElementById('profBox').innerHTML = '<div class="prof-av"' + (cust.photo ? ' onclick="viewPhoto(\'' + escHtml(cust.photo) + '\')"' : '') + '>' + (cust.photo ? '<img src="' + escHtml(cust.photo) + '">' : escHtml((cust.name || '?').charAt(0).toUpperCase())) + '</div><div>' +
+            (cust.org ? '<b>' + escHtml(cust.org) + '</b><br>' : '') + (cust.owner ? 'Owner: ' + escHtml(cust.owner) + '<br>' : '') + (cust.addr ? 'Address: ' + escHtml(cust.addr) + '<br>' : '') + (cust.note ? 'Note: ' + escHtml(cust.note) : '') + '</div>';
     }
 
     function selectCustomer(id) {
-        activeCustId = id;
+        activeCustId = id; sid = 'main';
         document.getElementById('ledgerArea').style.display = 'block';
         const searchBox = document.getElementById('searchEntryBox');
         if (searchBox) searchBox.value = '';
@@ -1046,7 +1175,7 @@
 
         const d = mDate.split('-');
         transactions.push({
-            id: Date.now(), custId: activeCustId,
+            id: Date.now(), custId: activeCustId, sectionId: sid,
             date: d[2] + '/' + d[1] + '/' + d[0],
             rawDate: mDate,
             item: type === 'Payment' ? 'Cash Received' : document.getElementById('itemType').value,
@@ -1063,13 +1192,17 @@
     }
 
     function editTrans(id) {
-        const t = transactions.find(x => x.id === id);
-        const newRate = prompt("Naya Rate:", t.rate);
-        if (newRate !== null) {
-            t.rate = parseFloat(newRate);
-            t.total = t.type === 'Payment' ? t.rate : (t.qty * t.rate);
-            sync();
-        }
+        const t = transactions.find(x => x.id === id); if (!t) return;
+        const pay = t.type === 'Payment';
+        const it = pay ? t.item : prompt('Item:', t.item); if (it === null) return;
+        const q = pay ? t.qty : prompt('Quantity:', t.qty); if (q === null) return;
+        const r = prompt(pay ? 'Amount:' : 'Rate:', t.rate); if (r === null) return;
+        const qn = parseFloat(q) || 0, rn = parseFloat(r) || 0;
+        const tt = prompt('Total (khud bhi badal saktay hain):', pay ? rn : qn * rn); if (tt === null) return;
+        const d = prompt('Details:', t.desc || ''); if (d === null) return;
+        const tot = parseFloat(tt); if (!tot) return alert('Total sahi likhein');
+        t.item = it; t.qty = qn; t.rate = rn; t.total = tot; t.desc = d;
+        if (sync()) showToast('Entry update ho gai!');
     }
 
     function deleteTrans(id) {
@@ -1084,7 +1217,8 @@
         const body = document.getElementById('transBody');
         body.innerHTML = '';
         let u = 0, p = 0;
-        const allCustTrans = transactions.filter(t => t.custId === activeCustId && !t.cleared);
+        renderSecBar();
+        const allCustTrans = tOf(activeCustId, sid);
         let custTrans = allCustTrans;
 
         // Search filter (item, description, date, qty, rate, total) - filters the visible list only
@@ -1145,18 +1279,18 @@
         const cust = customers.find(c => c.id === activeCustId);
         showConfirm(
             'Clear All Entries',
-            cust.name + ' ki SAARI entries khatte se clear ho jayengi. Record Card mein entries safe rahengi. Kya aap sure hain?',
+            cust.name + ' ki SAARI entries khatte se clear ho jayengi. Lifetime Record mein entries hamesha safe rahengi. Kya aap sure hain?',
             () => {
                 const clearDate = new Date().toISOString();
                 transactions.forEach(t => {
-                    if (t.custId === activeCustId && !t.cleared) {
+                    if (t.custId === activeCustId && !t.cleared && (t.sectionId || 'main') === sid) {
                         t.cleared = true;
                         t.clearDate = clearDate;
                     }
                 });
                 sync();
                 renderTransactions();
-                showToast(cust.name + ' ka khatta clear ho gaya! Record safe hai.');
+                showToast(cust.name + ' ka khatta clear ho gaya! Lifetime Record mein safe hai.');
             }
         );
     }
@@ -1269,12 +1403,115 @@
             '</div>';
     }
 
+
+    // ====== LIFETIME RECORD (cleared entries archive) ======
+    // Read-only view: reads the same `transactions` array (entries with cleared:true).
+    // Nothing here writes to or deletes any data.
+    let archCustId = null;
+    function rawOf(t) {
+        if (t.rawDate) return t.rawDate;
+        const d = (t.date || '').split('/');
+        return d.length === 3 ? d[2] + '-' + d[1] + '-' + d[0] : '';
+    }
+    function fmtClear(t) { return t.clearDate ? new Date(t.clearDate).toLocaleDateString('en-GB') : '-'; }
+    function renderArchCustomers() {
+        const list = document.getElementById('archCustomerList'); if (!list) return;
+        const term = document.getElementById('archSearchCust').value.toLowerCase();
+        const cleared = transactions.filter(t => t.cleared);
+        let h = '<div class="cust-item ' + (archCustId === null ? 'active-cust' : '') + '" onclick="selectArchCust(null)"><strong>📚 Sab Customers</strong> <span style="font-size:11px; color:#777;">(' + cleared.length + ' entries)</span></div>';
+        customers.forEach(c => {
+            if (!(c.name || '').toLowerCase().includes(term)) return;
+            const l = cleared.filter(t => t.custId === c.id);
+            if (!l.length) return;
+            const b = sumT(l).b;
+            h += '<div class="cust-item ' + (archCustId === c.id ? 'active-cust' : '') + '" onclick="selectArchCust(' + c.id + ')"><div style="display:flex; justify-content:space-between;"><strong>' + escHtml(c.name) + '</strong><span style="font-size:11px; color:' + (b > 0 ? 'red' : 'green') + '">Rs. ' + b + '</span></div><small style="color:#999;">' + l.length + ' entries</small></div>';
+        });
+        list.innerHTML = h;
+    }
+    function selectArchCust(id) { archCustId = id; renderArchCustomers(); renderArchive(); }
+    function clearArchFilters() {
+        ['archFrom', 'archTo', 'archText'].forEach(i => document.getElementById(i).value = '');
+        renderArchive();
+    }
+    function getArchList() {
+        const from = document.getElementById('archFrom').value, to = document.getElementById('archTo').value;
+        const term = document.getElementById('archText').value.trim().toLowerCase();
+        let l = transactions.filter(t => t.cleared && (archCustId === null || t.custId === archCustId));
+        if (from) l = l.filter(t => rawOf(t) >= from);
+        if (to) l = l.filter(t => rawOf(t) <= to);
+        if (term) l = l.filter(t => {
+            const c = customers.find(x => x.id === t.custId);
+            return [t.item, t.desc, t.date, c ? c.name : '', c ? secName(c, t.sectionId || 'main') : '', t.total, t.qty, t.rate].join(' ').toLowerCase().includes(term);
+        });
+        return l.sort((a, b) => rawOf(b).localeCompare(rawOf(a)) || (b.id - a.id));
+    }
+    function renderArchive() {
+        const body = document.getElementById('archBody'); if (!body) return;
+        const c = customers.find(x => x.id === archCustId);
+        document.getElementById('archTitle').innerText = c ? c.name + ' — Lifetime Record' : 'Sab Customers — Lifetime Record';
+        const l = getArchList(), z = sumT(l);
+        document.getElementById('archStats').innerHTML =
+            '<div class="card udhaar"><h5 style="margin:0 0 5px;">Udhaar</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.u + '</p></div>' +
+            '<div class="card wasooli"><h5 style="margin:0 0 5px;">Paid</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.p + '</p></div>' +
+            '<div class="card balance"><h5 style="margin:0 0 5px;">Balance</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.b + '</p></div>';
+        body.innerHTML = l.map(t => {
+            const cu = customers.find(x => x.id === t.custId);
+            return '<tr><td>' + escHtml(t.date || '-') + '</td>' +
+                '<td>' + escHtml(cu ? cu.name : 'Unknown') + '</td>' +
+                '<td>' + escHtml(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td>' +
+                '<td><b>' + escHtml(t.item || '') + '</b><br><small>' + escHtml(t.desc || '-') + '</small></td>' +
+                '<td style="color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '; font-weight:bold;">Rs. ' + t.total + '</td>' +
+                '<td>' + (t.photo ? '<img src="' + escHtml(t.photo) + '" class="photo-thumb" data-txid="' + t.id + '">' : '-') + '</td>' +
+                '<td>' + escHtml(fmtClear(t)) + '</td></tr>';
+        }).join('') || '<tr><td colspan="7" style="text-align:center; color:#999; padding:20px;">Koi entry nahi mili</td></tr>';
+        body.querySelectorAll('.photo-thumb').forEach(img => img.addEventListener('click', function () {
+            const tx = transactions.find(t => t.id === parseInt(this.getAttribute('data-txid')));
+            if (tx && tx.photo) viewPhoto(tx.photo);
+        }));
+    }
+    function buildArchPdf() {
+        const l = getArchList().slice().sort((a, b) => rawOf(a).localeCompare(rawOf(b)) || (a.id - b.id)), z = sumT(l);
+        const c = customers.find(x => x.id === archCustId);
+        const from = document.getElementById('archFrom').value, to = document.getElementById('archTo').value;
+        const td = 'border:1px solid #000; padding:4px;';
+        const rows = l.map(t => {
+            const cu = customers.find(x => x.id === t.custId);
+            return '<tr><td style="' + td + '">' + escHtml(t.date || '-') + '</td>' +
+                (c ? '' : '<td style="' + td + '">' + escHtml(cu ? cu.name : 'Unknown') + '</td>') +
+                '<td style="' + td + '">' + escHtml(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td>' +
+                '<td style="' + td + '">' + escHtml(t.item || '') + '</td>' +
+                '<td style="' + td + '">' + escHtml(t.desc || '-') + '</td>' +
+                '<td style="' + td + '">' + (t.qty || '-') + '</td>' +
+                '<td style="' + td + '">' + t.rate + '</td>' +
+                '<td style="' + td + ' font-weight:bold; color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '">' + t.total + '</td></tr>';
+        }).join('');
+        document.getElementById('archPrintable').innerHTML =
+            '<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;"><h2 style="margin:0; color:#004d40;">HASSAN HUSSAIN BOOK CENTER</h2><p style="margin:5px 0;">Lifetime Record (Cleared Entries)</p></div>' +
+            '<div style="display:flex; justify-content:space-between; margin-top:15px;"><div><b>Customer:</b> ' + (c ? escHtml(c.name) + '<br><b>Phone:</b> ' + escHtml(c.phone || '-') : 'Sab Customers') + '</div>' +
+            '<div><b>Statement Date:</b> ' + new Date().toLocaleDateString('en-GB') + (from || to ? '<br><b>Period:</b> ' + (from ? new Date(from).toLocaleDateString('en-GB') : 'Start') + ' - ' + (to ? new Date(to).toLocaleDateString('en-GB') : 'Today') : '') + '</div></div>' +
+            '<table style="width:100%; border-collapse:collapse; margin-top:15px; border:1px solid #000;"><thead><tr style="background:#eee;">' +
+            ['Date'].concat(c ? [] : ['Customer']).concat(['Section', 'Item', 'Details', 'Qty', 'Rate', 'Amount']).map(h => '<th style="' + td + '">' + h + '</th>').join('') +
+            '</tr></thead><tbody style="text-align:center;">' + rows + '</tbody></table>' +
+            '<div style="float:right; width:200px; margin-top:15px; border:1px solid #000; padding:8px;">Total Udhaar: ' + z.u + '<br>Total Paid: ' + z.p + '<hr><b>Net Balance: ' + z.b + '</b></div><div style="clear:both;"></div>';
+    }
+    function openArchPdf() { buildArchPdf(); document.getElementById('archPdfModal').style.display = 'block'; }
+    function downloadArchPdf() {
+        const c = customers.find(x => x.id === archCustId);
+        html2pdf().set({
+            margin: 0,
+            filename: 'Lifetime_Record_' + (c ? c.name.replace(/[^\w]+/g, '_') : 'All') + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(document.getElementById('archPrintable')).save();
+    }
+
     // ====== WhatsApp ======
     function sendWhatsAppKhata() {
         const cust = customers.find(c => c.id === activeCustId);
         if (!cust.phone) return alert("WhatsApp number missing!");
         let u = 0, p = 0;
-        transactions.filter(t => t.custId === activeCustId && !t.cleared).forEach(t => {
+        tOf(activeCustId, sid).forEach(t => {
             if (t.type === 'Udhaar') u += t.total; else p += t.total;
         });
         const balance = u - p;
@@ -1309,7 +1546,8 @@
     function getFilteredTransactions() {
         const fromDate = document.getElementById('pdfDateFrom').value;
         const toDate = document.getElementById('pdfDateTo').value;
-        let list = transactions.filter(t => t.custId === activeCustId && !t.cleared).sort((a, b) => a.id - b.id);
+        const ps = document.getElementById('pdfSec').value;
+        let list = transactions.filter(t => t.custId === activeCustId && !t.cleared && (ps === '*' || (t.sectionId || 'main') === ps)).sort((a, b) => a.id - b.id);
         if (fromDate) list = list.filter(t => t.rawDate >= fromDate);
         if (toDate) list = list.filter(t => t.rawDate <= toDate);
         return list;
@@ -1317,7 +1555,7 @@
 
     function buildPdfContent(list) {
         const cust = customers.find(c => c.id === activeCustId);
-        document.getElementById('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + escHtml(cust.name) + '<br><b>Phone:</b> ' + escHtml(cust.phone || '-');
+        document.getElementById('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + escHtml(cust.name) + '<br><b>Phone:</b> ' + escHtml(cust.phone || '-') + (cust.org ? '<br><b>School/Business:</b> ' + escHtml(cust.org) : '') + (cust.owner ? '<br><b>Owner:</b> ' + escHtml(cust.owner) : '') + (cust.addr ? '<br><b>Address:</b> ' + escHtml(cust.addr) : '') + '<br><b>Khatta:</b> ' + (document.getElementById('pdfSec').value === '*' ? 'Sab sections' : escHtml(secName(cust, document.getElementById('pdfSec').value)));
         const fromDate = document.getElementById('pdfDateFrom').value;
         const toDate = document.getElementById('pdfDateTo').value;
         let dateLabel = '<b>Statement Date:</b> ' + new Date().toLocaleDateString();
@@ -1352,6 +1590,8 @@
     function openPdfPreview() {
         document.getElementById('pdfDateFrom').value = '';
         document.getElementById('pdfDateTo').value = '';
+        const cc = customers.find(c => c.id === activeCustId);
+        document.getElementById('pdfSec').innerHTML = secs(cc).map(x => '<option value="' + x.id + '"' + (x.id === sid ? ' selected' : '') + '>' + escHtml(x.name) + '</option>').join('') + '<option value="*">Sab sections</option>';
         buildPdfContent(getFilteredTransactions());
         document.getElementById('pdfModal').style.display = 'block';
     }
