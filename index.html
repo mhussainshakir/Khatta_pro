@@ -276,7 +276,16 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   <button class="btn red" onclick="event.stopPropagation();closePhoto()">Close</button>
 </div>
 
-<div class="modal" id="confirmModal">
+  <div class="modal" id="globalSearchModal">
+  <div class="sheet" style="max-width:560px">
+  <div class="row" style="align-items:center"><h3 style="flex:1">Global Search</h3><button class="btn ghost sm" onclick="closeModal('globalSearchModal')">Close</button></div>
+  <p class="muted" style="margin:0 0 10px">Search customers, phone numbers, schools, items and transaction notes without changing any existing data.</p>
+  <input id="globalSearchInput" class="field" placeholder="Type to search..." oninput="renderGlobalSearch()" autocomplete="off">
+  <div id="globalSearchResults" style="margin-top:10px;max-height:52vh;overflow:auto"></div>
+  </div>
+  </div>
+
+  <div class="modal" id="confirmModal">
   <div class="sheet" style="text-align:center">
     <h3 id="confirmTitle" style="color:var(--red)">Confirm</h3>
     <p id="confirmMsg" class="muted" style="margin:0 0 16px"></p>
@@ -369,8 +378,9 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
           </div>
         </div>
         <div class="baqaya"><small>Total outstanding balance</small><b class="num" id="hBal">Rs. 0</b></div>
-        <div class="hero-stats">
-          <div><b class="num" id="hU">0</b>Total credit</div>
+      <div class="hero-stats">
+  <button class="btn ghost sm" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.25)" onclick="openGlobalSearch()">Search anything</button>
+  <div><b class="num" id="hU">0</b>Total credit</div>
           <div><b class="num" id="hP">0</b>Total received</div>
           <div><b class="num" id="hC">0</b>Customers</div>
           <div><b class="num" id="hToday">0</b>Received today</div>
@@ -838,8 +848,21 @@ function changePin() {
 }
 function setAutoLock(v) { try { localStorage.setItem('hh_autolock', v); } catch (e) {} toast(v === '0' ? 'Auto-lock band' : 'Auto-lock ' + v + ' minute'); }
 
-// ---------- navigation ----------
-const NAV_MAP = { home: 'home', khatta: 'khatta', wasooli: 'wasooli', archive: 'archive', dash: 'features', cashbook: 'features', trash: 'features', backup: 'features', settings: 'features' };
+  // ---------- professional global search ----------
+  function openGlobalSearch() { openModal('globalSearchModal'); $('globalSearchInput').value = ''; $('globalSearchResults').innerHTML = '<div class="empty"><b>Search your complete business record</b>Customer, phone, school, item or note</div>'; setTimeout(() => $('globalSearchInput').focus(), 60); }
+  function renderGlobalSearch() {
+    const term = $('globalSearchInput').value.trim().toLowerCase();
+    if (!term) return $('globalSearchResults').innerHTML = '<div class="empty"><b>Search your complete business record</b>Customer, phone, school, item or note</div>';
+    const matched = customers.filter(c => [c.name, c.phone, c.org, c.owner, c.addr, c.note].join(' ').toLowerCase().includes(term));
+    const txMatches = transactions.filter(t => [t.item, t.desc, t.date, t.total].join(' ').toLowerCase().includes(term)).slice(0, 20);
+    const customerRows = matched.slice(0, 20).map(c => '<button class="tile" style="width:100%;text-align:left;margin-bottom:6px" onclick="closeModal(\'globalSearchModal\');openKhattaFor(' + JSON.stringify(c.id).replace(/"/g, '&quot;') + ')">' + avatar(c) + '<b>' + esc(c.name) + '</b><small>' + esc([c.phone, c.org].filter(Boolean).join(' · ') || 'Open ledger') + '</small></button>').join('');
+    const txRows = txMatches.map(t => { const c = custById(t.custId); return '<button class="tile" style="width:100%;text-align:left;margin-bottom:6px" onclick="closeModal(\'globalSearchModal\');openKhattaFor(' + JSON.stringify(t.custId).replace(/"/g, '&quot;') + ')"><b>' + esc(t.item || 'Entry') + ' · ' + money(t.total) + '</b><small>' + esc((c ? c.name + ' · ' : '') + (t.date || '') + (t.desc || '')) + '</small></button>'; }).join('');
+    $('globalSearchResults').innerHTML = (customerRows ? '<h4 style="margin:8px 0">Customers</h4>' + customerRows : '') + (txRows ? '<h4 style="margin:14px 0 8px">Transactions</h4>' + txRows : '') || '<div class="empty"><b>No results found</b>Try a different name, phone or item</div>';
+  }
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openGlobalSearch(); } });
+
+  // ---------- navigation ----------
+  const NAV_MAP = { home: 'home', khatta: 'khatta', wasooli: 'wasooli', archive: 'archive', dash: 'features', cashbook: 'features', trash: 'features', backup: 'features', settings: 'features' };
 function showView(v, replace) {
   currentView = v;
   document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === 'v-' + v));
