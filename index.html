@@ -227,7 +227,12 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 .due .amt{font-weight:800;color:var(--red);text-align:right;white-space:nowrap}
 .due.late{box-shadow:inset 4px 0 0 var(--red)}
 .cb-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
-.net{font-family:var(--display);font-size:30px;font-weight:800;border-bottom:3px double currentColor;display:inline-block}
+  .net{font-family:var(--display);font-size:30px;font-weight:800;border-bottom:3px double currentColor;display:inline-block}
+  .smart-panel{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+  .smart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.smart-head h2{font-size:15px}
+  .smart-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.smart-item{display:flex;gap:9px;align-items:flex-start;background:var(--field);border-radius:10px;padding:10px;font-size:12.5px}.smart-item .si{font-size:18px;line-height:1}.smart-item b{display:block;font-size:13px;margin-bottom:2px}.smart-item small{color:var(--muted)}
+  .smart-empty{color:var(--ok);font-weight:700;font-size:13px;padding:5px 0}
+
 
 /* ---------- pdf ---------- */
 .pdfm{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;overflow:auto;padding:10px;display:none}
@@ -372,6 +377,10 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
         </div>
       </div>
       <div class="notice" id="backupNotice" hidden><span id="backupNoticeTxt"></span><button class="btn brass sm" onclick="showView('backup')">Backup lein</button></div>
+      <section class="smart-panel" aria-labelledby="smartTitle">
+        <div class="smart-head"><h2 id="smartTitle">Smart business insights</h2><span class="tag">LIVE</span></div>
+        <div id="smartInsights" class="smart-list"><div class="muted">Preparing your insights...</div></div>
+      </section>
 
       <h2 class="sec-title">Main Sections</h2>
       <div class="tiles">
@@ -390,6 +399,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
           <button class="tile" onclick="showView('cashbook')"><div class="ic">🧾</div><b>Rozana Hisab</b><small>Aaj ki wasooli, nakad bikri, kharcha</small></button>
           <button class="tile" onclick="showView('trash')"><div class="ic">♻️</div><b>Recycle Bin</b><small>Restore deleted entries and ledgers</small></button>
           <button class="tile" onclick="showView('backup')"><div class="ic">💾</div><b>Backup &amp; Restore</b><small>Download and safely restore all data</small></button>
+          <button class="tile" onclick="showView('dash')"><div class="ic">✨</div><b>Smart Insights</b><small>Instant alerts for overdue balances and follow-ups</small></button>
           <button class="tile" onclick="showView('settings')"><div class="ic">🔐</div><b>Settings</b><small>PIN badlein, auto-lock, dark mode</small></button>
         </div>
       </div>
@@ -1013,10 +1023,24 @@ function waAddLine() { const t = $('waNew').value.trim(); if (!t) return toast('
 function waReset() { showConfirm('Lines reset karein', 'Aapki likhi hui lines hat jayengi aur shuru wali lines wapas aa jayengi.', () => { extra.wa = { edited: false, lines: [], selected: '' }; if (syncExtra()) renderWaSettings(); }, 'Haan, reset'); }
 
 // ---------- HOME ----------
+function renderSmartInsights() {
+  const box = $('smartInsights'); if (!box) return;
+  const today = localRaw(), balances = balMap(false);
+  const overdue = customers.filter(c => { const p = extra.promises[c.id]; return p && p.date && p.date < today && (balances[c.id] || 0) > 0; });
+  const top = customers.filter(c => (balances[c.id] || 0) > 0).sort((a, b) => (balances[b.id] || 0) - (balances[a.id] || 0))[0];
+  const recent = transactions.filter(t => rawOf(t) === today).length;
+  const cards = [];
+  if (overdue.length) cards.push('<div class="smart-item"><span class="si">!</span><div><b>' + overdue.length + ' overdue follow-up' + (overdue.length === 1 ? '' : 's') + '</b><small>Open Wasooli List to contact customers.</small></div></div>');
+  if (top) cards.push('<div class="smart-item"><span class="si">↗</span><div><b>Highest balance: ' + esc(top.name) + '</b><small>' + money(balances[top.id]) + ' currently outstanding.</small></div></div>');
+  cards.push('<div class="smart-item"><span class="si">✓</span><div><b>' + recent + ' transaction' + (recent === 1 ? '' : 's') + ' today</b><small>Your ledger activity is up to date.</small></div></div>');
+  if (!customers.length) cards.push('<div class="smart-item"><span class="si">+</span><div><b>Start your first ledger</b><small>Add a customer to unlock business insights.</small></div></div>');
+  box.innerHTML = cards.join('') || '<div class="smart-empty">Everything looks clear. No urgent actions right now.</div>';
+}
 function renderHome() {
   const act = transactions.filter(t => !t.cleared), a = sumT(act), today = localRaw();
   $('hBal').textContent = money(a.b); $('hU').textContent = money(a.u); $('hP').textContent = money(a.p); $('hC').textContent = customers.length;
   $('hToday').textContent = money(sumT(transactions.filter(t => t.type === 'Payment' && rawOf(t) === today)).p);
+  renderSmartInsights();
   let last = null; try { last = localStorage.getItem('hh_last_backup'); } catch (e) {}
   const days = last ? daysBetween(last, today) : null;
   const show = (loaded && (customers.length || transactions.length)) && (days === null || days >= 7);
