@@ -275,7 +275,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   <div class="sheet" style="text-align:center">
     <h3 id="confirmTitle" style="color:var(--red)">Confirm</h3>
     <p id="confirmMsg" class="muted" style="margin:0 0 16px"></p>
-    <div class="row"><button class="btn red" id="confirmYes">Haan</button><button class="btn ghost" id="confirmNo">Nahi</button></div>
+    <div class="row"><button class="btn red" id="confirmYes">Confirm</button><button class="btn ghost" id="confirmNo">Cancel</button></div>
   </div>
 </div>
 
@@ -363,20 +363,20 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
             <button class="icon-btn" onclick="lockNow()" aria-label="Lock app" title="Lock">🔒</button>
           </div>
         </div>
-        <div class="baqaya"><small>Kul Baqaya (sab customers)</small><b class="num" id="hBal">Rs. 0</b></div>
+        <div class="baqaya"><small>Total outstanding balance</small><b class="num" id="hBal">Rs. 0</b></div>
         <div class="hero-stats">
-          <div><b class="num" id="hU">0</b>Total Udhaar</div>
-          <div><b class="num" id="hP">0</b>Total Wasool</div>
+          <div><b class="num" id="hU">0</b>Total credit</div>
+          <div><b class="num" id="hP">0</b>Total received</div>
           <div><b class="num" id="hC">0</b>Customers</div>
-          <div><b class="num" id="hToday">0</b>Aaj ki wasooli</div>
+          <div><b class="num" id="hToday">0</b>Received today</div>
         </div>
       </div>
       <div class="notice" id="backupNotice" hidden><span id="backupNoticeTxt"></span><button class="btn brass sm" onclick="showView('backup')">Backup lein</button></div>
 
       <h2 class="sec-title">Main Sections</h2>
       <div class="tiles">
-        <button class="tile" onclick="showView('khatta')"><div class="ic">📒</div><b>Khatta</b><small>Udhaar aur payments manage karein</small></button>
-        <button class="tile" onclick="showView('record')"><div class="ic">📋</div><b>Record Card</b><small>Customer ki poori details</small></button>
+        <button class="tile" onclick="showView('khatta')"><div class="ic">📒</div><b>Ledgers</b><small>Manage customer credit and payments</small></button>
+        <button class="tile" onclick="showView('record')"><div class="ic">📋</div><b>Customer records</b><small>View complete customer details</small></button>
         <button class="tile" onclick="openCloud()"><div class="ic">☁️</div><b>Cloud</b><small>Photos / files upload aur search</small></button>
         <button class="tile" onclick="showView('archive')"><div class="ic">🗂️</div><b>Lifetime Record</b><small>Clear shuda entries, date search, PDF</small></button>
         <button class="tile" onclick="showView('inventory')"><div class="ic">📦</div><b>Saman / Stock</b><small>Naya saman, rate, karaya, bill photo</small></button>
@@ -388,8 +388,8 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
           <button class="tile" onclick="showView('dash')"><div class="ic">📊</div><b>Dashboard</b><small>Mahine ka chart, top udhaar wale, category</small></button>
           <button class="tile" onclick="showView('wasooli')"><div class="ic">💸</div><b>Wasooli List</b><small>Kis se paisay lene hain, WhatsApp yaad-dehani</small></button>
           <button class="tile" onclick="showView('cashbook')"><div class="ic">🧾</div><b>Rozana Hisab</b><small>Aaj ki wasooli, nakad bikri, kharcha</small></button>
-          <button class="tile" onclick="showView('trash')"><div class="ic">♻️</div><b>Recycle Bin</b><small>Delete hui entries wapas laayein</small></button>
-          <button class="tile" onclick="showView('backup')"><div class="ic">💾</div><b>Backup &amp; Restore</b><small>Poora data download, safe restore</small></button>
+          <button class="tile" onclick="showView('trash')"><div class="ic">♻️</div><b>Recycle Bin</b><small>Restore deleted entries and ledgers</small></button>
+          <button class="tile" onclick="showView('backup')"><div class="ic">💾</div><b>Backup &amp; Restore</b><small>Download and safely restore all data</small></button>
           <button class="tile" onclick="showView('settings')"><div class="ic">🔐</div><b>Settings</b><small>PIN badlein, auto-lock, dark mode</small></button>
         </div>
       </div>
@@ -422,6 +422,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
             <div class="chips">
               <button class="btn wa sm" onclick="sendWhatsAppKhata()">WhatsApp</button>
               <button class="btn ghost sm" onclick="openProfile(activeCustId)">Edit</button>
+              <button class="btn red sm" onclick="deleteCustomer(activeCustId)">Delete ledger</button>
               <button class="btn brass sm" onclick="openPdfPreview()">PDF</button>
             </div>
           </div>
@@ -1256,6 +1257,16 @@ async function saveProfile() {
   } finally { b.disabled = false; b.textContent = 'Save'; }
 }
 function confirmDup(n) { return window.confirm('"' + n + '" naam ka customer pehle se maujood hai. Phir bhi naya banayein?'); }
+function deleteCustomer(id) {
+  const c = custById(id); if (!c) return;
+  const related = transactions.filter(t => t.custId === id);
+  showConfirm('Delete ledger?', c.name + ' and all related entries will be moved to the Recycle Bin. Nothing is permanently deleted.', () => {
+    trashPush('customer', { customer: c, transactions: related });
+    customers = customers.filter(x => x.id !== id);
+    transactions = transactions.filter(t => t.custId !== id);
+    if (sync() && syncExtra()) { activeCustId = null; sid = 'main'; deselectCust(); renderCustomers(); renderHome(); toast('Ledger moved to Recycle Bin'); }
+  }, 'Delete ledger');
+}
 
 // ---- WhatsApp / promise ----
 function sendWhatsAppKhata() {
@@ -1527,6 +1538,7 @@ $('cbBody').addEventListener('click', e => {
 // ---------- 4. Recycle Bin ----------
 function trashLabel(t) {
   const d = t.data || {};
+  if (t.kind === 'customer') return { ico: '👤', title: 'Ledger: ' + d.customer.name, sub: d.transactions.length + ' related entries', amt: sumT(d.transactions).b };
   if (t.kind === 'transaction') { const c = custById(d.custId); return { ico: d.type === 'Udhaar' ? '📕' : '📗', title: (c ? c.name : 'Unknown') + ' — ' + (d.item || ''), sub: (d.type || '') + ' · ' + (d.date || '') + (d.desc ? ' · ' + d.desc : ''), amt: d.total }; }
   if (t.kind === 'item') return { ico: '📦', title: 'Stock: ' + d.name, sub: (d.date || '') + ' · qty ' + d.qty, amt: d.totalCost };
   return { ico: '🧾', title: (d.kind === 'nakad' ? 'Nakad bikri' : 'Kharcha') + (d.desc ? ' — ' + d.desc : ''), sub: fmtDate(d.rawDate), amt: d.amount };
@@ -1539,7 +1551,8 @@ $('trashList').addEventListener('click', e => {
   const id = b.dataset.r || b.dataset.x, t = extra.trash.find(x => String(x.id) === String(id)); if (!t) return;
   if (b.dataset.x) return showConfirm('Hamesha ke liye delete', 'Ye entry phir wapas nahi aayegi.', () => { const tid = t.id; extra.trash = extra.trash.filter(x => x.id !== tid); if (syncExtra()) renderTrash(); }, 'Haan, delete');
   const d = t.data;
-  if (t.kind === 'transaction') { if (!transactions.some(x => x.id === d.id)) transactions.push(d); if (!sync()) return; }
+  if (t.kind === 'customer') { if (!customers.some(x => x.id === d.customer.id)) customers.push(d.customer); d.transactions.forEach(x => { if (!transactions.some(y => y.id === x.id)) transactions.push(x); }); if (!sync()) return; }
+  else if (t.kind === 'transaction') { if (!transactions.some(x => x.id === d.id)) transactions.push(d); if (!sync()) return; }
   else if (t.kind === 'item') { if (!items.some(x => String(x.id) === String(d.id))) items.push(d); if (!sync()) return; }
   else { if (!extra.expenses.some(x => x.id === d.id)) extra.expenses.push(d); }
   extra.trash = extra.trash.filter(x => x.id !== t.id); syncExtra(); renderTrash(); toast('✅ Entry wapas aa gai');
