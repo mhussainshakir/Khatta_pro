@@ -1,45 +1,44 @@
-const CACHE_NAME = 'hh-book-center-v1';
-const APP_SHELL = [
-  './index.html',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
-];
+const CACHE_NAME = 'hh-book-center-v2';
+const urlsToCache = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(urlsToCache.map((u) => cache.add(u).catch(() => {})))
+    )
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    caches.keys().then((names) =>
+      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
     )
   );
   self.clients.claim();
 });
 
-// Network-first for navigation & data (Firebase/Cloudinary/Drive always live),
-// cache-first fallback only for the app shell files themselves.
+// Network first, cache fallback (offline). Sirf apni site ki GET requests.
 self.addEventListener('fetch', (event) => {
-  const url = event.request.url;
-  const isAppShell = APP_SHELL.some((f) => url.includes(f.replace('./', '')));
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;           // Firebase / CDN ko na chheden
+  if (url.pathname.startsWith('/.netlify/')) return;          // config API cache na karein
 
-  if (isAppShell) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const fetchPromise = fetch(event.request)
-          .then((networkRes) => {
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkRes.clone()));
-            return networkRes;
-          })
-          .catch(() => cached);
-        return cached || fetchPromise;
+  event.respondWith(
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(req, copy)).catch(() => {});
+        }
+        return res;
       })
-    );
-  }
-  // Everything else (Firestore, Cloudinary, Drive API calls) goes straight to network.
+      .catch(() =>
+        caches.match(req).then((hit) => hit || (req.mode === 'navigate' ? caches.match('/index.html') : null) ||
+          new Response('Offline - Page not available', { status: 503, headers: { 'Content-Type': 'text/plain' } }))
+      )
+  );
 });
