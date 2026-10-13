@@ -212,6 +212,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 #installBanner span{flex:1;min-width:150px}
 
 /* ---------- features ---------- */
+.wa-row{display:flex;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}.wa-row label{flex:1;display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px}.wa-row input{margin-top:3px;accent-color:var(--green-2)}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow)}
 .kpi small{color:var(--muted);font-weight:700;font-size:12px}.kpi b{display:block;font-family:var(--display);font-size:21px;margin-top:2px}
@@ -312,6 +313,18 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
       <div><label class="lbl">Total</label><input type="number" id="etTotal" class="field"></div>
     </div>
     <div class="row" style="margin-top:12px"><button class="btn ok" onclick="saveEdit()">Update</button><button class="btn ghost" onclick="closeModal('editModal')">Cancel</button></div>
+  </div>
+</div>
+
+<div class="modal" id="waModal">
+  <div class="sheet">
+    <h3>WhatsApp message</h3>
+    <p class="muted" id="waCust" style="margin:0 0 10px"></p>
+    <label class="lbl">Akhri line chunein</label>
+    <select id="waSel" class="field" onchange="waRebuild()" style="margin-bottom:10px"></select>
+    <label class="lbl">Message (yahan khud bhi badal sakte hain)</label>
+    <textarea id="waText" class="field" rows="11" style="min-height:200px;font-size:13px"></textarea>
+    <div class="row" style="margin-top:12px"><button class="btn wa" onclick="waSend()">WhatsApp par bhejein</button><button class="btn ghost" onclick="closeModal('waModal')">Cancel</button></div>
   </div>
 </div>
 
@@ -607,6 +620,15 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
         <label class="lbl">Auto-lock (kuch na karne par)</label>
         <select id="setAutoLock" class="field" onchange="setAutoLock(this.value)"><option value="0">Band</option><option value="2">2 minute</option><option value="5">5 minute</option><option value="10">10 minute</option><option value="30">30 minute</option></select>
       </div>
+      <div class="card" style="margin-bottom:12px">
+        <h3 style="font-size:16px;margin-bottom:6px">WhatsApp message ki akhri line</h3>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Jo line chunengi wo har khatte ke message ke end mein jayegi. "Koi line nahi" chunein to sirf hisab jayega. Bhejte waqt bhi har customer ke liye line badal ya hata sakte hain.</p>
+        <div id="waLines"></div>
+        <div class="row" style="margin-top:10px;align-items:flex-end"><div style="flex:3"><label class="lbl">Apni nayi line</label><input id="waNew" class="field" placeholder="e.g. Jald payment kar dein, mehrbani!" onkeydown="if(event.key==='Enter')waAddLine()"></div><button class="btn ok" style="flex:none" onclick="waAddLine()">+ Add</button></div>
+        <label class="lbl" style="margin-top:14px">Message aisa dikhega</label>
+        <pre id="waPreview" style="white-space:pre-wrap;font-family:var(--font);font-size:12.5px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px;margin:0 0 10px"></pre>
+        <button class="btn ghost sm" onclick="waReset()">Shuru wali lines wapas laayein</button>
+      </div>
       <div class="card">
         <h3 style="font-size:16px;margin-bottom:8px">Cloudinary (photo upload)</h3>
         <p class="muted" style="margin:0 0 10px;font-size:12.5px">Set na ho to photo chhoti karke Firebase mein hi save hoti hai. Cloudinary set karne se photos wahan jati hain aur database halka rehta hai.</p>
@@ -678,7 +700,7 @@ if (FB) { firebase.initializeApp(firebaseConfig); db = firebase.database(); }
 
 // ---------- state ----------
 let customers = [], transactions = [], items = [], customCategories = [];
-let extra = { expenses: [], trash: [], promises: {} };
+let extra = { expenses: [], trash: [], promises: {}, wa: { edited: false, lines: [], selected: '' } };
 let loaded = false, extraLoaded = false, currentView = 'home';
 let activeCustId = null, recordActiveCustId = null, archCustId = null, sid = 'main';
 let entryMode = 'Udhaar', custSort = 'name', custDue = false, txFilter = 'all', busy = false;
@@ -814,7 +836,7 @@ function showView(v, replace) {
   try { if (replace) history.replaceState({ v }, ''); else history.pushState({ v }, ''); } catch (e) {}
   if (v === 'cloud') { const f = $('cloudFrame'); if (!f.getAttribute('src')) f.src = 'cloud/index.html'; }
   if (v === 'khatta') { renderItemOptions(); }
-  if (v === 'settings') { $('setTheme').value = (localStorage.getItem('hh_theme') || 'auto'); $('setAutoLock').value = (localStorage.getItem('hh_autolock') || '0'); const c = getCloudinaryConfig(); $('settCloudName').value = c.cloudName; $('settUploadPreset').value = c.uploadPreset; }
+  if (v === 'settings') { renderWaSettings(); $('setTheme').value = (localStorage.getItem('hh_theme') || 'auto'); $('setAutoLock').value = (localStorage.getItem('hh_autolock') || '0'); const c = getCloudinaryConfig(); $('settCloudName').value = c.cloudName; $('settUploadPreset').value = c.uploadPreset; }
   if (v === 'cashbook' && !$('cbDate').value) $('cbDate').value = localRaw();
   if (v === 'backup') renderBackupInfo();
   renderCurrent();
@@ -830,6 +852,7 @@ function renderCurrent() {
     case 'wasooli': renderWasooli(); break;
     case 'cashbook': renderCashbook(); break;
     case 'trash': renderTrash(); break;
+    case 'settings': renderWaSettings(); break;
   }
 }
 function goHome() { activeCustId = null; recordActiveCustId = null; $('khSplit').classList.remove('has-active'); $('rcSplit').classList.remove('has-active'); showView('home'); }
@@ -861,7 +884,7 @@ if (FB) {
   }, err => toast('Data load nahi hua: ' + err.message, 'err'));
   db.ref('hh_extra').on('value', snap => {
     const d = snap.val() || {};
-    extra = { expenses: toArr(d.expenses), trash: toArr(d.trash), promises: d.promises && typeof d.promises === 'object' ? d.promises : {} };
+    extra = { expenses: toArr(d.expenses), trash: toArr(d.trash), promises: d.promises && typeof d.promises === 'object' ? d.promises : {}, wa: d.wa && typeof d.wa === 'object' ? { edited: !!d.wa.edited, lines: toArr(d.wa.lines), selected: d.wa.selected || '' } : { edited: false, lines: [], selected: '' } };
     extraLoaded = true; renderCurrent(); renderHome();
   });
 } else { setTimeout(() => toast('Firebase load nahi hua. Internet check karke page refresh karein.', 'err'), 2500); }
@@ -876,7 +899,7 @@ function sync() {
 }
 function syncExtra() {
   if (!FB || !extraLoaded) { toast('Data load ho raha hai, thora ruko', 'err'); return false; }
-  db.ref('hh_extra').update(clean({ expenses: extra.expenses, trash: extra.trash.slice(0, 500), promises: extra.promises })).catch(e => toast('Save fail: ' + e.message, 'err'));
+  db.ref('hh_extra').update(clean({ expenses: extra.expenses, trash: extra.trash.slice(0, 500), promises: extra.promises, wa: extra.wa })).catch(e => toast('Save fail: ' + e.message, 'err'));
   return true;
 }
 function dailyBackup(d) {
@@ -941,11 +964,52 @@ async function uploadImage(file, ids) {
 // ---------- WhatsApp helpers ----------
 function waNumber(p) { let d = String(p || '').replace(/\D/g, ''); if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('92')) return d; if (d.startsWith('0')) return '92' + d.slice(1); return '92' + d; }
 function openWhatsApp(phone, text) { window.open('https://wa.me/' + waNumber(phone) + '?text=' + encodeURIComponent(text), '_blank'); }
-function khataMsg(c, u, p, label) {
+const WA_DEFAULTS = [
+  { id: 'd1', text: 'Kindly apna balance jald az jald clear karwaein. Shukriya!' },
+  { id: 'd2', text: 'Meherbani farma kar baqaya raqam is hafte tak ada kar dein. Shukriya!' },
+  { id: 'd3', text: 'Aap ka sath hamare liye qeemti hai. Baqaya ada karne ki meherbani karein.' },
+  { id: 'd4', text: 'Agar payment ho chuki hai to is message ko nazar-andaz karein. Shukriya!' },
+  { id: 'd5', text: 'Naye session ki kitabein aa gayi hain, tashreef layein. Purana baqaya ada kar dein to meherbani.' }
+];
+const waLines = () => extra.wa.edited ? extra.wa.lines : WA_DEFAULTS;
+function waSelected() { const ls = waLines(), s = extra.wa.selected; if (s === 'none') return 'none'; return ls.some(l => l.id === s) ? s : (ls[0] ? ls[0].id : 'none'); }
+function waLineText() { const s = waSelected(); if (s === 'none') return ''; const l = waLines().find(x => x.id === s); return l ? l.text : ''; }
+// line === undefined -> settings wali default line; '' -> koi line nahi
+function khataMsg(c, u, p, label, line) {
+  if (line === undefined) line = waLineText();
   const pr = extra.promises[c.id];
-  return '*HASSAN HUSSAIN BOOK CENTER*\n------------------------------\n*Customer:* ' + c.name + (label ? '\n*Khatta:* ' + label : '') + '\n*Total Udhaar:* Rs. ' + u + '\n*Total Paid:* Rs. ' + p + '\n------------------------------\n*Net Balance:* Rs. ' + (u - p) + '\n------------------------------\n' +
-    (pr && pr.date && u - p > 0 ? '_Aap ne ' + fmtDate(pr.date) + ' tak payment ka wada kiya tha._\n' : '') + '_Kindly apna balance jald az jald clear karwaein. Shukriya!_';
+  return ('*HASSAN HUSSAIN BOOK CENTER*\n------------------------------\n*Customer:* ' + c.name + (label ? '\n*Khatta:* ' + label : '') + '\n*Total Udhaar:* Rs. ' + u + '\n*Total Paid:* Rs. ' + p + '\n------------------------------\n*Net Balance:* Rs. ' + (u - p) + '\n------------------------------\n' +
+    (pr && pr.date && u - p > 0 ? '_Aap ne ' + fmtDate(pr.date) + ' tak payment ka wada kiya tha._\n' : '') + (line ? '_' + line + '_' : '')).trim();
 }
+let waCtx = null;
+function openWaModal(c, u, p, label) {
+  if (!c.phone) return toast('WhatsApp number missing hai — Edit mein number likhein', 'err');
+  waCtx = { c, u, p, label };
+  $('waCust').textContent = c.name + ' — ' + c.phone;
+  $('waSel').innerHTML = waLines().map(l => '<option value="' + esc(l.id) + '">' + esc(l.text) + '</option>').join('') + '<option value="none">❌ Koi line nahi (sirf hisab)</option>';
+  $('waSel').value = waSelected(); waRebuild(); openModal('waModal');
+}
+function waRebuild() { const v = $('waSel').value, l = v === 'none' ? null : waLines().find(x => x.id === v); $('waText').value = khataMsg(waCtx.c, waCtx.u, waCtx.p, waCtx.label, l ? l.text : ''); }
+function waSend() { if (!waCtx) return; openWhatsApp(waCtx.c.phone, $('waText').value); closeModal('waModal'); }
+
+// ---- settings: WhatsApp line manager ----
+function waSave(lines, selected) { extra.wa = { edited: true, lines, selected }; if (syncExtra()) renderWaSettings(); }
+function renderWaSettings() {
+  const sel = waSelected(), ls = waLines();
+  $('waLines').innerHTML = ls.map(l => '<div class="wa-row"><label><input type="radio" name="waLine" value="' + esc(l.id) + '"' + (sel === l.id ? ' checked' : '') + '><span>' + esc(l.text) + '</span></label><button class="btn ghost sm" data-e="' + esc(l.id) + '" aria-label="Edit">✎</button><button class="btn ghost sm" data-d="' + esc(l.id) + '" aria-label="Delete">🗑</button></div>').join('') +
+    '<div class="wa-row"><label><input type="radio" name="waLine" value="none"' + (sel === 'none' ? ' checked' : '') + '><span><b>Koi line nahi</b> — message mein sirf hisab jaye</span></label></div>';
+  const c = customers[0] || { id: 0, name: 'Customer Name' };
+  $('waPreview').textContent = khataMsg(c, 8500, 2000, '');
+}
+$('waLines').addEventListener('change', e => { if (e.target.name === 'waLine') waSave(waLines().slice(), e.target.value); });
+$('waLines').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const ls = waLines().slice(), sel = waSelected();
+  if (b.dataset.e) { const l = ls.find(x => x.id === b.dataset.e); askText('Line badlein', l.text, t => waSave(ls.map(x => x.id === l.id ? { id: x.id, text: t } : x), sel)); }
+  else if (b.dataset.d) { const rest = ls.filter(x => x.id !== b.dataset.d); waSave(rest, sel === b.dataset.d ? (rest[0] ? rest[0].id : 'none') : sel); }
+});
+function waAddLine() { const t = $('waNew').value.trim(); if (!t) return toast('Pehle line likhein', 'err'); const id = 'c' + newId(); $('waNew').value = ''; waSave(waLines().concat({ id, text: t }), id); toast('✅ Line add ho gai'); }
+function waReset() { showConfirm('Lines reset karein', 'Aapki likhi hui lines hat jayengi aur shuru wali lines wapas aa jayengi.', () => { extra.wa = { edited: false, lines: [], selected: '' }; if (syncExtra()) renderWaSettings(); }, 'Haan, reset'); }
 
 // ---------- HOME ----------
 function renderHome() {
@@ -1196,9 +1260,8 @@ function confirmDup(n) { return window.confirm('"' + n + '" naam ka customer peh
 // ---- WhatsApp / promise ----
 function sendWhatsAppKhata() {
   const c = custById(activeCustId); if (!c) return;
-  if (!c.phone) return toast('WhatsApp number missing hai — Edit mein number likhein', 'err');
-  const s = sumT(tOf(activeCustId, sid));
-  openWhatsApp(c.phone, khataMsg(c, s.u, s.p, secs(c).length > 1 ? secName(c, sid) : ''));
+  const x = sumT(tOf(activeCustId, sid));
+  openWaModal(c, x.u, x.p, secs(c).length > 1 ? secName(c, sid) : '');
 }
 let promiseCust = null;
 function openPromise(id) {
@@ -1420,8 +1483,7 @@ $('wsList').addEventListener('click', e => {
   if (b.dataset.act === 'promise') openPromise(c.id);
   else if (b.dataset.act === 'open') openKhattaFor(c.id);
   else if (b.dataset.act === 'wa') {
-    if (!c.phone) return toast('Is customer ka WhatsApp number nahi hai', 'err');
-    const s = sumT(tOf(c.id, null)); openWhatsApp(c.phone, khataMsg(c, s.u, s.p, ''));
+    const x = sumT(tOf(c.id, null)); openWaModal(c, x.u, x.p, '');
   }
 });
 
