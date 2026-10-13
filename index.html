@@ -1,1622 +1,1751 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HH Book Center - Pro Edition</title>
-    <meta name="description" content="Customer Ledger Management System for Hassan Hussain Book Center">
-    <meta name="theme-color" content="#004d40">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HH Book Center">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icons/icon-192.png">
-    <link rel="icon" type="image/png" href="/icons/icon-192.png">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
-    <style>
-        :root { --primary: #004d40; --secondary: #00796b; --danger: #d32f2f; --success: #388e3c; --gold: #FFD700; --whatsapp: #25D366; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>H-H Book Photo State &amp; Book Center</title>
+<meta name="theme-color" content="#1F4D3A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HH Book Center">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-deep:#1F4D3A;
+    --green-mid:#2F7A52;
+    --green-soft:#DCEAE1;
+    --cream:#F6F1E4;
+    --paper-line:#D8CFB0;
+    --ink:#1B241E;
+    --ink-soft:#5B6960;
+    --stamp-red:#E8583A;
+    --shadow: 0 8px 28px rgba(9,38,28,0.16);
+    --glass-bg: rgba(255,255,255,0.46);
+    --glass-bg-strong: rgba(255,255,255,0.68);
+    --glass-border: rgba(255,255,255,0.55);
+    --glass-blur: blur(18px) saturate(160%);
+    --glass-dark-bg: rgba(14,42,32,0.42);
+    --glass-dark-border: rgba(255,255,255,0.16);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background-color:#0d3b2c;
+    background-image:
+      radial-gradient(circle at 10% -5%, rgba(66,178,130,0.55) 0%, transparent 42%),
+      radial-gradient(circle at 105% 12%, rgba(232,88,58,0.35) 0%, transparent 38%),
+      radial-gradient(circle at 90% 92%, rgba(37,111,183,0.45) 0%, transparent 45%),
+      radial-gradient(circle at 5% 95%, rgba(47,122,82,0.5) 0%, transparent 40%),
+      linear-gradient(160deg, #0b3226 0%, #124a3a 38%, #0d3752 75%, #0a2e40 100%);
+    background-attachment:fixed;
+    background-repeat:no-repeat;
+    background-size:cover;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{ font-family:'Fraunces', serif; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; }
+  input{ font-family:inherit; }
+  ::selection{ background:var(--green-soft); }
 
-        /* Splash Screen */
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
-        .spinner { width: 60px; height: 60px; border: 6px solid rgba(255,255,255,0.2); border-top: 6px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  /* ---------- PIN LOCK SCREEN ---------- */
+  #lockScreen{
+    position:fixed; inset:0; z-index:100;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; padding:20px;
+  }
+  #lockScreen::before{
+    content:''; position:absolute; inset:0; z-index:-1;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(61,220,151,0.32) 0%, transparent 45%),
+      radial-gradient(circle at 90% 0%, rgba(232,88,58,0.28) 0%, transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(47,122,183,0.4) 0%, transparent 45%),
+      linear-gradient(150deg, #0a2e22 0%, #113f30 45%, #0c3a4d 100%);
+  }
+  .lock-panel{
+    width:100%; max-width:340px;
+    background:var(--glass-dark-bg);
+    border:1px solid var(--glass-dark-border);
+    -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-radius:28px; padding:34px 26px;
+    display:flex; flex-direction:column; align-items:center; gap:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .stamp-logo{
+    width:96px; height:96px; border-radius:50%;
+    border:1.5px solid rgba(255,255,255,0.5);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:700; font-size:34px; color:var(--cream);
+    background:linear-gradient(145deg, rgba(61,220,151,0.35), rgba(47,122,82,0.55));
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    position:relative;
+    box-shadow: 0 0 0 6px rgba(246,241,228,0.06), 0 8px 20px rgba(0,0,0,0.25);
+  }
+  .lock-title{ color:var(--cream); text-align:center; }
+  .lock-title h1{ font-size:21px; font-weight:600; letter-spacing:0.3px; }
+  .lock-title span{ display:block; color:#BFEAD6; font-size:12.5px; margin-top:4px; font-family:'IBM Plex Mono', monospace; letter-spacing:1px; }
+  .pin-dots{ display:flex; gap:14px; margin:2px 0; }
+  .pin-dot{ width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,0.7); transition:background .15s; }
+  .pin-dot.filled{ background:var(--cream); border-color:var(--cream); }
+  .keypad{ display:grid; grid-template-columns:repeat(3,62px); gap:13px; }
+  .keypad button{
+    width:62px; height:62px; border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.14);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    color:var(--cream); font-size:19px; font-weight:500;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .15s, transform .1s;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .keypad button:active{ background:rgba(255,255,255,0.22); transform:scale(0.94); }
+  .keypad button.wide{ font-size:12px; }
+  #lockError{ color:#FFB3A0; font-size:13px; height:16px; font-family:'IBM Plex Mono', monospace; }
+  #firstPinSetup{ display:none; color:#BFEAD6; font-size:12px; text-align:center; max-width:260px; font-family:'IBM Plex Mono', monospace; }
 
-        /* Login Overlay */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 15000; display: flex; justify-content: center; align-items: center; color: white; }
+  /* ---------- APP SHELL ---------- */
+  #app{ display:none; min-height:100vh; padding-bottom:90px; }
+  header{
+    background:var(--glass-dark-bg);
+    -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-bottom:1px solid var(--glass-dark-border);
+    padding:16px 18px 0 18px;
+    position:sticky; top:0; z-index:20;
+    box-shadow:var(--shadow);
+  }
+  .header-top{ display:flex; align-items:center; gap:12px; padding-bottom:14px; }
+  .header-top .stamp-logo{ width:44px; height:44px; font-size:16px; border-width:1.5px; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+  .header-text h1{ color:var(--cream); font-size:17px; font-weight:600; line-height:1.25; }
+  .header-text span{ color:#B9E4D2; font-size:11px; font-family:'IBM Plex Mono', monospace; letter-spacing:0.5px; }
+  .lock-btn{ margin-inline-start:auto; color:#CFEBDF; font-size:18px; padding:8px; }
+  .install-btn{ color:#CFEBDF; font-size:18px; padding:8px; }
 
-        /* Notifications */
-        #notification-container { position: fixed; bottom: 20px; right: 20px; z-index: 10000; }
-        .toast { background: #333; color: white; padding: 12px 20px; border-radius: 8px; margin-top: 10px; border-left: 5px solid var(--success); display: flex; gap: 10px; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .search-row{ display:flex; gap:8px; padding-bottom:14px; }
+  .search-box{
+    flex:1; display:flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px; padding:0 12px; height:42px;
+  }
+  .search-box input{
+    flex:1; background:transparent; border:none; outline:none; color:var(--cream); font-size:14px;
+  }
+  .search-box input::placeholder{ color:#8FC4AE; }
+  .search-box svg{ flex-shrink:0; }
+  .date-btn{
+    width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center; color:#CFEBDF; position:relative;
+  }
+  .date-btn.active{ background:var(--stamp-red); border-color:var(--stamp-red); color:var(--cream); }
+  #dateInput{ position:absolute; opacity:0; width:100%; height:100%; left:0; top:0; }
 
-        /* PWA Install Banner */
-        #installBanner { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); color: white; padding: 15px 20px; z-index: 11000; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
-        #installBanner .banner-content { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; gap: 10px; }
-        #installBanner .banner-text { font-size: 14px; }
-        #installBanner .banner-text strong { color: var(--gold); }
+  /* ---------- GRID VIEW ---------- */
+  .grid-wrap{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:14px 10px;
+    margin-bottom:8px;
+  }
+  .grid-tile{
+    display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+    padding:8px 4px; border-radius:14px; position:relative; cursor:pointer; transition:background .15s;
+  }
+  .grid-tile:active{ background:rgba(255,255,255,0.35); }
+  .grid-icon{
+    width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    background:var(--glass-bg-strong); border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+    overflow:hidden; position:relative; box-shadow:0 4px 14px rgba(15,61,46,0.12);
+  }
+  .grid-icon img{ width:100%; height:100%; object-fit:cover; }
+  .grid-tile .status-dot{
+    position:absolute; top:2px; right:14px; width:10px; height:10px; border-radius:50%;
+    border:2px solid var(--cream); background:var(--stamp-red);
+  }
+  .grid-tile .status-dot.printed{ background:var(--green-mid); }
+  .grid-name{ font-size:11px; font-weight:600; color:var(--cream); max-width:82px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .grid-sub{ font-size:9.5px; color:#B9E4D2; font-family:'IBM Plex Mono', monospace; }
 
-        /* Common */
-        .btn { padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; transition: transform 0.1s, opacity 0.2s; }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .tabs{ display:flex; gap:0; }
+  .tab{
+    flex:1; text-align:center; padding:12px 0 10px 0; color:#7FB89F; font-size:14px; font-weight:500;
+    border-bottom:2px solid transparent; position:relative;
+  }
+  .tab.active{ color:var(--cream); border-bottom:2px solid var(--stamp-red); }
+  .tab .count{ font-family:'IBM Plex Mono', monospace; font-size:11px; margin-inline-start:4px; opacity:0.75; }
 
-        /* ====== HOME SCREEN ====== */
-        #homeScreen { display: none; flex: 1; justify-content: center; align-items: center; background: linear-gradient(135deg, #004d40 0%, #00796b 100%); padding: 20px; overflow-y: auto; }
-        .home-container { text-align: center; max-width: 500px; width: 100%; }
-        .home-title { color: var(--gold); font-size: 28px; margin-bottom: 5px; }
-        .home-subtitle { color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 40px; }
-        .home-options { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        .home-card { background: white; border-radius: 20px; padding: 40px 30px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 200px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-        .home-card:hover { transform: translateY(-5px); box-shadow: 0 12px 35px rgba(0,0,0,0.3); }
-        .home-card:active { transform: scale(0.97); }
-        .home-card-icon { font-size: 50px; margin-bottom: 15px; }
-        .home-card-title { font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        .home-card-desc { font-size: 12px; color: #777; }
-        .home-settings-btn { margin-top: 30px; }
+  main{ padding:16px; max-width:640px; margin:0 auto; }
+  .day-label{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:#D8E9DF;
+    letter-spacing:1px; text-transform:uppercase; margin:18px 4px 10px 4px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .day-label:first-child{ margin-top:2px; }
+  .day-label::after{ content:''; flex:1; height:1px; background:rgba(255,255,255,0.25); }
 
-        /* ====== HEADER ====== */
-        header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; flex-wrap: wrap; gap: 5px; }
+  .card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-radius:16px;
+    padding:12px; margin-bottom:10px; display:flex; gap:12px; align-items:center;
+    box-shadow:var(--shadow);
+    position:relative;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .card:active{ transform:scale(0.99); }
+  .thumb{
+    width:52px; height:52px; border-radius:11px; flex-shrink:0; object-fit:cover;
+    background:rgba(255,255,255,0.55); display:flex; align-items:center; justify-content:center;
+    color:var(--green-deep); font-size:20px; border:1px solid var(--glass-border);
+  }
+  .card-info{ flex:1; min-width:0; }
+  .card-info .name{ font-weight:600; font-size:14.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card-info .meta{ font-size:11.5px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; margin-top:2px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .status-badge{
+    font-size:9.5px; font-weight:600; padding:2px 7px; border-radius:20px; letter-spacing:0.5px;
+    border:1.5px solid; text-transform:uppercase; font-family:'IBM Plex Mono', monospace;
+  }
+  .status-badge.pending{ color:var(--stamp-red); border-color:var(--stamp-red); background:rgba(232,88,58,0.12); }
+  .status-badge.printed{ color:var(--green-mid); border-color:var(--green-mid); background:rgba(47,122,82,0.14); }
+  .card-actions{ display:flex; gap:4px; flex-shrink:0; }
+  .icon-btn{
+    width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    color:var(--green-deep); background:rgba(47,122,82,0.14);
+  }
+  .icon-btn.wa{ color:#1F7A4D; background:rgba(31,122,77,0.14); }
+  .icon-btn.del{ color:var(--stamp-red); background:rgba(232,88,58,0.14); }
 
-        /* ====== KHATTA VIEW ====== */
-        #khattaView { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-        .main-container { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-        .content { flex: 1; padding: 15px; overflow-y: auto; background: #fff; }
-        @media (max-width: 768px) { .main-container { flex-direction: column; } .sidebar { width: 100%; height: 250px; } }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .card { padding: 10px; border-radius: 10px; color: white; text-align: center; }
-        .card.udhaar { background: var(--danger); } .card.wasooli { background: var(--success); } .card.balance { background: #263238; }
-        .input-group { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; }
-        .cust-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
-        .cust-item:hover { background: #f5f5f5; }
-        .active-cust { background: #e0f2f1; border-left: 5px solid var(--primary); }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
-        th { background: #f8f9fa; font-weight: bold; color: #555; position: sticky; top: 0; }
+  .empty-state{ text-align:center; padding:60px 20px; color:#D8E9DF; }
+  .empty-state .stamp-logo{ width:64px; height:64px; font-size:24px; margin:0 auto 16px auto; background:rgba(255,255,255,0.12); color:var(--cream); border-color:rgba(255,255,255,0.3); }
+  .empty-state p{ font-size:13.5px; line-height:1.6; }
 
-        /* Clear All Entries Button */
-        .clear-all-section { padding: 20px; text-align: center; border-top: 2px dashed #ddd; margin-top: 20px; }
-        .clear-all-btn { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 14px 30px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(211,47,47,0.3); transition: transform 0.2s; }
-        .clear-all-btn:hover { transform: scale(1.03); }
-        .clear-all-btn:active { transform: scale(0.97); }
+  /* ---------- GROUPS ---------- */
+  .group-card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-radius:16px;
+    padding:12px; margin-bottom:10px; display:flex; gap:12px; align-items:center;
+    box-shadow:var(--shadow); cursor:pointer; transition:transform .12s;
+  }
+  .group-card:active{ transform:scale(0.99); }
+  .group-avatar{
+    width:48px; height:48px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(145deg, rgba(61,220,151,0.5), rgba(47,122,82,0.65)); color:#fff; font-family:'Fraunces',serif; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:17px; overflow:hidden;
+    border:1px solid var(--glass-border);
+  }
+  .group-avatar img{ width:100%; height:100%; object-fit:cover; }
+  .group-info{ flex:1; min-width:0; }
+  .group-info .name{ font-weight:600; font-size:14.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .group-info .meta{ font-size:11.5px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; margin-top:2px; }
+  .group-arrow{ color:var(--ink-soft); font-size:18px; flex-shrink:0; }
 
-        /* ====== RECORD CARD VIEW ====== */
-        #recordView { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-        .record-container { display: flex; flex: 1; overflow: hidden; }
-        .record-sidebar { width: 300px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-        .record-content { flex: 1; padding: 20px; overflow-y: auto; background: #f0f2f5; }
-        @media (max-width: 768px) { .record-container { flex-direction: column; } .record-sidebar { width: 100%; height: 250px; } }
-        .record-card { background: white; border-radius: 15px; padding: 25px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .record-card-header { text-align: center; padding-bottom: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px; }
-        .record-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px; }
-        .record-name { font-size: 22px; color: var(--primary); margin: 5px 0; }
-        .record-phone { color: #777; font-size: 14px; }
-        .record-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .record-stat { text-align: center; padding: 15px 10px; border-radius: 10px; }
-        .record-stat.udhaar { background: #ffebee; color: var(--danger); }
-        .record-stat.paid { background: #e8f5e9; color: var(--success); }
-        .record-stat.balance { background: #eceff1; color: #263238; }
-        .record-stat h4 { margin: 0 0 5px; font-size: 12px; text-transform: uppercase; opacity: 0.8; }
-        .record-stat p { margin: 0; font-size: 20px; font-weight: bold; }
-        .record-transactions { margin-top: 15px; }
-        .record-transactions h3 { color: var(--primary); margin-bottom: 10px; font-size: 16px; }
-        .record-tx-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-        .record-tx-left { display: flex; align-items: center; gap: 10px; }
-        .record-tx-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .record-tx-icon.debit { background: #ffebee; }
-        .record-tx-icon.credit { background: #e8f5e9; }
-        .record-no-selection { text-align: center; color: #999; margin-top: 80px; }
-        .record-no-selection-icon { font-size: 60px; margin-bottom: 15px; }
+  .select-row{ display:flex; align-items:center; gap:10px; }
+  .select-check{
+    width:22px; height:22px; border-radius:7px; border:1.5px solid var(--paper-line);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.6);
+  }
+  .select-check.checked{ background:var(--green-mid); border-color:var(--green-mid); color:#fff; font-size:14px; }
+  .select-bar{
+    display:none; position:sticky; bottom:0; left:0; right:0;
+    background:var(--glass-dark-bg); -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-top:1px solid var(--glass-dark-border);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom)) 14px; gap:8px; z-index:25;
+    box-shadow:0 -8px 24px rgba(0,0,0,0.2);
+  }
+  .select-bar.show{ display:flex; }
+  .select-bar button{
+    flex:1; height:42px; border-radius:12px; background:rgba(255,255,255,0.1); color:var(--cream);
+    border:1px solid rgba(255,255,255,0.14);
+    font-size:12px; font-weight:600; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  }
+  .select-bar button:disabled{ opacity:0.35; }
+  .select-bar button span{ font-size:16px; }
 
-        /* Photo proof */
-        .photo-thumb { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; cursor: pointer; border: 2px solid #ddd; transition: border-color 0.2s; }
-        .photo-thumb:hover { border-color: var(--secondary); }
-        #photoViewModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; justify-content: center; align-items: center; flex-direction: column; }
-        #photoViewModal img { max-width: 90%; max-height: 80%; border-radius: 10px; }
+  /* ---------- TOOLS ---------- */
+  .tool-card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+    border-radius:16px;
+    padding:16px; margin-bottom:12px; display:flex; gap:14px; align-items:center;
+    box-shadow:var(--shadow);
+  }
+  .tool-icon{
+    width:46px; height:46px; border-radius:14px; background:rgba(47,122,82,0.16); color:var(--green-deep);
+    display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;
+  }
+  .tool-body{ flex:1; min-width:0; }
+  .tool-body .t-title{ font-weight:600; font-size:14.5px; color:var(--ink); }
+  .tool-body .t-sub{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .tool-pick-btn{
+    flex-shrink:0; font-size:12px; font-weight:600; color:var(--cream); background:var(--green-deep);
+    padding:9px 14px; border-radius:20px; white-space:nowrap;
+  }
+  .tool-file-list{ font-size:11px; color:var(--ink-soft); margin:-4px 0 10px 0; font-family:'IBM Plex Mono', monospace; word-break:break-word; }
 
-        /* Upload progress */
-        .upload-progress { display: none; align-items: center; gap: 8px; }
-        .upload-bar { flex: 1; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
-        .upload-bar-fill { height: 100%; background: var(--success); border-radius: 3px; transition: width 0.3s; width: 0%; }
+  /* ---------- PDF VIEWER ---------- */
+  .pdf-frame{ width:100%; height:60vh; border:none; border-radius:12px; background:#fff; }
 
-        /* PDF Modal */
-        #pdfModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; overflow-y:auto; padding:10px; }
-        .pdf-controls { background:white; padding:15px; margin-bottom:10px; border-radius:8px; display:flex; flex-wrap:wrap; gap:10px; position:sticky; top:0; align-items:center; }
-        .pdf-paper { background:white; width: 210mm; min-height:297mm; margin:0 auto; padding: 10mm; font-family: Arial; box-sizing: border-box; font-size: 12px; color: black; }
-        .signature-section { margin-top: 30px; display: flex; justify-content: space-between; }
-        .sig-box { border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 5px; font-weight: bold; }
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed; bottom:22px; right:20px; z-index:30;
+    width:58px; height:58px; border-radius:50%;
+    background:linear-gradient(145deg, #FF7355, var(--stamp-red)); color:#fff;
+    border:1px solid rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 26px rgba(232,88,58,0.45);
+    font-size:26px; transition:transform .15s;
+  }
+  .fab:active{ transform:scale(0.92); }
 
-        /* Date filter */
-        .date-filter { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .date-filter label { font-size: 12px; font-weight: bold; color: #555; }
-        .date-filter input[type="date"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; }
+  /* ---------- MODAL BASE ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(6,20,15,0.55);
+    -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+    z-index:60;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-sheet{
+    background:var(--glass-bg-strong);
+    border:1px solid var(--glass-border);
+    -webkit-backdrop-filter:blur(28px) saturate(180%); backdrop-filter:blur(28px) saturate(180%);
+    width:100%; max-width:640px; border-radius:24px 24px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom)) 18px; max-height:88vh; overflow-y:auto;
+    animation:slideUp .25s ease;
+    box-shadow:0 -10px 40px rgba(0,0,0,0.25);
+  }
+  @keyframes slideUp{ from{transform:translateY(100%);} to{transform:translateY(0);} }
+  .sheet-handle{ width:40px; height:4px; background:rgba(27,36,30,0.25); border-radius:4px; margin:0 auto 16px auto; }
+  .modal-sheet h2{ font-size:18px; margin-bottom:16px; color:var(--ink); }
+  .field-label{ font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; display:block; font-family:'IBM Plex Mono', monospace; letter-spacing:0.5px; text-transform:uppercase; }
+  .field{ margin-bottom:16px; }
+  .field input, .field select{
+    width:100%; height:46px; border-radius:12px; border:1.5px solid var(--glass-border);
+    padding:0 14px; font-size:14.5px; background:rgba(255,255,255,0.55); outline:none; color:var(--ink);
+  }
+  .field input:focus{ border-color:var(--green-mid); }
+  .filedrop{
+    display:flex; align-items:center; gap:14px;
+    border:1.5px dashed rgba(31,77,58,0.35); border-radius:16px; padding:12px 14px;
+    background:rgba(255,255,255,0.4); margin-bottom:16px; transition:border-color .15s, background .15s, transform .12s;
+  }
+  .filedrop:active{ background:rgba(255,255,255,0.55); }
+  .filedrop.has-file{ border-style:solid; border-color:var(--green-mid); background:rgba(47,122,82,0.14); }
+  .filedrop.drag-over{ border-style:solid; border-color:var(--stamp-red); background:rgba(232,88,58,0.14); transform:scale(1.015); }
+  .filedrop input{ display:none; }
+  .filedrop-icon{
+    width:48px; height:48px; border-radius:13px; flex-shrink:0;
+    background:rgba(47,122,82,0.16); display:flex; align-items:center; justify-content:center;
+    color:var(--green-mid); overflow:hidden;
+  }
+  .filedrop.has-file .filedrop-icon{ background:rgba(255,255,255,0.6); border:1px solid var(--glass-border); font-size:22px; }
+  .filedrop-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .filedrop-body{ flex:1; min-width:0; text-align:left; }
+  .filedrop-title{ font-size:13.5px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .filedrop-sub{ font-size:11px; color:var(--ink-soft); margin-top:2px; font-family:'IBM Plex Mono', monospace; }
+  .filedrop-browse{
+    flex-shrink:0; font-size:11.5px; font-weight:600; color:var(--green-deep); background:rgba(47,122,82,0.16);
+    padding:8px 13px; border-radius:20px; letter-spacing:0.3px; white-space:nowrap;
+  }
+  .filedrop.has-file .filedrop-browse{ background:var(--green-deep); color:var(--cream); }
 
-        /* Settings Modal */
-        #settingsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 12000; justify-content: center; align-items: center; }
-        .settings-box { background: white; border-radius: 15px; padding: 25px; width: 90%; max-width: 400px; }
-        .settings-box h3 { color: var(--primary); margin-top: 0; }
-        .settings-box input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
-        .settings-box label { font-size: 13px; color: #555; font-weight: bold; display: block; margin-bottom: 4px; }
+  .file-chip-list{ display:flex; gap:10px; overflow-x:auto; margin:-6px 0 16px 2px; padding:6px 2px 6px 2px; }
+  .file-chip{ position:relative; flex-shrink:0; width:56px; }
+  .file-chip .chip-thumb{
+    width:56px; height:56px; border-radius:13px; background:rgba(47,122,82,0.14);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    border:1px solid var(--glass-border); font-size:22px; color:var(--green-mid);
+  }
+  .file-chip .chip-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .file-chip .chip-remove{
+    position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
+    background:var(--stamp-red); color:#fff; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; border:2px solid var(--cream);
+  }
+  .file-chip .chip-name{
+    font-size:9px; text-align:center; margin-top:4px; color:var(--ink-soft);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:'IBM Plex Mono', monospace;
+  }
+  .btn-primary{
+    width:100%; height:50px; border-radius:14px;
+    background:linear-gradient(135deg, var(--green-mid), var(--green-deep)); color:var(--cream);
+    border:1px solid rgba(255,255,255,0.18);
+    font-weight:600; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px;
+    box-shadow:0 8px 22px rgba(31,77,58,0.28);
+  }
+  .btn-primary:disabled{ opacity:0.5; box-shadow:none; }
+  .btn-ghost{
+    width:100%; height:44px; border-radius:14px; background:rgba(255,255,255,0.3); color:var(--ink-soft);
+    font-weight:500; font-size:13.5px; margin-top:8px; border:1.5px solid var(--glass-border);
+  }
+  .progress-wrap{ display:none; margin-top:14px; }
+  .progress-bar{ height:6px; background:rgba(31,77,58,0.15); border-radius:6px; overflow:hidden; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--green-mid), #3ddc97); width:0%; transition:width .2s; }
+  .progress-text{ font-size:11.5px; color:var(--ink-soft); margin-top:6px; font-family:'IBM Plex Mono', monospace; text-align:center; }
 
-        /* Confirm Modal */
-        #confirmModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 13000; justify-content: center; align-items: center; }
-        .confirm-box { background: white; border-radius: 15px; padding: 30px; width: 90%; max-width: 380px; text-align: center; }
-        .confirm-box h3 { color: var(--danger); margin-top: 0; }
-        .confirm-box p { color: #555; font-size: 14px; }
-    .secbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-        .sec-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--secondary);background:#fff;color:var(--primary);font-size:13px;cursor:pointer}
-        .sec-chip.on{background:var(--primary);color:#fff}
-        .prof-box{display:flex;gap:12px;align-items:center;background:#f5faf8;border:1px solid #d6e6e0;border-radius:10px;padding:10px;margin-bottom:12px;font-size:13px;color:#444}
-        .prof-av{width:56px;height:56px;border-radius:50%;background:var(--secondary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;overflow:hidden;flex:none}
-        .prof-av img{width:100%;height:100%;object-fit:cover}
-        .pmi{width:100%;padding:9px;margin-bottom:8px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
-        .dash-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
-        .dash-card{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 14px;color:#fff;text-align:center;min-width:110px}
-        .dash-card small{display:block;font-size:11px;opacity:.8}.dash-card b{font-size:16px}
-        #archiveView { display:none; flex-direction:column; flex:1; overflow:hidden; }
-        #archiveView .dash-card { background:#e0f2f1; border-color:#b2dfdb; color:var(--primary); }
-        #archiveView .dash-row { justify-content:flex-start; }
-        .arch-filter { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; background:#f8f9fa; border:1px solid #eee; border-radius:10px; padding:10px; margin-bottom:12px; }
-        .arch-filter label { font-size:11px; font-weight:bold; color:#555; display:block; margin-bottom:3px; }
-        .arch-filter input { padding:7px 9px; border:1px solid #ccc; border-radius:6px; font-size:12px; }
-        #archPdfModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; overflow:auto; padding:10px; }
-    </style>
+  /* ---------- VIEW MODAL ---------- */
+  #viewOverlay{ align-items:center; }
+  #viewOverlay .modal-sheet{ border-radius:20px; max-width:520px; }
+  .view-media{ width:100%; border-radius:14px; margin-bottom:14px; background:rgba(255,255,255,0.35); display:flex; align-items:center; justify-content:center; min-height:180px; overflow:hidden; border:1px solid var(--glass-border); }
+  .view-media img{ width:100%; display:block; }
+  .view-media .file-icon-big{ width:100px; height:100px; margin:40px auto; display:flex; align-items:center; justify-content:center; }
+  .view-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+  .view-actions button{
+    height:46px; border-radius:12px; background:rgba(47,122,82,0.14); color:var(--green-deep);
+    border:1px solid var(--glass-border);
+    font-weight:600; font-size:13.5px; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+
+  .toast{
+    position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:rgba(27,36,30,0.85); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+    color:#fff; padding:10px 18px; border-radius:30px; font-size:13px;
+    border:1px solid rgba(255,255,255,0.12);
+    opacity:0; transition:all .25s; z-index:80; pointer-events:none; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- DRAG & DROP ---------- */
+  .drag-drop-overlay{
+    position:fixed; inset:14px; z-index:90; display:none;
+    align-items:center; justify-content:center;
+    background:rgba(31,77,58,0.35);
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+    border:2.5px dashed rgba(255,255,255,0.7); border-radius:26px;
+    pointer-events:none;
+  }
+  .drag-drop-overlay.show{ display:flex; }
+  .drag-drop-inner{
+    text-align:center; color:#fff; font-weight:600; font-size:16px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .drag-drop-inner .dd-icon{ font-size:44px; }
+
+  @media(min-width:640px){ header{ padding-left:24px; padding-right:24px; } }
+</style>
 </head>
 <body>
 
-<!-- Splash Screen -->
-<div id="splash">
-    <div class="spinner"></div>
-    <h1 style="color:white; margin-top: 20px;">HH BOOK CENTER</h1>
-    <p style="color:var(--gold);">Powering Your Business</p>
-</div>
-
-<div id="notification-container"></div>
-
-<!-- PWA Install Banner -->
-<div id="installBanner">
-    <div class="banner-content">
-        <div class="banner-text">
-            <strong>HH Book Center</strong> ko apne phone mein install karein!
-        </div>
-        <div style="display:flex; gap:8px;">
-            <button class="btn" style="background:var(--gold); color:#000; padding:8px 16px;" onclick="installPWA()">Install</button>
-            <button class="btn" style="background:transparent; border:1px solid white; padding:8px 12px;" onclick="dismissInstall()">Baad mein</button>
-        </div>
+<!-- ============ PIN LOCK ============ -->
+<div id="lockScreen">
+  <div class="lock-panel">
+    <div class="stamp-logo">HH</div>
+    <div class="lock-title">
+      <h1>H-H Book Photo State &amp; Book Center</h1>
+      <span id="lockSubtitle">APNA PIN DAALEIN</span>
     </div>
-</div>
-
-<!-- Photo View Modal -->
-<div id="photoViewModal" onclick="this.style.display='none'">
-    <img id="photoViewImg" src="" alt="Proof Photo">
-    <button class="btn" style="background:var(--danger); margin-top:15px; padding:10px 30px;" onclick="event.stopPropagation(); document.getElementById('photoViewModal').style.display='none'">Close</button>
-</div>
-
-<!-- Settings Modal (Cloudinary) -->
-<div id="settingsModal">
-    <div class="settings-box">
-        <h3>Cloudinary Settings</h3>
-        <p style="font-size:12px; color:#999; margin-top:0;">Photo proof ke liye Cloudinary setup karein</p>
-        <label>Cloud Name</label>
-        <input type="text" id="settCloudName" placeholder="e.g. my-cloud-name">
-        <label>Upload Preset (Unsigned)</label>
-        <input type="text" id="settUploadPreset" placeholder="e.g. my_unsigned_preset">
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="btn" style="background:var(--success); flex:1; padding:12px;" onclick="saveCloudinarySettings()">Save</button>
-            <button class="btn" style="background:#999; flex:1; padding:12px;" onclick="closeSettings()">Cancel</button>
-        </div>
-        <p style="font-size:11px; color:#aaa; margin-bottom:0; margin-top:12px;">Cloudinary.com pe free account banayein, phir Settings &gt; Upload &gt; Upload presets mein unsigned preset create karein.</p>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
+    <div id="lockError"></div>
+    <div class="keypad" id="keypad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="clear" class="wide">CLEAR</button><button data-k="0">0</button><button data-k="back" class="wide">⌫</button>
+    </div>
+  </div>
 </div>
 
-<!-- Confirm Modal -->
-<div id="confirmModal">
-    <div class="confirm-box">
-        <h3 id="confirmTitle">Confirm</h3>
-        <p id="confirmMsg">Are you sure?</p>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn" style="background:var(--danger); flex:1; padding:12px;" id="confirmYes">Haan, Clear Karein</button>
-            <button class="btn" style="background:#999; flex:1; padding:12px;" id="confirmNo">Nahi</button>
-        </div>
+<!-- ============ APP ============ -->
+<div id="app">
+  <header>
+    <div class="header-top">
+      <div class="stamp-logo">HH</div>
+      <div class="header-text">
+        <h1>H-H Book Photo State</h1>
+        <span>&amp; BOOK CENTER · CLOUD</span>
+      </div>
+      <button class="install-btn" id="toolsBtn" title="PDF/Photo Tools">🧰</button>
+      <button class="install-btn" id="installBtn" title="Install App" style="display:none;">⬇️</button>
+      <button class="lock-btn" id="lockNowBtn" title="Lock">🔒</button>
     </div>
+    <div class="search-row">
+      <div class="search-box">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8FAE9E" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Naam se search karein...">
+      </div>
+      <button class="date-btn" id="dateBtn">
+        📅
+        <input type="date" id="dateInput">
+      </button>
+      <button class="date-btn" id="viewToggleBtn" title="List/Grid view">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="photo">Photos <span class="count" id="countPhoto">0</span></button>
+      <button class="tab" data-tab="file">Files <span class="count" id="countFile">0</span></button>
+      <button class="tab" data-tab="group">Groups <span class="count" id="countGroup">0</span></button>
+    </div>
+  </header>
+
+  <main id="listContainer">
+    <!-- records injected here -->
+  </main>
+
+  <button class="fab" id="fabAdd">+</button>
 </div>
 
-<!-- ====== LOGIN OVERLAY ====== -->
-<div id="loginOverlay">
-    <div style="text-align: center; background: #333; padding: 30px; border-radius: 15px; width: 85%; max-width: 300px;">
-        <h2 style="color:var(--gold); margin:0 0 5px;">HH BOOK CENTER</h2>
-        <p style="color:#aaa; font-size:12px; margin:0 0 15px;">Enter PIN to unlock</p>
-        <input type="password" id="pinInput" placeholder="ENTER PIN" style="width: 100%; margin: 10px 0; text-align: center; font-size: 20px; padding: 12px; border-radius: 8px; border: 2px solid #555; background: #444; color: white;" onkeydown="if(event.key==='Enter') checkPin()">
-        <button class="btn" style="background:var(--secondary); width:100%; padding:14px; font-size:16px;" onclick="checkPin()">UNLOCK</button>
+<!-- ============ UPLOAD MODAL ============ -->
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <h2>Nayi File Upload Karein</h2>
+
+    <label class="filedrop" id="filedropLabel">
+      <input type="file" id="fileInput" multiple>
+      <div class="filedrop-icon" id="filedropIcon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5 5 0 0 1 16.5 7.5 4.5 4.5 0 0 1 17 18H7Z"/><path d="M12 12v6"/><path d="m9.5 14.5 2.5-2.5 2.5 2.5"/></svg>
+      </div>
+      <div class="filedrop-body">
+        <div class="filedrop-title" id="filedropTitle">Files choose karein</div>
+        <div class="filedrop-sub" id="filedropSub">Ek se zyada photos/files ek sath select ho sakti hain</div>
+      </div>
+      <span class="filedrop-browse" id="filedropBrowse">Browse</span>
+    </label>
+
+    <div class="file-chip-list" id="fileChipList"></div>
+
+    <div class="field">
+      <label class="field-label">Customer Naam</label>
+      <input type="text" id="custName" placeholder="e.g. Ahmed Ali">
     </div>
+    <div class="field">
+      <label class="field-label">Phone Number (optional — WhatsApp ke liye)</label>
+      <input type="tel" id="custPhone" placeholder="03XXXXXXXXX">
+    </div>
+
+    <button class="btn-primary" id="uploadBtn">Upload Karein</button>
+    <button class="btn-ghost" id="cancelUploadBtn">Cancel</button>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Uploading...</div>
+    </div>
+  </div>
 </div>
 
-<!-- ====== HOME SCREEN ====== -->
-<div id="homeScreen">
-    <div class="home-container">
-        <h1 class="home-title">HH BOOK CENTER</h1>
-        <p class="home-subtitle">Customer Ledger Management System</p>
-        <div class="home-options">
-            <div class="home-card" onclick="openKhatta()">
-                <div class="home-card-icon">📒</div>
-                <div class="home-card-title">Khatta</div>
-                <div class="home-card-desc">Customer ka udhaar aur payments manage karein</div>
-            </div>
-            <div class="home-card" onclick="openRecordCard()">
-                <div class="home-card-icon">📋</div>
-                <div class="home-card-title">Record Card</div>
-                <div class="home-card-desc">Customer ki complete details dekhein</div>
-            </div>
-            <div class="home-card" onclick="openCloud()">
-                <div class="home-card-icon">☁️</div>
-                <div class="home-card-title">Cloud</div>
-                <div class="home-card-desc">Photos aur files cloud pe upload/search karein</div>
-            </div>
-            <div class="home-card" onclick="openArchive()">
-                <div class="home-card-icon">🗂️</div>
-                <div class="home-card-title">Lifetime Record</div>
-                <div class="home-card-desc">Clear ki hui purani entries, dashboard, date search aur PDF</div>
-            </div>
-            <div class="home-card" onclick="openInventory()">
-                <div class="home-card-icon">📦</div>
-                <div class="home-card-title">Saman / Stock</div>
-                <div class="home-card-desc">Naya saman, rate, karaya aur bill photo record karein</div>
-            </div>
-        </div>
-        <div class="home-settings-btn">
-            <button class="btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:10px 20px; font-size:13px;" onclick="openSettings()">Cloudinary Settings</button>
-        </div>
+<!-- ============ VIEW MODAL ============ -->
+<div class="modal-overlay" id="viewOverlay">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="viewTitle">File</h2>
+    <div class="view-media" id="viewMedia"></div>
+    <div style="font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;" id="viewMeta"></div>
+    <div class="view-actions">
+      <button id="viewPrintBtn">🖨️ Print</button>
+      <button id="viewDownloadBtn">⬇️ Download</button>
+      <button id="viewStatusBtn">✅ Printed</button>
+      <button id="viewWaBtn" style="display:none;">💬 WhatsApp</button>
     </div>
+    <button class="btn-ghost" id="viewDeleteBtn" style="color:var(--stamp-red); border-color:var(--stamp-red);">🗑️ Delete Karein</button>
+    <button class="btn-ghost" id="closeViewBtn">Band Karein</button>
+  </div>
 </div>
 
-<!-- ====== CLOUD VIEW (H-H Book Photo State & Book Center, embedded) ====== -->
-<div id="cloudView" style="display:none; position:fixed; inset:0; z-index:5000; background:#0d3b2c; flex-direction:column;">
-    <div style="height:42px; flex-shrink:0; background:var(--primary); color:#fff; display:flex; align-items:center; padding:0 12px; gap:10px; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
-        <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:13px;" onclick="goHome()">&#8592; Home</button>
-        <span style="font-size:13px; font-weight:bold;">☁️ Cloud — Photo/File Upload</span>
+<!-- ============ GROUP DETAIL MODAL ============ -->
+<div class="modal-overlay" id="groupOverlay">
+  <div class="modal-sheet" style="padding-bottom:0;">
+    <div class="sheet-handle"></div>
+    <h2 id="groupTitle">Group</h2>
+    <div style="max-height:52vh; overflow-y:auto; margin:0 -4px;" id="groupList"></div>
+    <div class="select-bar" id="groupSelectBar" style="margin:14px -18px 0 -18px; border-radius:0;">
+      <button id="groupMergeBtn" disabled><span>📎</span>Merge PDF</button>
+      <button id="groupPhotosPdfBtn" disabled><span>🖼️</span>Photos→PDF</button>
+      <button id="groupZipBtn" disabled><span>🗜️</span>Zip Banao</button>
     </div>
-    <iframe id="cloudFrame" title="Cloud" style="flex:1; width:100%; border:none;"></iframe>
+    <button class="btn-ghost" id="closeGroupBtn" style="margin:14px 0 20px 0;">Band Karein</button>
+  </div>
 </div>
 
-<!-- ====== INVENTORY VIEW (Saman / Stock) ====== -->
-<div id="inventoryView" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
-            <h1 style="margin:0; font-size:18px;">Saman / Stock</h1>
-        </div>
-    </header>
-    <div style="flex:1; overflow-y:auto; padding:15px; background:#fff;">
-        <div class="input-group">
-            <h3 style="margin:0 0 10px; color:var(--primary); font-size:15px;">Naya Saman Add Karein</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:10px;">
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Item Ka Naam</label>
-                    <input type="text" id="invName" placeholder="e.g. Notebook 100 Pages" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Details</label>
-                    <input type="text" id="invDetails" placeholder="e.g. brand, size, color" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Kitni Quantity Aayi (pieces)</label>
-                    <input type="number" id="invQty" placeholder="e.g. 12" oninput="calcInventoryRate()" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Total Rate Jo Mila (Rs.)</label>
-                    <input type="number" id="invTotalCost" placeholder="e.g. 1200" oninput="calcInventoryRate()" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Karaya/Freight (Rs.) — agar laga ho</label>
-                    <input type="number" id="invFreight" placeholder="0" oninput="calcInventoryRate()" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-                <div>
-                    <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Munafa %</label>
-                    <input type="number" id="invMargin" value="10" oninput="calcInventoryRate()" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;">
-                </div>
-            </div>
-            <div style="display:flex; gap:15px; margin-top:12px; flex-wrap:wrap;">
-                <div class="card balance" style="flex:1; min-width:140px;">
-                    <h5 style="margin:0 0 5px; font-size:11px;">Per Piece Cost</h5>
-                    <p id="invUnitCostPreview" style="margin:0; font-size:18px; font-weight:bold;">Rs. 0</p>
-                </div>
-                <div class="card wasooli" style="flex:1; min-width:140px;">
-                    <h5 style="margin:0 0 5px; font-size:11px;">Sale Rate (Auto)</h5>
-                    <p id="invSaleRatePreview" style="margin:0; font-size:18px; font-weight:bold;">Rs. 0</p>
-                </div>
-            </div>
-            <div style="margin-top:12px;">
-                <label style="font-size:12px; font-weight:bold; color:#555; display:block; margin-bottom:4px;">Bill Ki Photo</label>
-                <input type="file" id="invBillPhoto" accept="image/*" capture="environment" style="font-size:12px;">
-                <div class="upload-progress" id="invUploadProgress" style="margin-top:6px;">
-                    <div class="upload-bar"><div class="upload-bar-fill" id="invUploadBarFill"></div></div>
-                    <span id="invUploadPercent" style="font-size:11px;">0%</span>
-                </div>
-            </div>
-            <button class="btn" style="background:var(--success); width:100%; margin-top:14px; padding:12px;" onclick="addInventoryItem()">+ Save Entry</button>
-        </div>
+<!-- ============ TOOLS MODAL ============ -->
+<div class="modal-overlay" id="toolsOverlay">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <h2>PDF &amp; Photo Tools</h2>
 
-        <div style="margin:20px 0 10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <h3 style="margin:0; color:var(--primary); font-size:15px;">Stock History</h3>
-            <input type="text" id="invSearch" placeholder="Search item..." onkeyup="renderInventory()" style="padding:8px; border-radius:6px; border:1px solid #ccc; font-size:13px;">
-        </div>
-        <div style="overflow-x:auto;">
-            <table style="min-width:760px;">
-                <thead>
-                    <tr>
-                        <th>Date</th><th>Item</th><th>Details</th><th>Qty</th><th>Per Piece Cost</th><th>Sale Rate</th><th>Bill</th><th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTableBody"></tbody>
-            </table>
-        </div>
+    <div class="tool-card">
+      <div class="tool-icon">📎</div>
+      <div class="tool-body">
+        <div class="t-title">PDFs Merge Karein</div>
+        <div class="t-sub" id="mergeFilesSub">2 ya zyada PDF files select karein</div>
+      </div>
+      <label class="tool-pick-btn">Select<input type="file" id="mergeFileInput" accept="application/pdf" multiple style="display:none;"></label>
     </div>
+    <button class="btn-primary" id="mergeRunBtn" style="margin-bottom:18px;" disabled>Merge Karein &amp; Download</button>
+
+    <div class="tool-card">
+      <div class="tool-icon">🖼️</div>
+      <div class="tool-body">
+        <div class="t-title">Photos ko PDF Banayein</div>
+        <div class="t-sub" id="p2pFilesSub">Ek ya zyada photos select karein</div>
+      </div>
+      <label class="tool-pick-btn">Select<input type="file" id="p2pFileInput" accept="image/*" multiple style="display:none;"></label>
+    </div>
+    <button class="btn-primary" id="p2pRunBtn" style="margin-bottom:18px;" disabled>PDF Banayein &amp; Download</button>
+
+    <div class="tool-card">
+      <div class="tool-icon">🗜️</div>
+      <div class="tool-body">
+        <div class="t-title">Zip Banayein</div>
+        <div class="t-sub" id="zipFilesSub">Koi bhi files select karein</div>
+      </div>
+      <label class="tool-pick-btn">Select<input type="file" id="zipFileInput" multiple style="display:none;"></label>
+    </div>
+    <button class="btn-primary" id="zipRunBtn" style="margin-bottom:6px;" disabled>Zip Banayein &amp; Download</button>
+
+    <div class="progress-wrap" id="toolsProgressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="toolsProgressFill"></div></div>
+      <div class="progress-text" id="toolsProgressText">Kaam ho raha hai...</div>
+    </div>
+
+    <button class="btn-ghost" id="closeToolsBtn">Band Karein</button>
+  </div>
 </div>
 
-<!-- ====== KHATTA VIEW ====== -->
-<div id="khattaView">
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
-            <h1 style="margin:0; font-size:18px;">Khatta <span id="syncStatus" style="font-size: 10px; color: #90EE90;">● Loading...</span></h1>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn" style="background:#1D6F42; padding: 5px 10px;" onclick="exportToExcel()">Backup</button>
-            <button class="btn" style="background:var(--danger); padding: 5px 10px;" onclick="goHome()">Back</button>
-        </div>
-    </header>
-    <div class="main-container">
-        <div class="sidebar">
-            <div style="padding: 10px; background: #f1f1f1;">
-                <input type="text" id="searchCust" placeholder="Search customer..." onkeyup="renderCustomers()" style="width: 100%; padding: 8px; border-radius: 5px; border:1px solid #ccc;">
-                <button class="btn" style="background:var(--success); width: 100%; margin-top:5px;" onclick="showAddCustomer()">+ New Customer</button>
-            </div>
-            <div id="customerList" style="flex:1; overflow-y: auto;"></div>
-        </div>
-        <div class="content" id="ledgerArea" style="display:none;">
-            <div style="display:flex; justify-content: space-between; margin-bottom: 15px; align-items:center; flex-wrap:wrap; gap:8px;">
-                <div>
-                    <h2 id="activeCustName" style="margin:0; color:var(--primary);"></h2>
-                    <small id="activeCustPhoneDisplay" style="color: #666;"></small>
-                </div>
-                <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
-                    <button class="btn" style="background:var(--whatsapp); padding: 8px 15px;" onclick="sendWhatsAppKhata()">WhatsApp</button>
-                    <button class="btn" style="background:var(--secondary); padding: 8px 15px;" onclick="editCustomerDetails()">Edit</button>
-                    <button class="btn" style="background:#e65100; padding: 8px 15px;" onclick="openPdfPreview()">PDF</button>
-                </div>
-            </div>
-            <div id="secBar" class="secbar" style="margin-bottom:10px;"></div>
-            <div id="profBox"></div>
-            <div class="stats-grid">
-                <div class="card udhaar"><h5 style="margin:0 0 5px;">Udhaar</h5><p id="sumUdhaar" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
-                <div class="card wasooli"><h5 style="margin:0 0 5px;">Paid</h5><p id="sumPaid" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
-                <div class="card balance"><h5 style="margin:0 0 5px;">Balance</h5><p id="sumBalance" style="margin:0; font-size:20px; font-weight:bold;">0</p></div>
-            </div>
-            <div class="input-group">
-                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-                    <select id="itemType" onchange="handleItemTypeChange()" style="flex:1; min-width:100px; padding:8px; border-radius:5px; border:1px solid #ccc;"></select>
-                    <input type="text" id="entryDesc" placeholder="Details (Remarks)" style="flex:2; min-width:120px; padding:8px; border-radius:5px; border:1px solid #ccc;">
-                    <input type="date" id="manualDate" style="flex:1; min-width:120px; padding:8px; border-radius:5px; border:1px solid #ccc;">
-                </div>
-                <div id="customCategoryRow" style="display:none; margin-bottom:8px;">
-                    <input type="text" id="customCategoryInput" placeholder="Nayi category ka naam likhen (e.g. Copy, Pens)" style="width:100%; padding:8px; border-radius:5px; border:1px solid var(--secondary);">
-                </div>
-                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-                    <input type="number" id="entryQty" placeholder="Qty" oninput="calcTotal()" style="flex:1; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
-                    <input type="number" id="entryRate" placeholder="Rate" oninput="calcTotal()" style="flex:1; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
-                    <input type="number" id="entryTotal" placeholder="0" readonly style="flex:1; background:#eee; min-width:60px; padding:8px; border-radius:5px; border:1px solid #ccc;">
-                </div>
-                <!-- Photo Proof Upload with Cloudinary -->
-                <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center; flex-wrap:wrap;">
-                    <label style="font-size:12px; font-weight:bold; color:#555;">Proof Photo:</label>
-                    <input type="file" id="proofPhoto" accept="image/*" capture="environment" style="flex:1; font-size:12px;">
-                    <div class="upload-progress" id="uploadProgress">
-                        <div class="upload-bar"><div class="upload-bar-fill" id="uploadBarFill"></div></div>
-                        <span id="uploadPercent" style="font-size:11px; color:#555;">0%</span>
-                    </div>
-                    <span id="photoStatus" style="font-size:11px; color:#999;"></span>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" style="background:var(--danger); flex:1; padding:12px;" onclick="addTransaction('Udhaar')">+ Add Udhaar</button>
-                    <button class="btn" style="background:var(--success); flex:1; padding:12px;" onclick="addTransaction('Payment')">Cash Payment</button>
-                </div>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
-                <input type="text" id="searchEntryBox" placeholder="🔍 Is customer ki entries mein search karein (item, detail, date)..." oninput="renderTransactions()" style="flex:1; padding:9px 12px; border-radius:8px; border:1px solid #ccc; font-size:13px;">
-                <button class="btn" style="background:#999; padding:9px 14px;" onclick="document.getElementById('searchEntryBox').value=''; renderTransactions();">Clear</button>
-            </div>
-            <table>
-                <thead><tr><th>Date</th><th>Item & Details</th><th>Calc</th><th>Total</th><th>Proof</th><th>Action</th></tr></thead>
-                <tbody id="transBody"></tbody>
-            </table>
-            <p id="searchEntryNoResult" style="display:none; text-align:center; color:#999; padding:15px;">Koi entry nahi mili is search ke liye.</p>
-            <!-- Clear All Entries Button -->
-            <div class="clear-all-section" id="clearAllSection" style="display:none;">
-                <p style="color:#999; font-size:12px; margin-bottom:10px;">Sab entries clear karne ke liye neeche button dabayein</p>
-                <button class="clear-all-btn" onclick="clearAllEntries()">Clear All Entries</button>
-            </div>
-        </div>
-    </div>
+<div class="toast" id="toast"></div>
+<div class="drag-drop-overlay" id="dragDropOverlay">
+  <div class="drag-drop-inner">
+    <div class="dd-icon">📥</div>
+    <span>Files yahan chhod dein — upload shuru ho jayega</span>
+  </div>
 </div>
 
-<!-- ====== LIFETIME RECORD (ARCHIVE) VIEW ====== -->
-<div id="archiveView">
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
-            <h1 style="margin:0; font-size:18px;">Lifetime Record</h1>
-        </div>
-        <button class="btn" style="background:#e65100; padding:5px 12px;" onclick="openArchPdf()">PDF</button>
-    </header>
-    <div class="record-container">
-        <div class="record-sidebar">
-            <div style="padding:10px; background:#f1f1f1;">
-                <input type="text" id="archSearchCust" placeholder="Search customer..." onkeyup="renderArchCustomers()" style="width:100%; padding:8px; border-radius:5px; border:1px solid #ccc;">
-            </div>
-            <div id="archCustomerList" style="flex:1; overflow-y:auto;"></div>
-        </div>
-        <div class="record-content" style="background:#fff;">
-            <div id="dashBox"></div>
-            <h3 id="archTitle" style="margin:6px 0 10px; color:var(--primary); font-size:16px;"></h3>
-            <div class="arch-filter">
-                <div><label>From</label><input type="date" id="archFrom" onchange="renderArchive()"></div>
-                <div><label>To</label><input type="date" id="archTo" onchange="renderArchive()"></div>
-                <div style="flex:1; min-width:140px;"><label>Search</label><input type="text" id="archText" oninput="renderArchive()" placeholder="item, detail, naam, amount..." style="width:100%;"></div>
-                <button class="btn" style="background:#999; padding:9px 14px;" onclick="clearArchFilters()">Clear</button>
-            </div>
-            <div class="stats-grid" id="archStats"></div>
-            <div style="overflow-x:auto;">
-                <table style="min-width:640px;">
-                    <thead><tr><th>Date</th><th>Customer</th><th>Section</th><th>Item & Details</th><th>Total</th><th>Proof</th><th>Cleared On</th></tr></thead>
-                    <tbody id="archBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="module">
+// ================= FIREBASE =================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, query, orderBy,
+  doc, updateDoc, deleteDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<!-- ====== ARCHIVE PDF MODAL ====== -->
-<div id="archPdfModal">
-    <div class="pdf-controls">
-        <button class="btn" style="background:var(--danger)" onclick="document.getElementById('archPdfModal').style.display='none'">Close</button>
-        <span style="font-size:12px; color:#555;">Filters (customer / date / search) wahi hain jo Lifetime Record mein laga rakhe hain</span>
-        <button class="btn" style="background:var(--success); margin-left:auto;" onclick="downloadArchPdf()">Download PDF</button>
-    </div>
-    <div id="archPrintable" class="pdf-paper"></div>
-</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyCVDNT-v6Zi_s3bQsxMfVVi-xm4xVR7ikk",
+  authDomain: "hh-book-center.firebaseapp.com",
+  projectId: "hh-book-center",
+  storageBucket: "hh-book-center.firebasestorage.app",
+  messagingSenderId: "786503882036",
+  appId: "1:786503882036:web:9e8e212fa919329616c161"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const recordsCol = collection(db, "records");
 
-<!-- ====== RECORD CARD VIEW ====== -->
-<div id="recordView">
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn" style="background:rgba(255,255,255,0.15); padding:6px 12px; font-size:14px;" onclick="goHome()">&#8592; Home</button>
-            <h1 style="margin:0; font-size:18px;">Record Card</h1>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn" style="background:var(--danger); padding: 5px 10px;" onclick="goHome()">Back</button>
-        </div>
-    </header>
-    <div class="record-container">
-        <div class="record-sidebar">
-            <div style="padding: 10px; background: #f1f1f1;">
-                <input type="text" id="recordSearchCust" placeholder="Search customer..." onkeyup="renderRecordCustomers()" style="width: 100%; padding: 8px; border-radius: 5px; border:1px solid #ccc;">
-            </div>
-            <div id="recordCustomerList" style="flex:1; overflow-y: auto;"></div>
-        </div>
-        <div class="record-content" id="recordArea">
-            <div class="record-no-selection" id="recordPlaceholder">
-                <div class="record-no-selection-icon">📋</div>
-                <h3 style="color:#aaa;">Customer Select Karein</h3>
-                <p style="color:#bbb; font-size:13px;">Left side se customer choose karein to uski details dekhein</p>
-            </div>
-            <div id="recordCardArea" style="display:none;"></div>
-        </div>
-    </div>
-</div>
+// ================= CONFIG =================
+const CLOUDINARY_ACCOUNTS = [
+  { cloudName: "pukij92j", preset: "h-h book center" },
+  { cloudName: "oejvniqa", preset: "my secound" }
+];
+const DRIVE_SCRIPT_URLS = [
+  "https://script.google.com/macros/s/AKfycbxbyCgRfkPJsuEVkrkT2yVTDX9mSBJRPVZkmQuClSpiisjyE0j6zaR9T8h5UUU2ihVGUg/exec",
+  "https://script.google.com/macros/s/AKfycbxkH42TwCXKFlyKI-UFPp3zpRe0U89BQPRtTNzd1oS_fWbhK48edQ3dsAlsi1vJs97d/exec",
+  "https://script.google.com/macros/s/AKfycbzgo2NZiSqJE6FiK3xaBGczqIrIpi8K8bhydFLbLXpJBrdM4d9jiUuSb89HKYH_NEoz/exec",
+  "https://script.google.com/macros/s/AKfycbxsIWDwr4jYWhfUcXPxC5WO81TnI9AUJzRsFKx8rSlOuEAeH5y8syJu9jUhsosa9Z3BkA/exec",
+  "https://script.google.com/macros/s/AKfycbzFApY2IT12epRhJwBLTzhNXqnY36kbGvmu1iODru4BQCck59pL0ZpEpoB5RBLZlRZBDA/exec",
+  "https://script.google.com/macros/s/AKfycbywUdldHoITzer7A8ZLa-SpxM9cGesK4Z7AF6Cf-McapZCQulwniyTwCaZGWkQG2k9q-Q/exec"
+];
 
-<div id="profModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:6000;align-items:center;justify-content:center;padding:12px;">
-  <div style="background:#fff;border-radius:12px;padding:18px;width:100%;max-width:420px;max-height:92vh;overflow:auto;">
-    <h3 id="pmTitle" style="margin:0 0 10px;color:var(--primary);"></h3>
-    <input type="file" id="pmPhoto" accept="image/*" style="width:100%;margin-bottom:8px;font-size:12px;">
-    <input id="pmName" placeholder="Customer Name *" class="pmi"><input id="pmPhone" placeholder="WhatsApp Number *" class="pmi">
-    <input id="pmOrg" placeholder="School / Business Name" class="pmi"><input id="pmOwner" placeholder="Owner / Principal Name" class="pmi">
-    <input id="pmAddr" placeholder="Address" class="pmi"><input id="pmNote" placeholder="Notes" class="pmi">
-    <div style="display:flex;gap:8px;margin-top:10px;"><button class="btn" id="pmSave" style="background:var(--success);flex:1;" onclick="saveProfile()">Save</button><button class="btn" style="background:#999;" onclick="document.getElementById('profModal').style.display='none'">Cancel</button></div>
-  </div></div>
+// ================= PIN LOCK =================
+const lockScreen = document.getElementById('lockScreen');
+const appEl = document.getElementById('app');
+const pinDots = document.querySelectorAll('.pin-dot');
+const lockError = document.getElementById('lockError');
+const lockSubtitle = document.getElementById('lockSubtitle');
+let pinBuffer = "";
+let settingNewPin = !localStorage.getItem('hh_pin');
+if(settingNewPin){ lockSubtitle.textContent = "NAYA PIN SET KAREIN (4 digit)"; }
+let confirmPinStage = false;
+let firstPinTemp = "";
 
-<!-- ====== PDF MODAL ====== -->
-<div id="pdfModal">
-    <div class="pdf-controls">
-        <button class="btn" style="background:var(--danger)" onclick="document.getElementById('pdfModal').style.display='none'">Close</button>
-        <select id="pdfSec" onchange="refreshPdfPreview()" style="padding:6px;border-radius:5px;margin-left:10px;"></select>
-        <div class="date-filter" style="margin-left:10px;">
-            <label>From:</label>
-            <input type="date" id="pdfDateFrom" onchange="refreshPdfPreview()">
-            <label>To:</label>
-            <input type="date" id="pdfDateTo" onchange="refreshPdfPreview()">
-            <button class="btn" style="background:var(--secondary); padding:6px 12px;" onclick="clearDateFilter()">Clear Filter</button>
-        </div>
-        <button class="btn" style="background:var(--success); margin-left:auto;" onclick="downloadPdf()">Download PDF</button>
-    </div>
-    <div id="printableArea" class="pdf-paper">
-        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;">
-            <h2 style="margin:0; color:#004d40;">HASSAN HUSSAIN BOOK CENTER</h2>
-            <p style="margin:5px 0;">Customer Statement / Ledger</p>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-top:15px;">
-            <div id="pdfCustInfo"></div>
-            <div id="pdfDate"></div>
-        </div>
-        <table style="width:100%; border-collapse:collapse; margin-top:15px; border: 1px solid #000;">
-            <thead><tr style="background:#eee;">
-                <th style="border:1px solid #000; padding:5px;">Date</th>
-                <th style="border:1px solid #000; padding:5px;">Item</th>
-                <th style="border:1px solid #000; padding:5px;">Details</th>
-                <th style="border:1px solid #000; padding:5px;">Qty</th>
-                <th style="border:1px solid #000; padding:5px;">Rate</th>
-                <th style="border:1px solid #000; padding:5px;">Amount</th>
-                <th style="border:1px solid #000; padding:5px;">Proof</th>
-            </tr></thead>
-            <tbody id="pdfRows" style="text-align:center;"></tbody>
-        </table>
-        <div id="pdfSummary" style="float:right; width:200px; margin-top:15px; border:1px solid #000; padding:8px;"></div>
-        <div style="clear:both;"></div>
-        <div class="signature-section">
-            <div class="sig-box">Customer Signature</div>
-            <div class="sig-box">Shop Signature</div>
-        </div>
-    </div>
-</div>
+function updateDots(){
+  pinDots.forEach((d,i)=> d.classList.toggle('filled', i < pinBuffer.length));
+}
+function shakeLock(){
+  lockScreen.style.animation = "none";
+  requestAnimationFrame(()=>{ lockScreen.style.animation = "shake .35s"; });
+}
+const styleShake = document.createElement('style');
+styleShake.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}`;
+document.head.appendChild(styleShake);
 
-<script>
-    // ====== Firebase Config ======
-    const firebaseConfig = {
-        apiKey: "AIzaSyBsAmYuS2kxo7r3MB35XczP1I7lqr-8hEM",
-        authDomain: "h-h-book-center.firebaseapp.com",
-        databaseURL: "https://h-h-book-center-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "h-h-book-center"
+document.getElementById('keypad').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const k = btn.dataset.k;
+  lockError.textContent = "";
+  if(k === 'clear'){ pinBuffer = ""; updateDots(); return; }
+  if(k === 'back'){ pinBuffer = pinBuffer.slice(0,-1); updateDots(); return; }
+  if(pinBuffer.length >= 4) return;
+  pinBuffer += k;
+  updateDots();
+  if(pinBuffer.length === 4){
+    setTimeout(()=> handlePinComplete(), 150);
+  }
+});
+
+function handlePinComplete(){
+  if(settingNewPin){
+    if(!confirmPinStage){
+      firstPinTemp = pinBuffer;
+      pinBuffer = "";
+      updateDots();
+      confirmPinStage = true;
+      lockSubtitle.textContent = "PIN DOBARA DAALEIN";
+    } else {
+      if(pinBuffer === firstPinTemp){
+        localStorage.setItem('hh_pin', firstPinTemp);
+        unlockApp();
+      } else {
+        lockError.textContent = "PIN match nahi hua, dobara try karein";
+        pinBuffer = ""; firstPinTemp = ""; confirmPinStage = false;
+        updateDots();
+        lockSubtitle.textContent = "NAYA PIN SET KAREIN (4 digit)";
+      }
+    }
+  } else {
+    const savedPin = localStorage.getItem('hh_pin');
+    if(pinBuffer === savedPin){
+      unlockApp();
+    } else {
+      lockError.textContent = "Galat PIN, dobara try karein";
+      shakeLock();
+      pinBuffer = "";
+      updateDots();
+    }
+  }
+}
+function unlockApp(){
+  lockScreen.style.display = "none";
+  appEl.style.display = "block";
+  pinBuffer = "";
+}
+document.getElementById('lockNowBtn').addEventListener('click', ()=>{
+  appEl.style.display = "none";
+  lockScreen.style.display = "flex";
+  pinBuffer = ""; updateDots();
+  lockError.textContent = "";
+});
+
+// ================= STATE =================
+let allRecords = [];
+let currentTab = 'photo';
+let searchTerm = '';
+let filterDate = '';
+let viewMode = localStorage.getItem('hh_view_mode') || 'list'; // 'list' | 'grid'
+
+const viewToggleBtn = document.getElementById('viewToggleBtn');
+function updateViewToggleIcon(){
+  viewToggleBtn.innerHTML = viewMode === 'list'
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>`;
+  viewToggleBtn.title = viewMode === 'list' ? 'Grid view pe switch karein' : 'List view pe switch karein';
+}
+updateViewToggleIcon();
+viewToggleBtn.addEventListener('click', ()=>{
+  viewMode = viewMode === 'list' ? 'grid' : 'list';
+  localStorage.setItem('hh_view_mode', viewMode);
+  updateViewToggleIcon();
+  renderList();
+});
+
+// ================= FIRESTORE LISTENER =================
+const q = query(recordsCol, orderBy('createdAt', 'desc'));
+onSnapshot(q, (snap)=>{
+  allRecords = [];
+  snap.forEach(d => allRecords.push({ id: d.id, ...d.data() }));
+  renderList();
+});
+
+// ================= TABS =================
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    renderList();
+  });
+});
+
+// ================= SEARCH & DATE =================
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value.trim().toLowerCase();
+  renderList();
+});
+const dateBtn = document.getElementById('dateBtn');
+const dateInput = document.getElementById('dateInput');
+dateInput.addEventListener('change', (e)=>{
+  filterDate = e.target.value;
+  dateBtn.classList.toggle('active', !!filterDate);
+  renderList();
+});
+dateBtn.addEventListener('dblclick', ()=>{
+  filterDate = ''; dateInput.value = '';
+  dateBtn.classList.remove('active');
+  renderList();
+});
+
+// ================= RENDER =================
+function localDateKey(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function fileIconFor(name){
+  const ext = (name||'').split('.').pop().toUpperCase();
+  const colorMap = {
+    PDF:  '#E5493C',
+    DOC:  '#2B579A', DOCX: '#2B579A',
+    XLS:  '#1D6F42', XLSX: '#1D6F42',
+    PPT:  '#D24726', PPTX: '#D24726',
+    TXT:  '#6B7280', ZIP: '#B7791F', RAR: '#B7791F'
+  };
+  const color = colorMap[ext] || '#8A94A6';
+  const label = ext.length > 4 ? ext.slice(0,4) : ext;
+  return `<svg viewBox="0 0 48 56" width="100%" height="100%" style="max-width:44px;max-height:52px;">
+    <path d="M6 2h22l14 14v36a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff" stroke="${color}" stroke-width="2"/>
+    <path d="M28 2v12a2 2 0 0 0 2 2h12" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="3" y="35" width="42" height="15" rx="2.5" fill="${color}"/>
+    <text x="24" y="45.5" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" letter-spacing="0.5">${label}</text>
+  </svg>`;
+}
+function formatDayLabel(dateStr){
+  const [y,m,day] = dateStr.split('-').map(Number);
+  const d = new Date(y, m-1, day);
+  const today = new Date();
+  const yest = new Date(); yest.setDate(today.getDate()-1);
+  const same = (a,b)=> a.toDateString() === b.toDateString();
+  if(same(d, today)) return 'Aaj';
+  if(same(d, yest)) return 'Kal';
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function renderList(){
+  const container = document.getElementById('listContainer');
+
+  document.getElementById('countPhoto').textContent = allRecords.filter(r=>r.type==='photo').length;
+  document.getElementById('countFile').textContent = allRecords.filter(r=>r.type==='file').length;
+  document.getElementById('countGroup').textContent = new Set(allRecords.map(r=>(r.customerName||'').trim().toLowerCase()).filter(Boolean)).size;
+
+  if(currentTab === 'group'){
+    renderGroupsView(container);
+    return;
+  }
+
+  const filtered = allRecords.filter(r=>{
+    if(r.type !== currentTab) return false;
+    if(searchTerm && !(r.customerName||'').toLowerCase().includes(searchTerm)) return false;
+    if(filterDate){
+      const rDate = r.dateKey || '';
+      if(rDate !== filterDate) return false;
+    }
+    return true;
+  });
+
+  if(filtered.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="stamp-logo">HH</div>
+        <p>Abhi koi ${currentTab==='photo'?'photo':'file'} nahi hai.<br>Neeche + button se upload karein.</p>
+      </div>`;
+    return;
+  }
+
+  if(viewMode === 'grid'){
+    renderGridView(container, filtered);
+  } else {
+    renderListView(container, filtered);
+  }
+}
+
+// ================= GROUPS (by customer name) =================
+function renderGroupsView(container){
+  // Group ALL records (photos + files) by customerName — same name = same group/folder
+  const groups = {}; // key: lowercase name -> { name, items: [], latest: 0 }
+  allRecords.forEach(r=>{
+    const rawName = (r.customerName || 'Naam nahi').trim();
+    const key = rawName.toLowerCase();
+    if(searchTerm && !key.includes(searchTerm)) return;
+    if(filterDate && (r.dateKey || '') !== filterDate) return;
+    if(!groups[key]) groups[key] = { name: rawName, items: [], latest: 0 };
+    groups[key].items.push(r);
+    const t = r.createdAt?.toMillis ? r.createdAt.toMillis() : 0;
+    if(t > groups[key].latest) groups[key].latest = t;
+  });
+
+  const list = Object.values(groups).sort((a,b)=> b.latest - a.latest);
+
+  if(list.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="stamp-logo">HH</div>
+        <p>Abhi koi group nahi bana.<br>Jab bhi kisi naam se file upload hogi, wo yahan group ban jayegi.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(g=>{
+    const pendingCount = g.items.filter(i=>i.status!=='printed').length;
+    const first = g.items.find(i=>i.type==='photo');
+    const avatar = first ? `<img src="${first.thumbUrl || first.fileUrl}" alt="">` : escapeHtml(g.name.slice(0,2).toUpperCase());
+    return `
+      <div class="group-card" data-group="${escapeHtml(g.name)}">
+        <div class="group-avatar">${avatar}</div>
+        <div class="group-info">
+          <div class="name">${escapeHtml(g.name)}</div>
+          <div class="meta">${g.items.length} file${g.items.length>1?'s':''} · ${pendingCount} pending</div>
+        </div>
+        <div class="group-arrow">›</div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('listContainer').addEventListener('click', (e)=>{
+  const gCard = e.target.closest('[data-group]');
+  if(gCard) openGroupDetail(gCard.dataset.group);
+});
+
+// ---- Group detail sheet ----
+const groupOverlay = document.getElementById('groupOverlay');
+let groupSelectedIds = new Set();
+let currentGroupItems = [];
+
+function openGroupDetail(name){
+  currentGroupItems = allRecords.filter(r => (r.customerName || 'Naam nahi').trim() === name);
+  groupSelectedIds = new Set();
+  document.getElementById('groupTitle').textContent = name;
+  renderGroupList();
+  updateGroupSelectBar();
+  groupOverlay.classList.add('open');
+}
+document.getElementById('closeGroupBtn').addEventListener('click', ()=> groupOverlay.classList.remove('open'));
+groupOverlay.addEventListener('click', (e)=>{ if(e.target === groupOverlay) groupOverlay.classList.remove('open'); });
+
+function renderGroupList(){
+  const el = document.getElementById('groupList');
+  el.innerHTML = currentGroupItems.map(r=>{
+    const checked = groupSelectedIds.has(r.id) ? 'checked' : '';
+    const thumb = r.type === 'photo'
+      ? `<img class="thumb" src="${r.thumbUrl || r.fileUrl}" alt="">`
+      : `<div class="thumb">${fileIconFor(r.fileName)}</div>`;
+    return `
+      <div class="card" style="margin:0 4px 10px 4px;">
+        <div class="select-row" style="flex:1;">
+          <button class="select-check ${checked}" data-gcheck="${r.id}">${groupSelectedIds.has(r.id)?'✓':''}</button>
+          ${thumb}
+          <div class="card-info" data-gview="${r.id}" style="cursor:pointer;">
+            <div class="name">${escapeHtml(r.fileName || r.customerName)}</div>
+            <div class="meta"><span>${r.timeLabel || ''}</span></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('groupList').addEventListener('click', (e)=>{
+  const chk = e.target.closest('[data-gcheck]');
+  const view = e.target.closest('[data-gview]');
+  if(chk){
+    const id = chk.dataset.gcheck;
+    if(groupSelectedIds.has(id)) groupSelectedIds.delete(id); else groupSelectedIds.add(id);
+    renderGroupList();
+    updateGroupSelectBar();
+    return;
+  }
+  if(view){ openViewModal(view.dataset.gview); return; }
+});
+
+function updateGroupSelectBar(){
+  const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
+  const allPdf = selected.length>0 && selected.every(r=> r.type==='file' && (r.fileName||'').toLowerCase().endsWith('.pdf'));
+  const allImg = selected.length>0 && selected.every(r=> r.type==='photo');
+  document.getElementById('groupMergeBtn').disabled = !allPdf || selected.length<2;
+  document.getElementById('groupPhotosPdfBtn').disabled = !allImg;
+  document.getElementById('groupZipBtn').disabled = selected.length===0;
+  // Zip/Merge/Photos-to-PDF bar only appears once user actually checks file(s) —
+  // tapping a single file to just view it should never show these options.
+  document.getElementById('groupSelectBar').classList.toggle('show', selected.length > 0);
+}
+
+async function fetchAsBlob(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('fetch failed');
+  return await res.blob();
+}
+
+function base64ToBlob(base64, mimeType){
+  const byteChars = atob(base64);
+  const byteNumbers = new Array(byteChars.length);
+  for(let i=0; i<byteChars.length; i++){ byteNumbers[i] = byteChars.charCodeAt(i); }
+  return new Blob([new Uint8Array(byteNumbers)], { type: mimeType || 'application/octet-stream' });
+}
+
+// Drive links can't be fetch()'d directly from the browser (CORS blocks it), so for
+// 'file' records we relay through Apps Script, which fetches the file server-side
+// and hands it back as base64. Photos (Cloudinary) allow direct fetch, so they skip this.
+async function fetchRecordBlob(rec){
+  if(rec.type === 'photo'){
+    return fetchAsBlob(rec.fileUrl);
+  }
+  if(!rec.driveFileId){
+    // Old record uploaded before this feature — no stored fileId, direct fetch is the only option (may fail)
+    return fetchAsBlob(rec.fileUrl);
+  }
+  for(const url of DRIVE_SCRIPT_URLS){
+    try{
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'fetchFile', fileId: rec.driveFileId })
+      });
+      const data = await res.json();
+      if(data.success) return base64ToBlob(data.base64, data.mimeType);
+    } catch(e){ /* try next relay */ }
+  }
+  throw new Error('File cloud se fetch nahi ho payi');
+}
+
+document.getElementById('groupMergeBtn').addEventListener('click', async ()=>{
+  const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
+  if(selected.length<2) return;
+  showToast('PDFs merge ho rahi hain...');
+  try{
+    const merged = await PDFLib.PDFDocument.create();
+    for(const r of selected){
+      const blob = await fetchRecordBlob(r);
+      const bytes = await blob.arrayBuffer();
+      const src = await PDFLib.PDFDocument.load(bytes);
+      const pages = await merged.copyPages(src, src.getPageIndices());
+      pages.forEach(p=> merged.addPage(p));
+    }
+    const outBytes = await merged.save();
+    downloadBlob(new Blob([outBytes], {type:'application/pdf'}), `${document.getElementById('groupTitle').textContent}-merged.pdf`);
+    showToast('Merge ho gaya ✅');
+  }catch(err){ console.error(err); showToast('Merge fail hui — files check karein'); }
+});
+
+document.getElementById('groupPhotosPdfBtn').addEventListener('click', async ()=>{
+  const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
+  if(selected.length===0) return;
+  showToast('Photos se PDF ban raha hai...');
+  try{
+    const pdfBytes = await photosToPdfBytes(await Promise.all(selected.map(r=>fetchRecordBlob(r))));
+    downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), `${document.getElementById('groupTitle').textContent}-photos.pdf`);
+    showToast('PDF ban gayi ✅');
+  }catch(err){ console.error(err); showToast('PDF banane mein masla hua'); }
+});
+
+document.getElementById('groupZipBtn').addEventListener('click', async ()=>{
+  const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
+  if(selected.length===0) return;
+  showToast('Zip ban raha hai...');
+  try{
+    const zip = new JSZip();
+    for(const r of selected){
+      const blob = await fetchRecordBlob(r);
+      zip.file(r.fileName || `file-${r.id}`, blob);
+    }
+    const zipBlob = await zip.generateAsync({type:'blob'});
+    downloadBlob(zipBlob, `${document.getElementById('groupTitle').textContent}.zip`);
+    showToast('Zip ready ✅');
+  }catch(err){ console.error(err); showToast('Zip banane mein masla hua'); }
+});
+
+async function photosToPdfBytes(blobs){
+  const pdfDoc = await PDFLib.PDFDocument.create();
+  for(const blob of blobs){
+    const bytes = await blob.arrayBuffer();
+    let img;
+    try{ img = await pdfDoc.embedJpg(bytes); }
+    catch(e){ img = await pdfDoc.embedPng(bytes); }
+    const page = pdfDoc.addPage([img.width, img.height]);
+    page.drawImage(img, { x:0, y:0, width: img.width, height: img.height });
+  }
+  return await pdfDoc.save();
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+}
+
+// ================= TOOLS (works on locally picked files, no upload needed) =================
+const toolsOverlay = document.getElementById('toolsOverlay');
+document.getElementById('toolsBtn').addEventListener('click', ()=> toolsOverlay.classList.add('open'));
+document.getElementById('closeToolsBtn').addEventListener('click', ()=> toolsOverlay.classList.remove('open'));
+toolsOverlay.addEventListener('click', (e)=>{ if(e.target === toolsOverlay) toolsOverlay.classList.remove('open'); });
+
+let mergePickedFiles = [];
+document.getElementById('mergeFileInput').addEventListener('change', (e)=>{
+  mergePickedFiles = Array.from(e.target.files || []);
+  document.getElementById('mergeFilesSub').textContent = mergePickedFiles.length
+    ? `${mergePickedFiles.length} file(s): ${mergePickedFiles.map(f=>f.name).join(', ')}`
+    : '2 ya zyada PDF files select karein';
+  document.getElementById('mergeRunBtn').disabled = mergePickedFiles.length < 2;
+});
+document.getElementById('mergeRunBtn').addEventListener('click', async ()=>{
+  if(mergePickedFiles.length<2) return;
+  toolsProgress(true, 'PDFs merge ho rahi hain...');
+  try{
+    const merged = await PDFLib.PDFDocument.create();
+    for(const f of mergePickedFiles){
+      const bytes = await f.arrayBuffer();
+      const src = await PDFLib.PDFDocument.load(bytes);
+      const pages = await merged.copyPages(src, src.getPageIndices());
+      pages.forEach(p=> merged.addPage(p));
+    }
+    const outBytes = await merged.save();
+    downloadBlob(new Blob([outBytes], {type:'application/pdf'}), 'merged.pdf');
+    showToast('Merge ho gaya ✅');
+  }catch(err){ console.error(err); showToast('Merge fail hui — sahi PDF files select karein'); }
+  toolsProgress(false);
+});
+
+let p2pPickedFiles = [];
+document.getElementById('p2pFileInput').addEventListener('change', (e)=>{
+  p2pPickedFiles = Array.from(e.target.files || []);
+  document.getElementById('p2pFilesSub').textContent = p2pPickedFiles.length
+    ? `${p2pPickedFiles.length} photo(s) selected`
+    : 'Ek ya zyada photos select karein';
+  document.getElementById('p2pRunBtn').disabled = p2pPickedFiles.length < 1;
+});
+document.getElementById('p2pRunBtn').addEventListener('click', async ()=>{
+  if(p2pPickedFiles.length<1) return;
+  toolsProgress(true, 'Photos se PDF ban raha hai...');
+  try{
+    const pdfBytes = await photosToPdfBytes(p2pPickedFiles);
+    downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), 'photos.pdf');
+    showToast('PDF ban gayi ✅');
+  }catch(err){ console.error(err); showToast('PDF banane mein masla hua'); }
+  toolsProgress(false);
+});
+
+let zipPickedFiles = [];
+document.getElementById('zipFileInput').addEventListener('change', (e)=>{
+  zipPickedFiles = Array.from(e.target.files || []);
+  document.getElementById('zipFilesSub').textContent = zipPickedFiles.length
+    ? `${zipPickedFiles.length} file(s) selected`
+    : 'Koi bhi files select karein';
+  document.getElementById('zipRunBtn').disabled = zipPickedFiles.length < 1;
+});
+document.getElementById('zipRunBtn').addEventListener('click', async ()=>{
+  if(zipPickedFiles.length<1) return;
+  toolsProgress(true, 'Zip ban raha hai...');
+  try{
+    const zip = new JSZip();
+    zipPickedFiles.forEach(f=> zip.file(f.name, f));
+    const zipBlob = await zip.generateAsync({type:'blob'});
+    downloadBlob(zipBlob, 'files.zip');
+    showToast('Zip ready ✅');
+  }catch(err){ console.error(err); showToast('Zip banane mein masla hua'); }
+  toolsProgress(false);
+});
+
+function toolsProgress(show, text){
+  document.getElementById('toolsProgressWrap').style.display = show ? 'block' : 'none';
+  if(text) document.getElementById('toolsProgressText').textContent = text;
+}
+
+function renderListView(container, filtered){
+  let html = '';
+  let lastDay = null;
+  filtered.forEach(r=>{
+    const dayLabel = formatDayLabel(r.dateKey);
+    if(dayLabel !== lastDay){
+      html += `<div class="day-label">${dayLabel}</div>`;
+      lastDay = dayLabel;
+    }
+    const thumb = r.type === 'photo'
+      ? `<img class="thumb" src="${r.thumbUrl || r.fileUrl}" alt="">`
+      : `<div class="thumb">${fileIconFor(r.fileName)}</div>`;
+    const statusClass = r.status === 'printed' ? 'printed' : 'pending';
+    const statusText = r.status === 'printed' ? 'PRINTED' : 'PENDING';
+    html += `
+      <div class="card" data-id="${r.id}">
+        ${thumb}
+        <div class="card-info">
+          <div class="name">${escapeHtml(r.customerName || 'Naam nahi')}</div>
+          <div class="meta">
+            <span>${r.timeLabel || ''}</span>
+            <span class="status-badge ${statusClass}" data-toggle-status="${r.id}">${statusText}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn" data-view="${r.id}" title="View">👁️</button>
+          <button class="icon-btn wa" data-wa="${r.id}" title="WhatsApp">💬</button>
+          <button class="icon-btn del" data-del="${r.id}" title="Delete">🗑️</button>
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderGridView(container, filtered){
+  let html = '';
+  let lastDay = null;
+  filtered.forEach(r=>{
+    const dayLabel = formatDayLabel(r.dateKey);
+    if(dayLabel !== lastDay){
+      if(lastDay !== null) html += `</div>`; // close previous grid-wrap
+      html += `<div class="day-label">${dayLabel}</div><div class="grid-wrap">`;
+      lastDay = dayLabel;
+    }
+    const icon = r.type === 'photo'
+      ? `<img src="${r.thumbUrl || r.fileUrl}" alt="">`
+      : fileIconFor(r.fileName);
+    const statusClass = r.status === 'printed' ? 'printed' : '';
+    html += `
+      <div class="grid-tile" data-view="${r.id}">
+        <div class="grid-icon">${icon}<span class="status-dot ${statusClass}"></span></div>
+        <div class="grid-name">${escapeHtml(r.customerName || 'Naam nahi')}</div>
+        <div class="grid-sub">${r.timeLabel || ''}</div>
+      </div>`;
+  });
+  html += `</div>`; // close final grid-wrap
+  container.innerHTML = html;
+}
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function shareToWhatsApp(rec){
+  if(!rec) return;
+  const msg = encodeURIComponent(`Assalam o Alaikum ${rec.customerName || ''}, aapki file ready hai: ${rec.fileUrl}`);
+  if(rec.phone){
+    let phone = rec.phone.replace(/[^0-9]/g,'');
+    if(phone.startsWith('0')) phone = '92' + phone.slice(1);
+    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+  } else {
+    // No number saved — open WhatsApp and let the user pick the contact/group themselves
+    window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+  }
+}
+
+// ================= LIST ACTIONS (delegated) =================
+document.getElementById('listContainer').addEventListener('click', async (e)=>{
+  const statusBtn = e.target.closest('[data-toggle-status]');
+  const viewBtn = e.target.closest('[data-view]');
+  const waBtn = e.target.closest('[data-wa]');
+  const delBtn = e.target.closest('[data-del]');
+
+  if(statusBtn){
+    const id = statusBtn.dataset.toggleStatus;
+    const rec = allRecords.find(r=>r.id===id);
+    const newStatus = rec.status === 'printed' ? 'pending' : 'printed';
+    await updateDoc(doc(db,'records',id), { status: newStatus });
+    return;
+  }
+  if(viewBtn){ openViewModal(viewBtn.dataset.view); return; }
+  if(waBtn){
+    const rec = allRecords.find(r=>r.id===waBtn.dataset.wa);
+    shareToWhatsApp(rec);
+    return;
+  }
+  if(delBtn){
+    if(confirm('Ye record delete karna hai? File cloud storage se bhi hamesha ke liye hat jayegi.')){
+      const rec = allRecords.find(r=>r.id===delBtn.dataset.del);
+      await deleteDoc(doc(db,'records',delBtn.dataset.del));
+      showToast('Delete ho gaya, storage clean ho rahi hai...');
+      cleanupCloudStorage(rec).then((ok)=>{
+        if(!ok) showToast('Storage se delete nahi ho payi — dekh lena');
+      }).catch(()=>{});
+    }
+    return;
+  }
+});
+
+// ================= CLOUD STORAGE CLEANUP (actually frees Drive/Cloudinary space) =================
+async function cleanupCloudStorage(rec){
+  if(!rec) return false;
+  if(rec.type === 'photo' && rec.cloudinaryPublicId && rec.cloudinaryCloudName){
+    return deleteFromCloudinaryAny(rec.cloudinaryCloudName, rec.cloudinaryPublicId, rec.cloudinaryResourceType || 'image');
+  }
+  if(rec.type === 'file' && rec.driveFileId){
+    return deleteFromDriveAny(rec.driveFileId);
+  }
+  return false; // old records uploaded before this feature won't have IDs saved
+}
+
+async function deleteFromDriveAny(fileId){
+  for(const url of DRIVE_SCRIPT_URLS){
+    try{
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteDrive', fileId })
+      });
+      const data = await res.json();
+      if(data.success) return true;
+    } catch(e){ /* try next account */ }
+  }
+  return false;
+}
+
+async function deleteFromCloudinaryAny(cloudName, publicId, resourceType){
+  for(const url of DRIVE_SCRIPT_URLS){
+    try{
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'deleteCloudinary', cloudName, publicId, resourceType })
+      });
+      const data = await res.json();
+      if(data.success) return true;
+    } catch(e){ /* try next relay */ }
+  }
+  return false;
+}
+
+// ================= VIEW MODAL =================
+const viewOverlay = document.getElementById('viewOverlay');
+let currentViewRec = null;
+function openViewModal(id){
+  const rec = allRecords.find(r=>r.id===id);
+  currentViewRec = rec;
+  document.getElementById('viewTitle').textContent = rec.customerName || 'File';
+  document.getElementById('viewMeta').textContent = `${rec.timeLabel} · ${rec.fileName || ''}`;
+  const media = document.getElementById('viewMedia');
+  const isPdf = (rec.fileName||'').toLowerCase().endsWith('.pdf');
+  if(rec.type === 'photo'){
+    media.innerHTML = `<img src="${rec.fileUrl}" alt="">`;
+  } else if(isPdf){
+    media.innerHTML = `<iframe class="pdf-frame" src="${rec.fileUrl}"></iframe>`;
+  } else {
+    media.innerHTML = `<div class="file-icon-big">${fileIconFor(rec.fileName)}</div>`;
+  }
+
+  const statusBtn = document.getElementById('viewStatusBtn');
+  statusBtn.textContent = rec.status === 'printed' ? '↺ Pending Karein' : '✅ Printed Karein';
+
+  const waBtn = document.getElementById('viewWaBtn');
+  waBtn.style.display = 'flex';
+
+  viewOverlay.classList.add('open');
+}
+document.getElementById('closeViewBtn').addEventListener('click', ()=> viewOverlay.classList.remove('open'));
+viewOverlay.addEventListener('click', (e)=>{ if(e.target === viewOverlay) viewOverlay.classList.remove('open'); });
+
+document.getElementById('viewDownloadBtn').addEventListener('click', ()=>{
+  if(!currentViewRec) return;
+  const a = document.createElement('a');
+  a.href = currentViewRec.downloadUrl || currentViewRec.fileUrl;
+  a.download = currentViewRec.fileName || 'file';
+  a.target = '_blank';
+  document.body.appendChild(a); a.click(); a.remove();
+});
+document.getElementById('viewStatusBtn').addEventListener('click', async ()=>{
+  if(!currentViewRec) return;
+  const newStatus = currentViewRec.status === 'printed' ? 'pending' : 'printed';
+  await updateDoc(doc(db,'records',currentViewRec.id), { status: newStatus });
+  currentViewRec.status = newStatus;
+  document.getElementById('viewStatusBtn').textContent = newStatus === 'printed' ? '↺ Pending Karein' : '✅ Printed Karein';
+});
+document.getElementById('viewWaBtn').addEventListener('click', ()=>{
+  shareToWhatsApp(currentViewRec);
+});
+document.getElementById('viewDeleteBtn').addEventListener('click', async ()=>{
+  if(!currentViewRec) return;
+  if(confirm('Ye record delete karna hai? File cloud storage se bhi hamesha ke liye hat jayegi.')){
+    const rec = currentViewRec;
+    viewOverlay.classList.remove('open');
+    await deleteDoc(doc(db,'records',rec.id));
+    showToast('Delete ho gaya, storage clean ho rahi hai...');
+    cleanupCloudStorage(rec).then((ok)=>{
+      if(!ok) showToast('Storage se delete nahi ho payi — dekh lena');
+    }).catch(()=>{});
+  }
+});
+document.getElementById('viewPrintBtn').addEventListener('click', ()=>{
+  if(!currentViewRec) return;
+  if(currentViewRec.type === 'photo'){
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>Print</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;}img{max-width:100%;}</style></head><body><img src="${currentViewRec.fileUrl}" onload="window.print();"></body></html>`);
+    w.document.close();
+  } else {
+    window.open(currentViewRec.fileUrl, '_blank');
+  }
+});
+
+// ================= UPLOAD MODAL =================
+const uploadOverlay = document.getElementById('uploadOverlay');
+const fabAdd = document.getElementById('fabAdd');
+const fileInput = document.getElementById('fileInput');
+const filedropLabel = document.getElementById('filedropLabel');
+const filedropIcon = document.getElementById('filedropIcon');
+const filedropTitle = document.getElementById('filedropTitle');
+const filedropSub = document.getElementById('filedropSub');
+const filedropBrowse = document.getElementById('filedropBrowse');
+const fileChipList = document.getElementById('fileChipList');
+const DEFAULT_ICON_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5 5 0 0 1 16.5 7.5 4.5 4.5 0 0 1 17 18H7Z"/><path d="M12 12v6"/><path d="m9.5 14.5 2.5-2.5 2.5 2.5"/></svg>`;
+
+let selectedFiles = []; // [{ file, previewUrl }]
+
+fabAdd.addEventListener('click', ()=> uploadOverlay.classList.add('open'));
+document.getElementById('cancelUploadBtn').addEventListener('click', resetUploadModal);
+uploadOverlay.addEventListener('click', (e)=>{ if(e.target === uploadOverlay) resetUploadModal(); });
+
+fileInput.addEventListener('change', ()=>{
+  const newFiles = Array.from(fileInput.files || []);
+  newFiles.forEach(f=>{
+    const previewUrl = f.type.startsWith('image/') ? URL.createObjectURL(f) : null;
+    selectedFiles.push({ file: f, previewUrl });
+  });
+  fileInput.value = ''; // allow re-adding / picking again
+  renderFileState();
+});
+
+// ---- Drag & drop onto the upload zone itself ----
+['dragenter','dragover'].forEach(evt=>{
+  filedropLabel.addEventListener(evt, (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    filedropLabel.classList.add('drag-over');
+  });
+});
+['dragleave','drop'].forEach(evt=>{
+  filedropLabel.addEventListener(evt, (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    filedropLabel.classList.remove('drag-over');
+  });
+});
+filedropLabel.addEventListener('drop', (e)=>{
+  const droppedFiles = Array.from(e.dataTransfer?.files || []);
+  droppedFiles.forEach(f=>{
+    const previewUrl = f.type.startsWith('image/') ? URL.createObjectURL(f) : null;
+    selectedFiles.push({ file: f, previewUrl });
+  });
+  if(droppedFiles.length) renderFileState();
+});
+
+// ---- Drag & drop anywhere on the app screen (opens upload sheet automatically) ----
+const dragDropOverlay = document.getElementById('dragDropOverlay');
+let dragDepth = 0;
+function isAppUnlocked(){ return appEl.style.display === 'block'; }
+window.addEventListener('dragenter', (e)=>{
+  if(!isAppUnlocked()) return;
+  if(!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+  e.preventDefault();
+  dragDepth++;
+  dragDropOverlay.classList.add('show');
+});
+window.addEventListener('dragover', (e)=>{
+  if(!isAppUnlocked()) return;
+  if(!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+  e.preventDefault();
+});
+window.addEventListener('dragleave', ()=>{
+  if(!isAppUnlocked()) return;
+  dragDepth = Math.max(0, dragDepth - 1);
+  if(dragDepth === 0) dragDropOverlay.classList.remove('show');
+});
+window.addEventListener('drop', (e)=>{
+  if(!isAppUnlocked()) return;
+  e.preventDefault();
+  dragDepth = 0;
+  dragDropOverlay.classList.remove('show');
+  const droppedFiles = Array.from(e.dataTransfer?.files || []);
+  if(droppedFiles.length === 0) return;
+  droppedFiles.forEach(f=>{
+    const previewUrl = f.type.startsWith('image/') ? URL.createObjectURL(f) : null;
+    selectedFiles.push({ file: f, previewUrl });
+  });
+  renderFileState();
+  uploadOverlay.classList.add('open');
+});
+
+function renderFileState(){
+  const count = selectedFiles.length;
+  if(count === 0){
+    filedropLabel.classList.remove('has-file');
+    filedropIcon.innerHTML = DEFAULT_ICON_SVG;
+    filedropTitle.textContent = 'Files choose karein';
+    filedropSub.textContent = 'Ek se zyada photos/files ek sath select ho sakti hain';
+    filedropBrowse.textContent = 'Browse';
+  } else {
+    filedropLabel.classList.add('has-file');
+    const first = selectedFiles[0];
+    if(first.previewUrl){ filedropIcon.innerHTML = `<img src="${first.previewUrl}" alt="">`; }
+    else { filedropIcon.innerHTML = fileIconFor(first.file.name); }
+    filedropTitle.textContent = count === 1 ? first.file.name : `${count} files select ki hain`;
+    const totalKb = selectedFiles.reduce((s,x)=> s + x.file.size, 0) / 1024;
+    filedropSub.textContent = `${totalKb.toFixed(0)} KB total`;
+    filedropBrowse.textContent = 'Add more';
+  }
+
+  fileChipList.innerHTML = selectedFiles.map((item, idx)=>{
+    const thumb = item.previewUrl
+      ? `<img src="${item.previewUrl}" alt="">`
+      : fileIconFor(item.file.name);
+    return `
+      <div class="file-chip">
+        <div class="chip-thumb">${thumb}</div>
+        <button class="chip-remove" data-remove-chip="${idx}" type="button">✕</button>
+        <div class="chip-name">${escapeHtml(item.file.name)}</div>
+      </div>`;
+  }).join('');
+}
+
+fileChipList.addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-remove-chip]');
+  if(!btn) return;
+  const idx = parseInt(btn.dataset.removeChip, 10);
+  const item = selectedFiles[idx];
+  if(item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+  selectedFiles.splice(idx, 1);
+  renderFileState();
+});
+
+function resetUploadModal(){
+  uploadOverlay.classList.remove('open');
+  selectedFiles.forEach(item=>{ if(item.previewUrl) URL.revokeObjectURL(item.previewUrl); });
+  selectedFiles = [];
+  fileInput.value = '';
+  document.getElementById('custName').value = '';
+  document.getElementById('custPhone').value = '';
+  renderFileState();
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('uploadBtn').disabled = false;
+  document.getElementById('uploadBtn').textContent = 'Upload Karein';
+}
+
+document.getElementById('uploadBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if(selectedFiles.length === 0){ showToast('Pehle file(s) choose karein'); return; }
+  if(!name){ showToast('Customer ka naam likhein'); return; }
+
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const uploadBtn = document.getElementById('uploadBtn');
+  progressWrap.style.display = 'block';
+  uploadBtn.disabled = true;
+
+  const total = selectedFiles.length;
+  let uploadedCount = 0;
+  let failedCount = 0;
+
+  for(let i = 0; i < total; i++){
+    const file = selectedFiles[i].file;
+    const isImage = file.type.startsWith('image/');
+    uploadBtn.textContent = `Uploading ${i+1}/${total}...`;
+    try{
+      let fileUrl, downloadUrl, thumbUrl;
+      let cloudinaryCloudName = null, cloudinaryPublicId = null, cloudinaryResourceType = null;
+      let driveFileId = null;
+      if(isImage){
+        progressText.textContent = `(${i+1}/${total}) Photo upload ho rahi hai: ${file.name}`;
+        const result = await uploadToCloudinary(file, (pct)=>{
+          const overall = ((i + pct/100) / total) * 100;
+          progressFill.style.width = overall + '%';
+        });
+        fileUrl = result.secure_url;
+        downloadUrl = result.secure_url;
+        thumbUrl = result.secure_url;
+        cloudinaryCloudName = result.cloudName;
+        cloudinaryPublicId = result.public_id;
+        cloudinaryResourceType = result.resource_type || 'image';
+      } else {
+        progressText.textContent = `(${i+1}/${total}) File upload ho rahi hai: ${file.name}`;
+        progressFill.style.width = (((i + 0.4) / total) * 100) + '%';
+        const result = await uploadToDrive(file);
+        fileUrl = result.fileUrl;
+        downloadUrl = result.downloadUrl;
+        driveFileId = result.fileId;
+      }
+
+      const now = new Date();
+      const dateKey = localDateKey(now);
+      const timeLabel = now.toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+
+      await addDoc(recordsCol, {
+        type: isImage ? 'photo' : 'file',
+        customerName: name,
+        phone: phone || null,
+        fileName: file.name,
+        fileUrl, downloadUrl, thumbUrl: thumbUrl || null,
+        cloudinaryCloudName, cloudinaryPublicId, cloudinaryResourceType,
+        driveFileId,
+        status: 'pending',
+        dateKey, timeLabel,
+        createdAt: serverTimestamp()
+      });
+
+      uploadedCount++;
+      progressFill.style.width = (((i+1) / total) * 100) + '%';
+    } catch(err){
+      console.error(err);
+      failedCount++;
+    }
+  }
+
+  if(failedCount === 0){
+    progressText.textContent = `Sab ${uploadedCount} file(s) upload ho gayen! ✅`;
+  } else {
+    progressText.textContent = `${uploadedCount} ho gayen, ${failedCount} fail hui — dobara try karein`;
+  }
+  setTimeout(()=>{
+    resetUploadModal();
+    showToast(failedCount === 0 ? 'Upload complete' : `${failedCount} file(s) fail hui`);
+  }, 900);
+});
+
+function uploadToCloudinary(file, onProgress){
+  return tryCloudinaryAccount(file, onProgress, 0);
+}
+
+function tryCloudinaryAccount(file, onProgress, accountIndex){
+  return new Promise((resolve, reject)=>{
+    if(accountIndex >= CLOUDINARY_ACCOUNTS.length){
+      reject(new Error('Sab accounts full hain ya offline hain'));
+      return;
+    }
+    const account = CLOUDINARY_ACCOUNTS[accountIndex];
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', account.preset);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${account.cloudName}/auto/upload`);
+    xhr.upload.onprogress = (e)=>{
+      if(e.lengthComputable) onProgress(Math.round((e.loaded/e.total)*100));
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    let customers = [], transactions = [], items = [], activeCustId = null, recordActiveCustId = null;
-    let loaded = false, sid = 'main'; let customCategories = []; // user-added custom categories, saved permanently via Firebase
-    const baseCategories = ['Photocopy', 'Books', 'Stationery', 'Uniform'];
-    let currentView = 'home'; // 'home', 'khatta', 'record'
-
-    // ====== Cloudinary Config (server-side via Netlify Blobs + localStorage fallback) ======
-    let cloudinaryConfigCache = {
-        cloudName: localStorage.getItem('cloudinary_cloud_name') || '',
-        uploadPreset: localStorage.getItem('cloudinary_upload_preset') || ''
+    xhr.onload = ()=>{
+      if(xhr.status >= 200 && xhr.status < 300){
+        const data = JSON.parse(xhr.responseText);
+        data.cloudName = account.cloudName; // remember which account this file lives in
+        resolve(data);
+      } else if(accountIndex + 1 < CLOUDINARY_ACCOUNTS.length){
+        // account full/failed — try next account automatically
+        tryCloudinaryAccount(file, onProgress, accountIndex + 1).then(resolve).catch(reject);
+      } else {
+        reject(new Error('Cloudinary upload failed'));
+      }
     };
+    xhr.onerror = ()=>{
+      if(accountIndex + 1 < CLOUDINARY_ACCOUNTS.length){
+        tryCloudinaryAccount(file, onProgress, accountIndex + 1).then(resolve).catch(reject);
+      } else {
+        reject(new Error('Network error'));
+      }
+    };
+    xhr.send(fd);
+  });
+}
 
-    // Load config from server on startup
-    (async function loadCloudinaryConfig() {
-        try {
-            const resp = await fetch('/.netlify/functions/cloudinary-config');
-            if (resp.ok) {
-                const data = await resp.json();
-                if (data.cloudName) {
-                    cloudinaryConfigCache.cloudName = data.cloudName;
-                    cloudinaryConfigCache.uploadPreset = data.uploadPreset;
-                    localStorage.setItem('cloudinary_cloud_name', data.cloudName);
-                    localStorage.setItem('cloudinary_upload_preset', data.uploadPreset);
-                }
-            }
-        } catch (e) { /* offline - use localStorage cache */ }
-    })();
+function uploadToDrive(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      const base64 = reader.result.split(',')[1];
+      try{
+        const data = await tryDriveAccount(base64, file, 0);
+        resolve(data);
+      } catch(err){ reject(err); }
+    };
+    reader.onerror = ()=> reject(new Error('File read error'));
+    reader.readAsDataURL(file);
+  });
+}
 
-    function getCloudinaryConfig() {
-        return {
-            cloudName: cloudinaryConfigCache.cloudName,
-            uploadPreset: cloudinaryConfigCache.uploadPreset
-        };
-    }
-
-    function isCloudinaryConfigured() {
-        const c = getCloudinaryConfig();
-        return c.cloudName && c.uploadPreset;
-    }
-
-    // ====== PWA Install Logic ======
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('installBanner').style.display = 'block';
-        const headerBtn = document.getElementById('headerInstallBtn');
-        if (headerBtn) headerBtn.style.display = 'block';
+async function tryDriveAccount(base64, file, accountIndex){
+  if(accountIndex >= DRIVE_SCRIPT_URLS.length){
+    throw new Error('Sab Drive accounts full hain ya offline hain');
+  }
+  try{
+    const res = await fetch(DRIVE_SCRIPT_URLS[accountIndex], {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'upload',
+        fileData: base64,
+        mimeType: file.type || 'application/octet-stream',
+        fileName: file.name
+      })
     });
-
-    function installPWA() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    showToast('✅ App install ho gaya!');
-                }
-                deferredPrompt = null;
-                document.getElementById('installBanner').style.display = 'none';
-                const headerBtn = document.getElementById('headerInstallBtn');
-                if (headerBtn) headerBtn.style.display = 'none';
-            });
-        } else {
-            showToast('App already installed ya supported nahi hai');
-        }
+    const data = await res.json();
+    if(data.success) return data;
+    if(accountIndex + 1 < DRIVE_SCRIPT_URLS.length){
+      return tryDriveAccount(base64, file, accountIndex + 1);
     }
-
-    function dismissInstall() {
-        document.getElementById('installBanner').style.display = 'none';
+    throw new Error(data.error || 'Drive upload failed');
+  } catch(err){
+    if(accountIndex + 1 < DRIVE_SCRIPT_URLS.length){
+      return tryDriveAccount(base64, file, accountIndex + 1);
     }
-
-    window.addEventListener('appinstalled', () => {
-        document.getElementById('installBanner').style.display = 'none';
-        const headerBtn = document.getElementById('headerInstallBtn');
-        if (headerBtn) headerBtn.style.display = 'none';
-        showToast('✅ App install ho gaya! Home screen pe dekh sakte ho');
-    });
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-
-    // ====== Splash Screen ======
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const splash = document.getElementById('splash');
-            splash.style.transition = 'opacity 0.5s';
-            splash.style.opacity = '0';
-            setTimeout(() => splash.style.display = 'none', 500);
-        }, 2000);
-        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-    });
-
-    // ====== PIN Lock ======
-    function checkPin() {
-        if (document.getElementById('pinInput').value === "4546") {
-            document.getElementById('loginOverlay').style.display = 'none';
-            showView('home');
-        } else {
-            alert("Wrong PIN!");
-            document.getElementById('pinInput').value = '';
-        }
-    }
-
-    // ====== Navigation ======
-    function showView(view) {
-        currentView = view;
-        document.getElementById('homeScreen').style.display = 'none';
-        document.getElementById('khattaView').style.display = 'none';
-        document.getElementById('recordView').style.display = 'none';
-        document.getElementById('cloudView').style.display = 'none';
-        document.getElementById('inventoryView').style.display = 'none';
-        document.getElementById('archiveView').style.display = 'none';
-        if (view === 'home') {
-            document.getElementById('homeScreen').style.display = 'flex'; renderDash();
-        } else if (view === 'khatta') {
-            document.getElementById('khattaView').style.display = 'flex';
-            renderCustomers();
-        } else if (view === 'record') {
-            document.getElementById('recordView').style.display = 'flex';
-            renderRecordCustomers();
-        } else if (view === 'archive') {
-            document.getElementById('archiveView').style.display = 'flex';
-            renderDash(); renderArchCustomers(); renderArchive();
-        }
-    }
-
-    function goHome() {
-        activeCustId = null;
-        recordActiveCustId = null;
-        document.getElementById('ledgerArea').style.display = 'none';
-        showView('home');
-    }
-
-    function openKhatta() { showView('khatta'); }
-    function openRecordCard() { showView('record'); }
-    function openArchive() { showView('archive'); }
-
-    // ====== Cloud (embedded sub-app) ======
-    // Loaded lazily into an iframe on first open, then left alone (not reloaded)
-    // so its own PIN-unlock / upload state is never lost when switching views.
-    let cloudLoaded = false;
-    function openCloud() {
-        currentView = 'cloud';
-        document.getElementById('homeScreen').style.display = 'none';
-        document.getElementById('khattaView').style.display = 'none';
-        document.getElementById('recordView').style.display = 'none';
-        document.getElementById('inventoryView').style.display = 'none';
-        document.getElementById('archiveView').style.display = 'none';
-        document.getElementById('cloudView').style.display = 'flex';
-        if (!cloudLoaded) {
-            document.getElementById('cloudFrame').src = 'cloud/index.html';
-            cloudLoaded = true;
-        }
-    }
-
-    // ====== Inventory / Stock (Saman) ======
-    function openInventory() {
-        currentView = 'inventory';
-        document.getElementById('homeScreen').style.display = 'none';
-        document.getElementById('khattaView').style.display = 'none';
-        document.getElementById('recordView').style.display = 'none';
-        document.getElementById('cloudView').style.display = 'none';
-        document.getElementById('archiveView').style.display = 'none';
-        document.getElementById('inventoryView').style.display = 'flex';
-        calcInventoryRate();
-        renderInventory();
-    }
-
-    function calcInventoryRate() {
-        const qty = parseFloat(document.getElementById('invQty').value) || 1;
-        const totalCost = parseFloat(document.getElementById('invTotalCost').value) || 0;
-        const freight = parseFloat(document.getElementById('invFreight').value) || 0;
-        const marginInput = parseFloat(document.getElementById('invMargin').value);
-        const marginPct = isNaN(marginInput) ? 10 : marginInput;
-        const unitCost = (totalCost + freight) / qty;
-        const saleRate = unitCost * (1 + marginPct / 100);
-        document.getElementById('invUnitCostPreview').innerText = 'Rs. ' + (unitCost || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-        document.getElementById('invSaleRatePreview').innerText = 'Rs. ' + (saleRate || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-        return { qty, totalCost, freight, marginPct, unitCost, saleRate };
-    }
-
-    async function addInventoryItem() {
-        const name = document.getElementById('invName').value.trim();
-        const details = document.getElementById('invDetails').value.trim();
-        if (!name) { alert('Item ka naam likhein!'); return; }
-        const calc = calcInventoryRate();
-        if (!calc.totalCost) { alert('Total rate/amount likhein!'); return; }
-
-        let billPhoto = '';
-        const photoInput = document.getElementById('invBillPhoto');
-        if (photoInput.files && photoInput.files[0]) {
-            billPhoto = await uploadInventoryBillPhoto(photoInput.files[0]);
-        }
-
-        const now = new Date();
-        items.push({
-            id: Date.now().toString(),
-            name, details,
-            qty: calc.qty,
-            totalCost: calc.totalCost,
-            freight: calc.freight,
-            marginPct: calc.marginPct,
-            unitCost: Math.round(calc.unitCost * 100) / 100,
-            saleRate: Math.round(calc.saleRate * 100) / 100,
-            billPhoto,
-            date: now.toLocaleDateString('en-GB'),
-            rawDate: now.toISOString().split('T')[0]
-        });
-        sync();
-        renderInventory();
-
-        document.getElementById('invName').value = '';
-        document.getElementById('invDetails').value = '';
-        document.getElementById('invQty').value = '';
-        document.getElementById('invTotalCost').value = '';
-        document.getElementById('invFreight').value = '';
-        document.getElementById('invMargin').value = '10';
-        photoInput.value = '';
-        calcInventoryRate();
-        showToast('✅ Stock entry save ho gyi!');
-    }
-
-    function uploadInventoryBillPhoto(file) {
-        const config = getCloudinaryConfig();
-        if (!config.cloudName || !config.uploadPreset) {
-            return fileToBase64Fallback(file);
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', config.uploadPreset);
-        const progressEl = document.getElementById('invUploadProgress');
-        const barFill = document.getElementById('invUploadBarFill');
-        const percentEl = document.getElementById('invUploadPercent');
-        progressEl.style.display = 'flex';
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + encodeURIComponent(config.cloudName) + '/image/upload');
-            xhr.upload.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const pct = Math.round((e.loaded / e.total) * 100);
-                    barFill.style.width = pct + '%';
-                    percentEl.innerText = pct + '%';
-                }
-            };
-            xhr.onload = () => {
-                progressEl.style.display = 'none';
-                barFill.style.width = '0%';
-                if (xhr.status === 200) {
-                    resolve(JSON.parse(xhr.responseText).secure_url);
-                } else {
-                    showToast('Bill photo upload fail, locally save ho rahi hai');
-                    fileToBase64Fallback(file).then(resolve).catch(reject);
-                }
-            };
-            xhr.onerror = () => {
-                progressEl.style.display = 'none';
-                barFill.style.width = '0%';
-                showToast('Upload error, locally save ho rahi hai');
-                fileToBase64Fallback(file).then(resolve).catch(reject);
-            };
-            xhr.send(formData);
-        });
-    }
-
-    function renderInventory() {
-        const search = (document.getElementById('invSearch')?.value || '').toLowerCase();
-        const list = items
-            .filter(it => !search || it.name.toLowerCase().includes(search) || (it.details || '').toLowerCase().includes(search))
-            .sort((a, b) => (b.rawDate || '').localeCompare(a.rawDate || '') || (Number(b.id) - Number(a.id)));
-        document.getElementById('inventoryTableBody').innerHTML = list.map(it => `
-            <tr>
-                <td>${escHtml(it.date || '-')}</td>
-                <td><strong>${escHtml(it.name)}</strong></td>
-                <td>${escHtml(it.details || '-')}</td>
-                <td>${it.qty}</td>
-                <td>Rs. ${it.unitCost.toLocaleString('en-IN')}</td>
-                <td style="color:var(--success); font-weight:bold;">Rs. ${it.saleRate.toLocaleString('en-IN')}</td>
-                <td>${it.billPhoto ? `<img src="${it.billPhoto}" class="photo-thumb" onclick="viewPhoto('${it.billPhoto}')">` : '-'}</td>
-                <td style="display:flex; gap:5px; flex-wrap:wrap;">
-                    ${it.billPhoto ? `<a href="${it.billPhoto}" download="Bill_${escHtml(it.name)}.jpg" target="_blank" class="btn" style="background:var(--secondary); padding:5px 8px; font-size:11px; text-decoration:none;">⬇</a>` : ''}
-                    <button class="btn" style="background:var(--danger); padding:5px 8px; font-size:11px;" onclick="deleteInventoryItem('${it.id}')">✕</button>
-                </td>
-            </tr>
-        `).join('') || '<tr><td colspan="8" style="text-align:center; color:#999; padding:20px;">Koi stock entry nahi hai</td></tr>';
-    }
-
-    function deleteInventoryItem(id) {
-        showConfirm('Delete Entry', 'Kya aap ye stock entry delete karna chahte hain?', () => {
-            items = items.filter(it => it.id !== id);
-            sync();
-            renderInventory();
-        });
-    }
-
-
-    function selectCustomer(custId) {
-        activeCustId = custId;
-        renderCustomers();
-        renderTransactions();
-        updateCustomerHeader();
-        document.getElementById('ledgerArea').style.display = 'block';
-    }
-
-    // ====== Toast Notification ======
-    function showToast(msg) {
-        const container = document.getElementById('notification-container');
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.innerHTML = msg;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    // ====== Sections / Dashboard / Profile ======
-    const tOf = (cid, s) => transactions.filter(t => t.custId === cid && !t.cleared && (s == null || (t.sectionId || 'main') === s));
-    const secs = c => [{ id: 'main', name: 'Main Khatta' }].concat((c && c.sections) || []);
-    const secName = (c, s) => (secs(c).find(x => x.id === s) || { name: 'Main Khatta' }).name;
-    const sumT = l => { let u = 0, p = 0; l.forEach(t => t.type === 'Udhaar' ? u += t.total : p += t.total); return { u, p, b: u - p }; };
-    function renderSecBar() {
-        const c = customers.find(x => x.id === activeCustId); if (!c) return;
-        document.getElementById('secBar').innerHTML = secs(c).map(x => '<div class="sec-chip ' + (x.id === sid ? 'on' : '') + '" onclick="setSec(\'' + x.id + '\')">' + escHtml(x.name) + '</div>').join('') +
-            '<div class="sec-chip" onclick="addSection()">+ Naya Section</div>' + (sid !== 'main' ? '<div class="sec-chip" onclick="renameSection()">✎ Rename</div>' : '');
-    }
-    function setSec(s) { sid = s; renderTransactions(); }
-    function addSection() {
-        const n = prompt('Naye section ka naam (e.g. Session 2026):'); if (!n || !n.trim()) return;
-        const c = customers.find(x => x.id === activeCustId); c.sections = c.sections || [];
-        const s = { id: 's' + Date.now(), name: n.trim() }; c.sections.push(s); sid = s.id;
-        if (sync()) renderTransactions();
-    }
-    function renameSection() {
-        const c = customers.find(x => x.id === activeCustId), s = (c.sections || []).find(x => x.id === sid); if (!s) return;
-        const n = prompt('Section ka naya naam:', s.name); if (n && n.trim()) { s.name = n.trim(); if (sync()) renderTransactions(); }
-    }
-    function renderDash() {
-        const el = document.getElementById('dashBox'); if (!el) return;
-        const all = transactions.filter(t => !t.cleared), a = sumT(all);
-        const m = sumT(all.filter(t => !t.sectionId || t.sectionId === 'main')), o = sumT(all.filter(t => t.sectionId && t.sectionId !== 'main'));
-        const card = (l, v) => '<div class="dash-card"><small>' + l + '</small><b>Rs. ' + Math.round(v) + '</b></div>';
-        el.innerHTML = '<div class="dash-row">' + card('Kul Baqaya', a.b) + card('Total Udhaar', a.u) + card('Total Wasool', a.p) + '</div><div class="dash-row">' + card('Main Khatta', m.b) + card('Doosre Sections', o.b) + '<div class="dash-card"><small>Customers</small><b>' + customers.length + '</b></div></div>' +
-            (function () { const z = sumT(transactions.filter(t => t.cleared)); return '<div class="dash-row">' + card('Clear Shuda Udhaar', z.u) + card('Clear Shuda Wasool', z.p) + card('Lifetime Baqaya', sumT(transactions).b) + '</div>'; })();
-    }
-    function dailyBackup(d) {
-        try { const k = 'hh_backup/' + new Date().toISOString().slice(0, 10);
-            db.ref(k).once('value').then(s => { if (!s.exists() && d) db.ref(k).set(d); }).catch(() => {}); } catch (e) {}
-    }
-    let profEditId = null;
-    function openProfile(id) {
-        profEditId = id; const c = id ? customers.find(x => x.id === id) : {};
-        document.getElementById('pmTitle').innerText = id ? 'Profile Edit' : 'Naya Customer';
-        [['pmName', 'name'], ['pmPhone', 'phone'], ['pmOrg', 'org'], ['pmOwner', 'owner'], ['pmAddr', 'addr'], ['pmNote', 'note']].forEach(f => document.getElementById(f[0]).value = c[f[1]] || '');
-        document.getElementById('pmPhoto').value = ''; document.getElementById('profModal').style.display = 'flex';
-    }
-    async function saveProfile() {
-        const n = document.getElementById('pmName').value.trim(), p = document.getElementById('pmPhone').value.trim();
-        if (!n || !p) return alert('Name aur WhatsApp number zaroori hain!');
-        const b = document.getElementById('pmSave'); b.disabled = true; b.innerText = 'Saving...';
-        let photo = ''; const f = document.getElementById('pmPhoto').files[0];
-        if (f) { try { photo = await uploadToCloudinary(f); } catch (e) { showToast('Photo upload fail'); } }
-        const d = { name: n, phone: p, org: document.getElementById('pmOrg').value.trim(), owner: document.getElementById('pmOwner').value.trim(), addr: document.getElementById('pmAddr').value.trim(), note: document.getElementById('pmNote').value.trim() };
-        let c;
-        if (profEditId) { c = customers.find(x => x.id === profEditId); Object.assign(c, d); } else { c = Object.assign({ id: Date.now() }, d); customers.push(c); }
-        if (photo) c.photo = photo;
-        b.disabled = false; b.innerText = 'Save';
-        if (sync()) { document.getElementById('profModal').style.display = 'none'; showToast('Save ho gaya!'); if (profEditId) selectCustomer(profEditId); }
-    }
-
-    // ====== Firebase Data Sync ======
-    db.ref('hh_data').on('value', (snap) => {
-        const data = snap.val();
-        if (!loaded) { loaded = true; dailyBackup(data); }
-        if (data) {
-            customers = data.customers || [];
-            transactions = data.transactions || [];
-            items = data.items || [];
-            document.getElementById('syncStatus').innerText = "● Online";
-            if (currentView === 'home') renderDash();
-            if (currentView === 'khatta') {
-                renderCustomers();
-                if (activeCustId) { renderTransactions(); updateCustomerHeader(); }
-            }
-            if (currentView === 'record') {
-                renderRecordCustomers();
-                if (recordActiveCustId) renderRecordCard(recordActiveCustId);
-            }
-            if (currentView === 'inventory') {
-                renderInventory();
-            }
-            if (currentView === 'archive') {
-                renderDash(); renderArchCustomers(); renderArchive();
-            }
-        }
-    });
-
-    function sync() {
-        if (!loaded) { showToast('Data load ho raha hai, thora ruko'); return false; }
-        db.ref('hh_data').update({ customers, transactions, items }); return true;
-    }
-
-    // ====== Cloudinary Upload ======
-    async function uploadToCloudinary(file) {
-        const config = getCloudinaryConfig();
-        if (!config.cloudName || !config.uploadPreset) {
-            return await fileToBase64Fallback(file);
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', config.uploadPreset);
-
-        const progressEl = document.getElementById('uploadProgress');
-        const barFill = document.getElementById('uploadBarFill');
-        const percentEl = document.getElementById('uploadPercent');
-        progressEl.style.display = 'flex';
-
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + encodeURIComponent(config.cloudName) + '/image/upload');
-            xhr.upload.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const pct = Math.round((e.loaded / e.total) * 100);
-                    barFill.style.width = pct + '%';
-                    percentEl.innerText = pct + '%';
-                }
-            };
-            xhr.onload = () => {
-                progressEl.style.display = 'none';
-                barFill.style.width = '0%';
-                if (xhr.status === 200) {
-                    const resp = JSON.parse(xhr.responseText);
-                    resolve(resp.secure_url);
-                } else {
-                    showToast('Cloudinary upload failed, saving locally');
-                    fileToBase64Fallback(file).then(resolve).catch(reject);
-                }
-            };
-            xhr.onerror = () => {
-                progressEl.style.display = 'none';
-                barFill.style.width = '0%';
-                showToast('Upload error, saving locally');
-                fileToBase64Fallback(file).then(resolve).catch(reject);
-            };
-            xhr.send(formData);
-        });
-    }
-
-    // Fallback: compress and convert to base64
-    function fileToBase64Fallback(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 400;
-                    let w = img.width, h = img.height;
-                    if (w > h) { if (w > MAX_SIZE) { h = h * MAX_SIZE / w; w = MAX_SIZE; } }
-                    else { if (h > MAX_SIZE) { w = w * MAX_SIZE / h; h = MAX_SIZE; } }
-                    canvas.width = w;
-                    canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
-                };
-                img.src = reader.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    function viewPhoto(url) {
-        const modal = document.getElementById('photoViewModal');
-        document.getElementById('photoViewImg').src = url;
-        modal.style.display = 'flex';
-    }
-
-    // ====== Settings ======
-    function openSettings() {
-        const config = getCloudinaryConfig();
-        document.getElementById('settCloudName').value = config.cloudName;
-        document.getElementById('settUploadPreset').value = config.uploadPreset;
-        document.getElementById('settingsModal').style.display = 'flex';
-    }
-
-    function closeSettings() {
-        document.getElementById('settingsModal').style.display = 'none';
-    }
-
-    async function saveCloudinarySettings() {
-        const cn = document.getElementById('settCloudName').value.trim();
-        const up = document.getElementById('settUploadPreset').value.trim();
-        // Update local cache and localStorage
-        cloudinaryConfigCache.cloudName = cn;
-        cloudinaryConfigCache.uploadPreset = up;
-        localStorage.setItem('cloudinary_cloud_name', cn);
-        localStorage.setItem('cloudinary_upload_preset', up);
-        // Save to server (Netlify Blobs) for persistence across devices
-        try {
-            await fetch('/.netlify/functions/cloudinary-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cloudName: cn, uploadPreset: up })
-            });
-        } catch (e) { /* offline - localStorage fallback is already saved */ }
-        closeSettings();
-        showToast(cn ? 'Cloudinary settings saved (server + local)!' : 'Cloudinary settings cleared');
-    }
-
-    // ====== Confirm Dialog ======
-    function showConfirm(title, message, onConfirm) {
-        document.getElementById('confirmTitle').innerText = title;
-        document.getElementById('confirmMsg').innerText = message;
-        document.getElementById('confirmModal').style.display = 'flex';
-        document.getElementById('confirmYes').onclick = () => {
-            document.getElementById('confirmModal').style.display = 'none';
-            onConfirm();
-        };
-        document.getElementById('confirmNo').onclick = () => {
-            document.getElementById('confirmModal').style.display = 'none';
-        };
-    }
-
-    // ====== Customer Management ======
-    function showAddCustomer() { openProfile(null); }
-    function editCustomerDetails() { openProfile(activeCustId); }
-
-    function renderCustomers() {
-        const list = document.getElementById('customerList');
-        const term = document.getElementById('searchCust').value.toLowerCase();
-        list.innerHTML = '';
-        customers.forEach(c => {
-            if (c.name.toLowerCase().includes(term)) {
-                let u = 0, p = 0;
-                transactions.filter(t => t.custId === c.id && !t.cleared).forEach(t => {
-                    if (t.type === 'Udhaar') u += t.total; else p += t.total;
-                });
-                const bal = u - p;
-                list.innerHTML += '<div class="cust-item ' + (activeCustId === c.id ? 'active-cust' : '') + '" onclick="selectCustomer(' + c.id + ')">' +
-                    '<div style="display:flex; justify-content:space-between;">' +
-                    '<strong>' + escHtml(c.name) + '</strong>' +
-                    '<span style="font-size:11px; color:' + (bal > 0 ? 'red' : 'green') + '">Rs. ' + bal + '</span>' +
-                    '</div></div>';
-            }
-        });
-    }
-
-    function escHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    }
-
-    function updateCustomerHeader() {
-        const cust = customers.find(c => c.id === activeCustId);
-        if (!cust) return;
-        document.getElementById('activeCustName').innerText = cust.name;
-        document.getElementById('activeCustPhoneDisplay').innerText = cust.phone ? "WhatsApp: " + cust.phone : "WhatsApp: Not Set";
-        document.getElementById('profBox').innerHTML = '<div class="prof-av"' + (cust.photo ? ' onclick="viewPhoto(\'' + escHtml(cust.photo) + '\')"' : '') + '>' + (cust.photo ? '<img src="' + escHtml(cust.photo) + '">' : escHtml((cust.name || '?').charAt(0).toUpperCase())) + '</div><div>' +
-            (cust.org ? '<b>' + escHtml(cust.org) + '</b><br>' : '') + (cust.owner ? 'Owner: ' + escHtml(cust.owner) + '<br>' : '') + (cust.addr ? 'Address: ' + escHtml(cust.addr) + '<br>' : '') + (cust.note ? 'Note: ' + escHtml(cust.note) : '') + '</div>';
-    }
-
-    function selectCustomer(id) {
-        activeCustId = id; sid = 'main';
-        document.getElementById('ledgerArea').style.display = 'block';
-        const searchBox = document.getElementById('searchEntryBox');
-        if (searchBox) searchBox.value = '';
-        updateCustomerHeader();
-        renderTransactions();
-        renderCustomers();
-    }
-
-    // ====== Transactions ======
-    async function addTransaction(type) {
-        const mDate = document.getElementById('manualDate').value;
-        const qty = parseFloat(document.getElementById('entryQty').value) || 0;
-        const rate = parseFloat(document.getElementById('entryRate').value) || 0;
-        const total = type === 'Payment' ? rate : (qty * rate);
-        if (!total || !mDate) return alert("Please fill in all details!");
-
-        let photoData = '';
-        const photoInput = document.getElementById('proofPhoto');
-        if (photoInput.files && photoInput.files[0]) {
-            document.getElementById('photoStatus').innerText = 'Uploading...';
-            try {
-                photoData = await uploadToCloudinary(photoInput.files[0]);
-            } catch (e) {
-                document.getElementById('photoStatus').innerText = 'Upload failed';
-            }
-            document.getElementById('photoStatus').innerText = '';
-        }
-
-        const d = mDate.split('-');
-        transactions.push({
-            id: Date.now(), custId: activeCustId, sectionId: sid,
-            date: d[2] + '/' + d[1] + '/' + d[0],
-            rawDate: mDate,
-            item: type === 'Payment' ? 'Cash Received' : document.getElementById('itemType').value,
-            desc: document.getElementById('entryDesc').value, qty, rate, total, type,
-            photo: photoData
-        });
-        sync();
-        document.getElementById('entryQty').value = '';
-        document.getElementById('entryRate').value = '';
-        document.getElementById('entryDesc').value = '';
-        document.getElementById('entryTotal').value = '';
-        photoInput.value = '';
-        showToast(type === 'Udhaar' ? 'Udhaar entry add ho gai!' : 'Payment record ho gai!');
-    }
-
-    function editTrans(id) {
-        const t = transactions.find(x => x.id === id); if (!t) return;
-        const pay = t.type === 'Payment';
-        const it = pay ? t.item : prompt('Item:', t.item); if (it === null) return;
-        const q = pay ? t.qty : prompt('Quantity:', t.qty); if (q === null) return;
-        const r = prompt(pay ? 'Amount:' : 'Rate:', t.rate); if (r === null) return;
-        const qn = parseFloat(q) || 0, rn = parseFloat(r) || 0;
-        const tt = prompt('Total (khud bhi badal saktay hain):', pay ? rn : qn * rn); if (tt === null) return;
-        const d = prompt('Details:', t.desc || ''); if (d === null) return;
-        const tot = parseFloat(tt); if (!tot) return alert('Total sahi likhein');
-        t.item = it; t.qty = qn; t.rate = rn; t.total = tot; t.desc = d;
-        if (sync()) showToast('Entry update ho gai!');
-    }
-
-    function deleteTrans(id) {
-        showConfirm('Delete Entry', 'Kya aap ye entry delete karna chahte hain?', () => {
-            transactions = transactions.filter(t => t.id !== id);
-            sync();
-            showToast('Entry delete ho gai!');
-        });
-    }
-
-    function renderTransactions() {
-        const body = document.getElementById('transBody');
-        body.innerHTML = '';
-        let u = 0, p = 0;
-        renderSecBar();
-        const allCustTrans = tOf(activeCustId, sid);
-        let custTrans = allCustTrans;
-
-        // Search filter (item, description, date, qty, rate, total) - filters the visible list only
-        const searchBox = document.getElementById('searchEntryBox');
-        const term = searchBox ? searchBox.value.trim().toLowerCase() : '';
-        if (term) {
-            custTrans = custTrans.filter(t =>
-                (t.item || '').toLowerCase().includes(term) ||
-                (t.desc || '').toLowerCase().includes(term) ||
-                (t.date || '').toLowerCase().includes(term) ||
-                String(t.qty || '').includes(term) ||
-                String(t.rate || '').includes(term) ||
-                String(t.total || '').includes(term)
-            );
-        }
-
-        document.getElementById('searchEntryNoResult').style.display = (term && custTrans.length === 0) ? 'block' : 'none';
-
-        // Totals always reflect ALL active entries, not just the search results
-        allCustTrans.forEach(t => { if (t.type === 'Udhaar') u += t.total; else p += t.total; });
-
-        custTrans.slice().reverse().forEach(t => {
-            const photoCell = t.photo
-                ? '<img src="' + escHtml(t.photo) + '" class="photo-thumb" data-txid="' + t.id + '" title="Click to view proof">'
-                : '<span style="color:#ccc; font-size:11px;">No proof</span>';
-            body.innerHTML += '<tr>' +
-                '<td>' + escHtml(t.date) + '</td>' +
-                '<td><b>' + escHtml(t.item) + '</b><br><small>' + escHtml(t.desc || '-') + '</small></td>' +
-                '<td>' + (t.qty || '-') + ' x ' + t.rate + '</td>' +
-                '<td style="color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '; font-weight:bold;">Rs. ' + t.total + '</td>' +
-                '<td>' + photoCell + '</td>' +
-                '<td><button class="btn" style="background:var(--secondary); padding:4px 8px; font-size:11px; margin:2px;" onclick="editTrans(' + t.id + ')">Edit</button>' +
-                '<button class="btn" style="background:var(--danger); padding:4px 8px; font-size:11px; margin:2px;" onclick="deleteTrans(' + t.id + ')">Del</button></td>' +
-                '</tr>';
-        });
-
-        // Attach click handlers for photo thumbnails
-        body.querySelectorAll('.photo-thumb').forEach(img => {
-            img.addEventListener('click', function () {
-                const txId = parseInt(this.getAttribute('data-txid'));
-                const tx = transactions.find(t => t.id === txId);
-                if (tx && tx.photo) viewPhoto(tx.photo);
-            });
-        });
-
-        document.getElementById('sumUdhaar').innerText = 'Rs. ' + u;
-        document.getElementById('sumPaid').innerText = 'Rs. ' + p;
-        document.getElementById('sumBalance').innerText = 'Rs. ' + (u - p);
-
-        // Show/hide Clear All Entries button (based on full list, not search results)
-        const clearSection = document.getElementById('clearAllSection');
-        clearSection.style.display = allCustTrans.length > 0 ? 'block' : 'none';
-    }
-
-    // ====== CLEAR ALL ENTRIES (Soft Delete - marks as cleared, keeps in Record) ======
-    function clearAllEntries() {
-        if (!activeCustId) return;
-        const cust = customers.find(c => c.id === activeCustId);
-        showConfirm(
-            'Clear All Entries',
-            cust.name + ' ki SAARI entries khatte se clear ho jayengi. Lifetime Record mein entries hamesha safe rahengi. Kya aap sure hain?',
-            () => {
-                const clearDate = new Date().toISOString();
-                transactions.forEach(t => {
-                    if (t.custId === activeCustId && !t.cleared && (t.sectionId || 'main') === sid) {
-                        t.cleared = true;
-                        t.clearDate = clearDate;
-                    }
-                });
-                sync();
-                renderTransactions();
-                showToast(cust.name + ' ka khatta clear ho gaya! Lifetime Record mein safe hai.');
-            }
-        );
-    }
-
-    // ====== RECORD CARD ======
-    function renderRecordCustomers() {
-        const list = document.getElementById('recordCustomerList');
-        const term = document.getElementById('recordSearchCust').value.toLowerCase();
-        list.innerHTML = '';
-        customers.forEach(c => {
-            if (c.name.toLowerCase().includes(term)) {
-                let u = 0, p = 0;
-                transactions.filter(t => t.custId === c.id).forEach(t => {
-                    if (t.type === 'Udhaar') u += t.total; else p += t.total;
-                });
-                const bal = u - p;
-                list.innerHTML += '<div class="cust-item ' + (recordActiveCustId === c.id ? 'active-cust' : '') + '" onclick="selectRecordCustomer(' + c.id + ')">' +
-                    '<div style="display:flex; justify-content:space-between;">' +
-                    '<strong>' + escHtml(c.name) + '</strong>' +
-                    '<span style="font-size:11px; color:' + (bal > 0 ? 'red' : 'green') + '">Rs. ' + bal + '</span>' +
-                    '</div></div>';
-            }
-        });
-    }
-
-    function selectRecordCustomer(id) {
-        recordActiveCustId = id;
-        renderRecordCustomers();
-        renderRecordCard(id);
-    }
-
-    function renderRecordCard(custId) {
-        const cust = customers.find(c => c.id === custId);
-        if (!cust) return;
-
-        document.getElementById('recordPlaceholder').style.display = 'none';
-        const area = document.getElementById('recordCardArea');
-        area.style.display = 'block';
-
-        let totalU = 0, totalP = 0, activeU = 0, activeP = 0;
-        const custTrans = transactions.filter(t => t.custId === custId);
-        custTrans.forEach(t => {
-            if (t.type === 'Udhaar') totalU += t.total; else totalP += t.total;
-            if (!t.cleared) {
-                if (t.type === 'Udhaar') activeU += t.total; else activeP += t.total;
-            }
-        });
-        const totalBal = totalU - totalP;
-        const activeBal = activeU - activeP;
-        const initial = cust.name.charAt(0).toUpperCase();
-        const hasClearedEntries = custTrans.some(t => t.cleared);
-
-        let txHtml = '';
-        custTrans.slice().reverse().forEach(t => {
-            const isDebit = t.type === 'Udhaar';
-            const photoHtml = t.photo
-                ? '<img src="' + escHtml(t.photo) + '" style="width:30px; height:30px; border-radius:4px; object-fit:cover; cursor:pointer; margin-left:8px;" onclick="viewPhoto(\'' + escHtml(t.photo).replace(/'/g, "\\'") + '\')">'
-                : '';
-            const clearedBadge = t.cleared
-                ? '<span style="background:#ff9800; color:#fff; font-size:9px; padding:1px 6px; border-radius:8px; margin-left:6px;">Cleared</span>'
-                : '';
-            const clearedStyle = t.cleared ? ' opacity:0.6;' : '';
-            txHtml += '<div class="record-tx-item" style="' + clearedStyle + '">' +
-                '<div class="record-tx-left">' +
-                '<div class="record-tx-icon ' + (isDebit ? 'debit' : 'credit') + '">' + (isDebit ? '📕' : '📗') + '</div>' +
-                '<div><strong style="font-size:13px;">' + escHtml(t.item) + clearedBadge + '</strong><br><small style="color:#999;">' + escHtml(t.date) + ' - ' + escHtml(t.desc || 'No details') + '</small></div>' +
-                '</div>' +
-                '<div style="display:flex; align-items:center;">' +
-                '<strong style="color:' + (isDebit ? 'var(--danger)' : 'var(--success)') + ';">' + (isDebit ? '-' : '+') + ' Rs. ' + t.total + '</strong>' +
-                photoHtml +
-                '</div></div>';
-        });
-
-        if (custTrans.length === 0) {
-            txHtml = '<div style="text-align:center; padding:30px; color:#ccc;"><p>Koi transaction nahi hai</p></div>';
-        }
-
-        let statsHtml =
-            '<div class="record-stats">' +
-            '<div class="record-stat udhaar"><h4>Total Udhaar</h4><p>Rs. ' + totalU + '</p></div>' +
-            '<div class="record-stat paid"><h4>Total Paid</h4><p>Rs. ' + totalP + '</p></div>' +
-            '<div class="record-stat balance"><h4>All-Time Balance</h4><p>Rs. ' + totalBal + '</p></div>' +
-            '</div>';
-        if (hasClearedEntries) {
-            statsHtml +=
-                '<div class="record-stats" style="margin-top:6px;">' +
-                '<div class="record-stat udhaar" style="background:#fff3e0;"><h4>Active Udhaar</h4><p>Rs. ' + activeU + '</p></div>' +
-                '<div class="record-stat paid" style="background:#e8f5e9;"><h4>Active Paid</h4><p>Rs. ' + activeP + '</p></div>' +
-                '<div class="record-stat balance" style="background:#e3f2fd;"><h4>Active Balance</h4><p>Rs. ' + activeBal + '</p></div>' +
-                '</div>';
-        }
-
-        const clearedCount = custTrans.filter(t => t.cleared).length;
-        const activeCount = custTrans.length - clearedCount;
-
-        area.innerHTML =
-            '<div class="record-card">' +
-            '<div class="record-card-header">' +
-            '<div class="record-avatar">' + initial + '</div>' +
-            '<h2 class="record-name">' + escHtml(cust.name) + '</h2>' +
-            '<p class="record-phone">' + (cust.phone ? 'WhatsApp: ' + escHtml(cust.phone) : 'Phone not set') + '</p>' +
-            '</div>' +
-            statsHtml +
-            '<div class="record-transactions">' +
-            '<h3>All Transactions (' + custTrans.length + ')' +
-            (clearedCount > 0 ? ' <small style="color:#ff9800; font-weight:normal;">(' + clearedCount + ' cleared, ' + activeCount + ' active)</small>' : '') +
-            '</h3>' +
-            txHtml +
-            '</div>' +
-            '</div>';
-    }
-
-
-    // ====== LIFETIME RECORD (cleared entries archive) ======
-    // Read-only view: reads the same `transactions` array (entries with cleared:true).
-    // Nothing here writes to or deletes any data.
-    let archCustId = null;
-    function rawOf(t) {
-        if (t.rawDate) return t.rawDate;
-        const d = (t.date || '').split('/');
-        return d.length === 3 ? d[2] + '-' + d[1] + '-' + d[0] : '';
-    }
-    function fmtClear(t) { return t.clearDate ? new Date(t.clearDate).toLocaleDateString('en-GB') : '-'; }
-    function renderArchCustomers() {
-        const list = document.getElementById('archCustomerList'); if (!list) return;
-        const term = document.getElementById('archSearchCust').value.toLowerCase();
-        const cleared = transactions.filter(t => t.cleared);
-        let h = '<div class="cust-item ' + (archCustId === null ? 'active-cust' : '') + '" onclick="selectArchCust(null)"><strong>📚 Sab Customers</strong> <span style="font-size:11px; color:#777;">(' + cleared.length + ' entries)</span></div>';
-        customers.forEach(c => {
-            if (!(c.name || '').toLowerCase().includes(term)) return;
-            const l = cleared.filter(t => t.custId === c.id);
-            if (!l.length) return;
-            const b = sumT(l).b;
-            h += '<div class="cust-item ' + (archCustId === c.id ? 'active-cust' : '') + '" onclick="selectArchCust(' + c.id + ')"><div style="display:flex; justify-content:space-between;"><strong>' + escHtml(c.name) + '</strong><span style="font-size:11px; color:' + (b > 0 ? 'red' : 'green') + '">Rs. ' + b + '</span></div><small style="color:#999;">' + l.length + ' entries</small></div>';
-        });
-        list.innerHTML = h;
-    }
-    function selectArchCust(id) { archCustId = id; renderArchCustomers(); renderArchive(); }
-    function clearArchFilters() {
-        ['archFrom', 'archTo', 'archText'].forEach(i => document.getElementById(i).value = '');
-        renderArchive();
-    }
-    function getArchList() {
-        const from = document.getElementById('archFrom').value, to = document.getElementById('archTo').value;
-        const term = document.getElementById('archText').value.trim().toLowerCase();
-        let l = transactions.filter(t => t.cleared && (archCustId === null || t.custId === archCustId));
-        if (from) l = l.filter(t => rawOf(t) >= from);
-        if (to) l = l.filter(t => rawOf(t) <= to);
-        if (term) l = l.filter(t => {
-            const c = customers.find(x => x.id === t.custId);
-            return [t.item, t.desc, t.date, c ? c.name : '', c ? secName(c, t.sectionId || 'main') : '', t.total, t.qty, t.rate].join(' ').toLowerCase().includes(term);
-        });
-        return l.sort((a, b) => rawOf(b).localeCompare(rawOf(a)) || (b.id - a.id));
-    }
-    function renderArchive() {
-        const body = document.getElementById('archBody'); if (!body) return;
-        const c = customers.find(x => x.id === archCustId);
-        document.getElementById('archTitle').innerText = c ? c.name + ' — Lifetime Record' : 'Sab Customers — Lifetime Record';
-        const l = getArchList(), z = sumT(l);
-        document.getElementById('archStats').innerHTML =
-            '<div class="card udhaar"><h5 style="margin:0 0 5px;">Udhaar</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.u + '</p></div>' +
-            '<div class="card wasooli"><h5 style="margin:0 0 5px;">Paid</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.p + '</p></div>' +
-            '<div class="card balance"><h5 style="margin:0 0 5px;">Balance</h5><p style="margin:0; font-size:18px; font-weight:bold;">Rs. ' + z.b + '</p></div>';
-        body.innerHTML = l.map(t => {
-            const cu = customers.find(x => x.id === t.custId);
-            return '<tr><td>' + escHtml(t.date || '-') + '</td>' +
-                '<td>' + escHtml(cu ? cu.name : 'Unknown') + '</td>' +
-                '<td>' + escHtml(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td>' +
-                '<td><b>' + escHtml(t.item || '') + '</b><br><small>' + escHtml(t.desc || '-') + '</small></td>' +
-                '<td style="color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '; font-weight:bold;">Rs. ' + t.total + '</td>' +
-                '<td>' + (t.photo ? '<img src="' + escHtml(t.photo) + '" class="photo-thumb" data-txid="' + t.id + '">' : '-') + '</td>' +
-                '<td>' + escHtml(fmtClear(t)) + '</td></tr>';
-        }).join('') || '<tr><td colspan="7" style="text-align:center; color:#999; padding:20px;">Koi entry nahi mili</td></tr>';
-        body.querySelectorAll('.photo-thumb').forEach(img => img.addEventListener('click', function () {
-            const tx = transactions.find(t => t.id === parseInt(this.getAttribute('data-txid')));
-            if (tx && tx.photo) viewPhoto(tx.photo);
-        }));
-    }
-    function buildArchPdf() {
-        const l = getArchList().slice().sort((a, b) => rawOf(a).localeCompare(rawOf(b)) || (a.id - b.id)), z = sumT(l);
-        const c = customers.find(x => x.id === archCustId);
-        const from = document.getElementById('archFrom').value, to = document.getElementById('archTo').value;
-        const td = 'border:1px solid #000; padding:4px;';
-        const rows = l.map(t => {
-            const cu = customers.find(x => x.id === t.custId);
-            return '<tr><td style="' + td + '">' + escHtml(t.date || '-') + '</td>' +
-                (c ? '' : '<td style="' + td + '">' + escHtml(cu ? cu.name : 'Unknown') + '</td>') +
-                '<td style="' + td + '">' + escHtml(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td>' +
-                '<td style="' + td + '">' + escHtml(t.item || '') + '</td>' +
-                '<td style="' + td + '">' + escHtml(t.desc || '-') + '</td>' +
-                '<td style="' + td + '">' + (t.qty || '-') + '</td>' +
-                '<td style="' + td + '">' + t.rate + '</td>' +
-                '<td style="' + td + ' font-weight:bold; color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '">' + t.total + '</td></tr>';
-        }).join('');
-        document.getElementById('archPrintable').innerHTML =
-            '<div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px;"><h2 style="margin:0; color:#004d40;">HASSAN HUSSAIN BOOK CENTER</h2><p style="margin:5px 0;">Lifetime Record (Cleared Entries)</p></div>' +
-            '<div style="display:flex; justify-content:space-between; margin-top:15px;"><div><b>Customer:</b> ' + (c ? escHtml(c.name) + '<br><b>Phone:</b> ' + escHtml(c.phone || '-') : 'Sab Customers') + '</div>' +
-            '<div><b>Statement Date:</b> ' + new Date().toLocaleDateString('en-GB') + (from || to ? '<br><b>Period:</b> ' + (from ? new Date(from).toLocaleDateString('en-GB') : 'Start') + ' - ' + (to ? new Date(to).toLocaleDateString('en-GB') : 'Today') : '') + '</div></div>' +
-            '<table style="width:100%; border-collapse:collapse; margin-top:15px; border:1px solid #000;"><thead><tr style="background:#eee;">' +
-            ['Date'].concat(c ? [] : ['Customer']).concat(['Section', 'Item', 'Details', 'Qty', 'Rate', 'Amount']).map(h => '<th style="' + td + '">' + h + '</th>').join('') +
-            '</tr></thead><tbody style="text-align:center;">' + rows + '</tbody></table>' +
-            '<div style="float:right; width:200px; margin-top:15px; border:1px solid #000; padding:8px;">Total Udhaar: ' + z.u + '<br>Total Paid: ' + z.p + '<hr><b>Net Balance: ' + z.b + '</b></div><div style="clear:both;"></div>';
-    }
-    function openArchPdf() { buildArchPdf(); document.getElementById('archPdfModal').style.display = 'block'; }
-    function downloadArchPdf() {
-        const c = customers.find(x => x.id === archCustId);
-        html2pdf().set({
-            margin: 0,
-            filename: 'Lifetime_Record_' + (c ? c.name.replace(/[^\w]+/g, '_') : 'All') + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(document.getElementById('archPrintable')).save();
-    }
-
-    // ====== WhatsApp ======
-    function sendWhatsAppKhata() {
-        const cust = customers.find(c => c.id === activeCustId);
-        if (!cust.phone) return alert("WhatsApp number missing!");
-        let u = 0, p = 0;
-        tOf(activeCustId, sid).forEach(t => {
-            if (t.type === 'Udhaar') u += t.total; else p += t.total;
-        });
-        const balance = u - p;
-        const msg = '*HASSAN HUSSAIN BOOK CENTER*%0A------------------------------%0A*Customer:* ' + cust.name + '%0A*Total Udhaar:* Rs. ' + u + '%0A*Total Paid:* Rs. ' + p + '%0A------------------------------%0A*Net Balance:* Rs. ' + balance + '%0A------------------------------%0A_Kindly apna balance jald az jald clear karwaein. Shukriya!_';
-        window.open('https://wa.me/92' + cust.phone.replace(/^0/, '') + '?text=' + msg, '_blank');
-    }
-
-    // ====== Excel Export ======
-    function exportToExcel() {
-        if (transactions.length === 0) return alert("No data to export!");
-        const exportData = transactions.map(t => {
-            const cust = customers.find(c => c.id === t.custId);
-            return {
-                "Date": t.date,
-                "Customer Name": cust ? cust.name : "Unknown",
-                "Item": t.item,
-                "Description": t.desc || "-",
-                "Qty": t.qty || 1,
-                "Rate": t.rate,
-                "Total Amount": t.total,
-                "Type": t.type,
-                "Status": t.cleared ? "Cleared" : "Active"
-            };
-        });
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "BookCenter_Backup");
-        XLSX.writeFile(wb, 'HH_BookCenter_Backup_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-    }
-
-    // ====== PDF with Date Filter ======
-    function getFilteredTransactions() {
-        const fromDate = document.getElementById('pdfDateFrom').value;
-        const toDate = document.getElementById('pdfDateTo').value;
-        const ps = document.getElementById('pdfSec').value;
-        let list = transactions.filter(t => t.custId === activeCustId && !t.cleared && (ps === '*' || (t.sectionId || 'main') === ps)).sort((a, b) => a.id - b.id);
-        if (fromDate) list = list.filter(t => t.rawDate >= fromDate);
-        if (toDate) list = list.filter(t => t.rawDate <= toDate);
-        return list;
-    }
-
-    function buildPdfContent(list) {
-        const cust = customers.find(c => c.id === activeCustId);
-        document.getElementById('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + escHtml(cust.name) + '<br><b>Phone:</b> ' + escHtml(cust.phone || '-') + (cust.org ? '<br><b>School/Business:</b> ' + escHtml(cust.org) : '') + (cust.owner ? '<br><b>Owner:</b> ' + escHtml(cust.owner) : '') + (cust.addr ? '<br><b>Address:</b> ' + escHtml(cust.addr) : '') + '<br><b>Khatta:</b> ' + (document.getElementById('pdfSec').value === '*' ? 'Sab sections' : escHtml(secName(cust, document.getElementById('pdfSec').value)));
-        const fromDate = document.getElementById('pdfDateFrom').value;
-        const toDate = document.getElementById('pdfDateTo').value;
-        let dateLabel = '<b>Statement Date:</b> ' + new Date().toLocaleDateString();
-        if (fromDate || toDate) {
-            const fmtFrom = fromDate ? new Date(fromDate).toLocaleDateString() : 'Start';
-            const fmtTo = toDate ? new Date(toDate).toLocaleDateString() : 'Today';
-            dateLabel += '<br><b>Period:</b> ' + fmtFrom + ' - ' + fmtTo;
-        }
-        document.getElementById('pdfDate').innerHTML = dateLabel;
-
-        let h = '', tu = 0, tp = 0;
-        list.forEach(t => {
-            const isUdhaar = t.type === 'Udhaar';
-            if (isUdhaar) tu += t.total; else tp += t.total;
-            const proofImg = t.photo
-                ? '<img src="' + escHtml(t.photo) + '" style="width:50px; height:50px; object-fit:cover; border-radius:3px;">'
-                : '-';
-            h += '<tr>' +
-                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.date) + '</td>' +
-                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.item) + '</td>' +
-                '<td style="border:1px solid #000; padding:4px;">' + escHtml(t.desc || '-') + '</td>' +
-                '<td style="border:1px solid #000; padding:4px;">' + (t.qty || '-') + '</td>' +
-                '<td style="border:1px solid #000; padding:4px;">' + t.rate + '</td>' +
-                '<td style="border:1px solid #000; padding:4px; font-weight:bold; color:' + (isUdhaar ? 'red' : 'green') + '">' + t.total + '</td>' +
-                '<td style="border:1px solid #000; padding:4px;">' + proofImg + '</td>' +
-                '</tr>';
-        });
-        document.getElementById('pdfRows').innerHTML = h;
-        document.getElementById('pdfSummary').innerHTML = 'Total Bill: ' + tu + '<br>Total Paid: ' + tp + '<hr><b>Net Balance: ' + (tu - tp) + '</b>';
-    }
-
-    function openPdfPreview() {
-        document.getElementById('pdfDateFrom').value = '';
-        document.getElementById('pdfDateTo').value = '';
-        const cc = customers.find(c => c.id === activeCustId);
-        document.getElementById('pdfSec').innerHTML = secs(cc).map(x => '<option value="' + x.id + '"' + (x.id === sid ? ' selected' : '') + '>' + escHtml(x.name) + '</option>').join('') + '<option value="*">Sab sections</option>';
-        buildPdfContent(getFilteredTransactions());
-        document.getElementById('pdfModal').style.display = 'block';
-    }
-
-    function refreshPdfPreview() { buildPdfContent(getFilteredTransactions()); }
-
-    function clearDateFilter() {
-        document.getElementById('pdfDateFrom').value = '';
-        document.getElementById('pdfDateTo').value = '';
-        refreshPdfPreview();
-    }
-
-    function downloadPdf() {
-        html2pdf().set({
-            margin: 0,
-            filename: 'Ledger.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).from(document.getElementById('printableArea')).save();
-    }
-
-    function calcTotal() {
-        document.getElementById('entryTotal').value = (document.getElementById('entryQty').value || 0) * (document.getElementById('entryRate').value || 0);
-    }
+    throw err;
+  }
+}
+
+// ================= TOAST =================
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+// ================= SERVICE WORKER =================
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+// ================= PWA INSTALL =================
+let deferredInstallPrompt = null;
+const installBtn = document.getElementById('installBtn');
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+if(!isStandalone()){
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    installBtn.style.display = 'inline-flex';
+  });
+}
+
+installBtn?.addEventListener('click', async ()=>{
+  if(!deferredInstallPrompt){
+    showToast('App pehle se installed ho sakta hai, ya browser install support nahi karta');
+    return;
+  }
+  installBtn.style.display = 'none';
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  if(choice.outcome === 'accepted'){
+    showToast('App install ho rahi hai...');
+  }
+  deferredInstallPrompt = null;
+});
+
+window.addEventListener('appinstalled', ()=>{
+  installBtn.style.display = 'none';
+  deferredInstallPrompt = null;
+  showToast('App install ho gayi ✅');
+});
 </script>
 </body>
 </html>

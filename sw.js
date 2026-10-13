@@ -1,75 +1,45 @@
 const CACHE_NAME = 'hh-book-center-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+const APP_SHELL = [
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
-// Install event
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache).catch(() => {
-        // Some resources might not be available yet, that's okay
-        console.log('Some resources failed to cache during install');
-      });
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
   );
   self.skipWaiting();
 });
 
-// Activate event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
 
-// Fetch event - Network first, fallback to cache
+// Network-first for navigation & data (Firebase/Cloudinary/Drive always live),
+// cache-first fallback only for the app shell files themselves.
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
+  const url = event.request.url;
+  const isAppShell = APP_SHELL.some((f) => url.includes(f.replace('./', '')));
+
+  if (isAppShell) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkRes) => {
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkRes.clone()));
+            return networkRes;
+          })
+          .catch(() => cached);
+        return cached || fetchPromise;
+      })
+    );
   }
-
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Don't cache if not a success
-        if (!response || response.status !== 200 || response.type === 'error') {
-          return response;
-        }
-
-        // Clone the response
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
-        return response;
-      })
-      .catch(() => {
-        // Return cached version if offline
-        return caches.match(event.request).then((response) => {
-          return response || new Response('Offline - Page not available', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
-          });
-        });
-      })
-  );
+  // Everything else (Firestore, Cloudinary, Drive API calls) goes straight to network.
 });
