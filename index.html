@@ -227,12 +227,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 .due .amt{font-weight:800;color:var(--red);text-align:right;white-space:nowrap}
 .due.late{box-shadow:inset 4px 0 0 var(--red)}
 .cb-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
-  .net{font-family:var(--display);font-size:30px;font-weight:800;border-bottom:3px double currentColor;display:inline-block}
-  .smart-panel{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
-  .smart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.smart-head h2{font-size:15px}
-  .smart-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.smart-item{display:flex;gap:9px;align-items:flex-start;background:var(--field);border-radius:10px;padding:10px;font-size:12.5px}.smart-item .si{font-size:18px;line-height:1}.smart-item b{display:block;font-size:13px;margin-bottom:2px}.smart-item small{color:var(--muted)}
-  .smart-empty{color:var(--ok);font-weight:700;font-size:13px;padding:5px 0}
-
+.net{font-family:var(--display);font-size:30px;font-weight:800;border-bottom:3px double currentColor;display:inline-block}
 
 /* ---------- pdf ---------- */
 .pdfm{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;overflow:auto;padding:10px;display:none}
@@ -254,16 +249,16 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 <div id="toasts" aria-live="polite"></div>
 
 <div id="installBanner">
-  <span><b>HH Book Center</b> ko apne phone mein install karein!</span>
+  <span>Install <b>HH Book Center</b> on your phone!</span>
   <button class="btn brass sm" onclick="installPWA()">Install</button>
-  <button class="btn ghost sm" onclick="dismissInstall()">Baad mein</button>
+  <button class="btn ghost sm" onclick="dismissInstall()">Later</button>
 </div>
 
 <!-- ===== LOGIN ===== -->
 <div id="loginOverlay">
   <div class="lockbox">
     <h2>HH BOOK CENTER</h2>
-    <p>PIN likh kar unlock karein</p>
+    <p>Enter your PIN to unlock</p>
     <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="••••" aria-label="PIN">
     <div id="pinMsg" role="alert"></div>
     <button class="btn brass block" style="min-height:48px;font-size:16px" onclick="checkPin()">Unlock</button>
@@ -276,20 +271,11 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   <button class="btn red" onclick="event.stopPropagation();closePhoto()">Close</button>
 </div>
 
-  <div class="modal" id="globalSearchModal">
-  <div class="sheet" style="max-width:560px">
-  <div class="row" style="align-items:center"><h3 style="flex:1">Global Search</h3><button class="btn ghost sm" onclick="closeModal('globalSearchModal')">Close</button></div>
-  <p class="muted" style="margin:0 0 10px">Search customers, phone numbers, schools, items and transaction notes without changing any existing data.</p>
-  <input id="globalSearchInput" class="field" placeholder="Type to search..." oninput="renderGlobalSearch()" autocomplete="off">
-  <div id="globalSearchResults" style="margin-top:10px;max-height:52vh;overflow:auto"></div>
-  </div>
-  </div>
-
-  <div class="modal" id="confirmModal">
+<div class="modal" id="confirmModal">
   <div class="sheet" style="text-align:center">
     <h3 id="confirmTitle" style="color:var(--red)">Confirm</h3>
     <p id="confirmMsg" class="muted" style="margin:0 0 16px"></p>
-    <div class="row"><button class="btn red" id="confirmYes">Confirm</button><button class="btn ghost" id="confirmNo">Cancel</button></div>
+    <div class="row"><button class="btn red" id="confirmYes">Yes</button><button class="btn ghost" id="confirmNo">No</button></div>
   </div>
 </div>
 
@@ -317,7 +303,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 
 <div class="modal" id="editModal">
   <div class="sheet">
-    <h3 id="etTitle">Entry edit karein</h3>
+    <h3 id="etTitle">Edit entry</h3>
     <div class="fld" id="etItemWrap"><label class="lbl">Item</label><input id="etItem" class="field"></div>
     <div class="fld"><label class="lbl">Details</label><input id="etDesc" class="field"></div>
     <div class="fld"><label class="lbl">Date</label><input type="date" id="etDate" class="field"></div>
@@ -334,30 +320,30 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   <div class="sheet">
     <h3>WhatsApp message</h3>
     <p class="muted" id="waCust" style="margin:0 0 10px"></p>
-    <label class="lbl">Akhri line chunein</label>
+    <label class="lbl">Choose closing line</label>
     <select id="waSel" class="field" onchange="waRebuild()" style="margin-bottom:10px"></select>
-    <label class="lbl">Message (yahan khud bhi badal sakte hain)</label>
+    <label class="lbl">Message (you can edit it here)</label>
     <textarea id="waText" class="field" rows="11" style="min-height:200px;font-size:13px"></textarea>
-    <div class="row" style="margin-top:12px"><button class="btn wa" onclick="waSend()">WhatsApp par bhejein</button><button class="btn ghost" onclick="closeModal('waModal')">Cancel</button></div>
+    <div class="row" style="margin-top:12px"><button class="btn wa" onclick="waSend()">Send on WhatsApp</button><button class="btn ghost" onclick="closeModal('waModal')">Cancel</button></div>
   </div>
 </div>
 
 <div class="modal" id="promiseModal">
   <div class="sheet">
-    <h3>Wada / Payment ki date</h3>
+    <h3>Promise / Payment date</h3>
     <p class="muted" id="prCust" style="margin:0 0 10px"></p>
-    <div class="fld"><label class="lbl">Customer ne kab tak payment ka wada kiya?</label><input type="date" id="prDate" class="field"></div>
-    <div class="fld"><label class="lbl">Note (optional)</label><input id="prNote" class="field" placeholder="e.g. 10 tareekh ko aadhi payment"></div>
-    <div class="row" style="margin-top:12px"><button class="btn ok" onclick="savePromise()">Save</button><button class="btn red" onclick="clearPromise()">Hata dein</button><button class="btn ghost" onclick="closeModal('promiseModal')">Cancel</button></div>
+    <div class="fld"><label class="lbl">By when did the customer promise to pay?</label><input type="date" id="prDate" class="field"></div>
+    <div class="fld"><label class="lbl">Note (optional)</label><input id="prNote" class="field" placeholder="e.g. Half payment on the 10th"></div>
+    <div class="row" style="margin-top:12px"><button class="btn ok" onclick="savePromise()">Save</button><button class="btn red" onclick="clearPromise()">Remove</button><button class="btn ghost" onclick="closeModal('promiseModal')">Cancel</button></div>
   </div>
 </div>
 
 <div class="modal" id="expModal">
   <div class="sheet">
-    <h3>Rozana Hisab entry</h3>
-    <div class="seg" id="expSeg"><button class="on u" data-k="kharch" onclick="setExpKind('kharch')">Kharcha</button><button data-k="nakad" onclick="setExpKind('nakad')" class="p">Nakad Bikri</button></div>
+    <h3>Daily Cash Book entry</h3>
+    <div class="seg" id="expSeg"><button class="on u" data-k="kharch" onclick="setExpKind('kharch')">Expense</button><button data-k="nakad" onclick="setExpKind('nakad')" class="p">Cash Sale</button></div>
     <div class="fld"><label class="lbl">Amount (Rs.)</label><input type="number" id="expAmt" class="field" inputmode="decimal"></div>
-    <div class="fld"><label class="lbl">Details</label><input id="expDesc" class="field" placeholder="e.g. Chai, bijli bill, rickshaw"></div>
+    <div class="fld"><label class="lbl">Details</label><input id="expDesc" class="field" placeholder="e.g. Tea, electricity bill, rickshaw"></div>
     <div class="fld"><label class="lbl">Date</label><input type="date" id="expDate" class="field"></div>
     <div class="row" style="margin-top:12px"><button class="btn ok" onclick="saveExpense()">Save</button><button class="btn ghost" onclick="closeModal('expModal')">Cancel</button></div>
   </div>
@@ -377,43 +363,38 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
             <button class="icon-btn" onclick="lockNow()" aria-label="Lock app" title="Lock">🔒</button>
           </div>
         </div>
-        <div class="baqaya"><small>Total outstanding balance</small><b class="num" id="hBal">Rs. 0</b></div>
-      <div class="hero-stats">
-  <button class="btn ghost sm" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.25)" onclick="openGlobalSearch()">Search anything</button>
-  <div><b class="num" id="hU">0</b>Total credit</div>
-          <div><b class="num" id="hP">0</b>Total received</div>
+        <div class="baqaya"><small>Total Outstanding (all customers)</small><b class="num" id="hBal">Rs. 0</b></div>
+        <div class="hero-stats">
+          <div><b class="num" id="hU">0</b>Total Credit Given</div>
+          <div><b class="num" id="hP">0</b>Total Collected</div>
           <div><b class="num" id="hC">0</b>Customers</div>
-          <div><b class="num" id="hToday">0</b>Received today</div>
+          <div><b class="num" id="hToday">0</b>Collected Today</div>
         </div>
       </div>
-      <div class="notice" id="backupNotice" hidden><span id="backupNoticeTxt"></span><button class="btn brass sm" onclick="showView('backup')">Backup lein</button></div>
-      <section class="smart-panel" aria-labelledby="smartTitle">
-        <div class="smart-head"><h2 id="smartTitle">Smart business insights</h2><span class="tag">LIVE</span></div>
-        <div id="smartInsights" class="smart-list"><div class="muted">Preparing your insights...</div></div>
-      </section>
+      <div class="notice" id="backupNotice" hidden><span id="backupNoticeTxt"></span><button class="btn brass sm" onclick="showView('backup')">Back up now</button></div>
 
       <h2 class="sec-title">Main Sections</h2>
       <div class="tiles">
-        <button class="tile" onclick="showView('khatta')"><div class="ic">📒</div><b>Ledgers</b><small>Manage customer credit and payments</small></button>
-        <button class="tile" onclick="showView('record')"><div class="ic">📋</div><b>Customer records</b><small>View complete customer details</small></button>
-        <button class="tile" onclick="openCloud()"><div class="ic">☁️</div><b>Cloud</b><small>Photos / files upload aur search</small></button>
-        <button class="tile" onclick="showView('archive')"><div class="ic">🗂️</div><b>Lifetime Record</b><small>Clear shuda entries, date search, PDF</small></button>
-        <button class="tile" onclick="showView('inventory')"><div class="ic">📦</div><b>Saman / Stock</b><small>Naya saman, rate, karaya, bill photo</small></button>
+        <button class="tile" onclick="showView('khatta')"><div class="ic">📒</div><b>Ledger</b><small>Manage credit and payments</small></button>
+        <button class="tile" onclick="showView('record')"><div class="ic">📋</div><b>Record Card</b><small>Complete customer details</small></button>
+        <button class="tile" onclick="openCloud()"><div class="ic">☁️</div><b>Cloud</b><small>Upload and search photos / files</small></button>
+        <button class="tile" onclick="showView('archive')"><div class="ic">🗂️</div><b>Lifetime Record</b><small>Cleared entries, date search, PDF</small></button>
+        <button class="tile" onclick="showView('inventory')"><div class="ic">📦</div><b>Inventory / Stock</b><small>New stock, rates, freight, bill photo</small></button>
       </div>
 
       <div class="newband">
-        <h2 class="sec-title">✨ Naye Features <span class="badge-new">NEW</span></h2>
+        <h2 class="sec-title">✨ New Features <span class="badge-new">NEW</span></h2>
         <div class="tiles">
-          <button class="tile" onclick="showView('dash')"><div class="ic">📊</div><b>Dashboard</b><small>Mahine ka chart, top udhaar wale, category</small></button>
-          <button class="tile" onclick="showView('wasooli')"><div class="ic">💸</div><b>Wasooli List</b><small>Kis se paisay lene hain, WhatsApp yaad-dehani</small></button>
-          <button class="tile" onclick="showView('cashbook')"><div class="ic">🧾</div><b>Rozana Hisab</b><small>Aaj ki wasooli, nakad bikri, kharcha</small></button>
-          <button class="tile" onclick="showView('trash')"><div class="ic">♻️</div><b>Recycle Bin</b><small>Restore deleted entries and ledgers</small></button>
-          <button class="tile" onclick="showView('backup')"><div class="ic">💾</div><b>Backup &amp; Restore</b><small>Download and safely restore all data</small></button>
-          <button class="tile" onclick="showView('dash')"><div class="ic">✨</div><b>Smart Insights</b><small>Instant alerts for overdue balances and follow-ups</small></button>
-          <button class="tile" onclick="showView('settings')"><div class="ic">🔐</div><b>Settings</b><small>PIN badlein, auto-lock, dark mode</small></button>
+          <button class="tile" onclick="showView('dash')"><div class="ic">📊</div><b>Dashboard</b><small>Monthly chart, top debtors, categories</small></button>
+          <button class="tile" onclick="showView('wasooli')"><div class="ic">💸</div><b>Collections List</b><small>Who owes you money, WhatsApp reminders</small></button>
+          <button class="tile" onclick="showView('cashbook')"><div class="ic">🧾</div><b>Daily Cash Book</b><small>Today's collections, cash sales, expenses</small></button>
+          <button class="tile" onclick="showView('aging')"><div class="ic">⏳</div><b>Aging Report</b><small>How old each outstanding balance is</small></button>
+          <button class="tile" onclick="showView('trash')"><div class="ic">♻️</div><b>Recycle Bin</b><small>Restore deleted entries</small></button>
+          <button class="tile" onclick="showView('backup')"><div class="ic">💾</div><b>Backup &amp; Restore</b><small>Full data download, safe restore</small></button>
+          <button class="tile" onclick="showView('settings')"><div class="ic">🔐</div><b>Settings</b><small>Change PIN, auto-lock, dark mode</small></button>
         </div>
       </div>
-      <p class="muted" style="text-align:center;font-size:12px;margin:22px 0 8px">Naye features ka apna alag data hai — purana khatta, customers aur stock bilkul wahi hain.</p>
+      <p class="muted" style="text-align:center;font-size:12px;margin:22px 0 8px">New features keep their own separate data — your existing ledger, customers and stock are untouched.</p>
     </div></div>
   </section>
 
@@ -421,7 +402,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   <section class="view" id="v-khatta">
     <header class="appbar">
       <button class="btn" onclick="goHome()">← Home</button>
-      <h1>Khatta <span class="sync on" id="syncStatus2"></span></h1>
+      <h1>Ledger <span class="sync on" id="syncStatus2"></span></h1>
       <button class="btn" onclick="exportToExcel()">Backup</button>
     </header>
     <div class="split" id="khSplit">
@@ -429,12 +410,12 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
         <div class="side-head">
           <input class="field" id="searchCust" placeholder="🔍 Customer search..." oninput="renderCustomers()">
           <div class="chips" id="custChips"></div>
-          <button class="btn ok block" onclick="openProfile(null)">+ Naya Customer</button>
+          <button class="btn ok block" onclick="openProfile(null)">+ New Customer</button>
         </div>
         <div class="side-list" id="customerList"></div>
       </aside>
       <div class="main" id="ledgerArea">
-        <div class="empty" id="khEmpty"><b>Customer select karein</b>Left list se customer chunein, phir uska khatta yahan khulega.</div>
+        <div class="empty" id="khEmpty"><b>Select a customer</b>Pick a customer from the list and their ledger will open here.</div>
         <div id="ledgerBody" hidden>
           <div class="lhead">
             <button class="btn ghost sm backlink" onclick="deselectCust()">← Customers</button>
@@ -442,14 +423,14 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
             <div class="chips">
               <button class="btn wa sm" onclick="sendWhatsAppKhata()">WhatsApp</button>
               <button class="btn ghost sm" onclick="openProfile(activeCustId)">Edit</button>
-              <button class="btn red sm" onclick="deleteCustomer(activeCustId)">Delete ledger</button>
               <button class="btn brass sm" onclick="openPdfPreview()">PDF</button>
+              <button class="btn red sm" onclick="deleteCustomer()">🗑 Delete</button>
             </div>
           </div>
           <div class="chips" id="secBar" style="margin-bottom:10px"></div>
           <div id="profBox"></div>
           <div class="stats">
-            <div class="stat u"><small>Udhaar</small><b class="num" id="sumUdhaar">0</b></div>
+            <div class="stat u"><small>Credit</small><b class="num" id="sumUdhaar">0</b></div>
             <div class="stat p"><small>Paid</small><b class="num" id="sumPaid">0</b></div>
             <div class="stat b"><small>Balance</small><b class="num" id="sumBalance">0</b></div>
           </div>
@@ -457,12 +438,12 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
           <div id="promiseChip" style="margin-bottom:10px"></div>
 
           <div class="entry">
-            <div class="seg"><button class="u on" id="segU" onclick="setEntryMode('Udhaar')">Udhaar</button><button class="p" id="segP" onclick="setEntryMode('Payment')">Cash Payment</button></div>
+            <div class="seg"><button class="u on" id="segU" onclick="setEntryMode('Udhaar')">Credit</button><button class="p" id="segP" onclick="setEntryMode('Payment')">Cash Payment</button></div>
             <div class="row" id="rowItem">
               <div style="flex:1.2"><label class="lbl">Item / Category</label><select id="itemType" class="field" onchange="handleItemTypeChange()"></select></div>
               <div style="flex:1"><label class="lbl">Date</label><input type="date" id="manualDate" class="field"></div>
             </div>
-            <div id="customCategoryRow" hidden style="margin-bottom:8px"><input type="text" id="customCategoryInput" class="field" placeholder="Nayi category ka naam (e.g. Copy, Pens)"></div>
+            <div id="customCategoryRow" hidden style="margin-bottom:8px"><input type="text" id="customCategoryInput" class="field" placeholder="New category name (e.g. Copy, Pens)"></div>
             <div class="row" style="margin-bottom:8px"><div style="flex:3;min-width:160px"><input type="text" id="entryDesc" class="field" placeholder="Details / Remarks"></div></div>
             <div class="row" id="rowCalc">
               <div id="qtyWrap"><label class="lbl">Qty</label><input type="number" id="entryQty" class="field" inputmode="decimal" oninput="calcTotal()"></div>
@@ -470,21 +451,21 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
               <div id="totWrap"><label class="lbl">Total</label><input type="number" id="entryTotal" class="field" readonly placeholder="0"></div>
             </div>
             <div class="row" style="align-items:center;margin-bottom:8px">
-              <div style="flex:2"><label class="lbl">Proof photo (camera ya gallery)</label><input type="file" id="proofPhoto" accept="image/*" class="field" style="padding:6px"></div>
+              <div style="flex:2"><label class="lbl">Proof photo (camera or gallery)</label><input type="file" id="proofPhoto" accept="image/*" class="field" style="padding:6px"></div>
             </div>
             <div class="pbar" id="uploadProgress"><i><b id="uploadBarFill"></b></i><span id="uploadPercent" class="muted" style="font-size:11px">0%</span></div>
             <div class="muted" id="photoStatus" style="font-size:12px"></div>
-            <button class="btn red block" id="addBtn" style="min-height:46px;margin-top:6px" onclick="addTransaction(entryMode)">+ Udhaar Add Karein</button>
+            <button class="btn red block" id="addBtn" style="min-height:46px;margin-top:6px" onclick="addTransaction(entryMode)">+ Add Credit</button>
           </div>
 
           <div class="row" style="align-items:center;margin-bottom:6px">
-            <div style="flex:3"><input type="text" id="searchEntryBox" class="field" placeholder="🔍 Entries mein search (item, detail, date, amount)" oninput="renderTransactions()"></div>
+            <div style="flex:3"><input type="text" id="searchEntryBox" class="field" placeholder="🔍 Search entries (item, detail, date, amount)" oninput="renderTransactions()"></div>
             <div class="chips" style="flex:2" id="txChips"></div>
           </div>
           <div id="transBody"></div>
-          <p id="searchEntryNoResult" class="empty" hidden>Koi entry nahi mili.</p>
+          <p id="searchEntryNoResult" class="empty" hidden>No entries found.</p>
           <div class="danger-zone" id="clearAllSection" hidden>
-            <p style="margin:0 0 10px">Sab entries khatte se hatani hon to neeche dabayein. Lifetime Record mein sab hamesha safe rahega.</p>
+            <p style="margin:0 0 10px">Press below to remove all entries from this ledger. Everything stays safe forever in Lifetime Record.</p>
             <button class="btn red" onclick="clearAllEntries()">Clear All Entries</button>
           </div>
         </div>
@@ -501,7 +482,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
         <div class="side-list" id="recordCustomerList"></div>
       </aside>
       <div class="main">
-        <div class="empty" id="recordPlaceholder"><b>Customer select karein</b>Left list se customer chunein to uski poori details dikhengi.</div>
+        <div class="empty" id="recordPlaceholder"><b>Select a customer</b>Pick a customer from the list to see their full details.</div>
         <div id="recordCardArea" hidden></div>
       </div>
     </div>
@@ -522,7 +503,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
         <div class="arch-filter">
           <div><label class="lbl">From</label><input type="date" id="archFrom" class="field" onchange="renderArchive()"></div>
           <div><label class="lbl">To</label><input type="date" id="archTo" class="field" onchange="renderArchive()"></div>
-          <div style="flex:2"><label class="lbl">Search</label><input type="text" id="archText" class="field" oninput="renderArchive()" placeholder="item, detail, naam, amount..."></div>
+          <div style="flex:2"><label class="lbl">Search</label><input type="text" id="archText" class="field" oninput="renderArchive()" placeholder="item, detail, name, amount..."></div>
           <button class="btn ghost" onclick="clearArchFilters()">Clear</button>
         </div>
         <div class="stats" id="archStats"></div>
@@ -533,23 +514,23 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 
   <!-- INVENTORY -->
   <section class="view" id="v-inventory">
-    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>Saman / Stock</h1></header>
+    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>Inventory / Stock</h1></header>
     <div class="scroll"><div class="wrap">
       <div class="card" style="margin-bottom:16px">
-        <h3 style="margin-bottom:10px;font-size:16px">Naya Saman Add Karein</h3>
+        <h3 style="margin-bottom:10px;font-size:16px">Add New Stock</h3>
         <div class="grid2">
-          <div><label class="lbl">Item ka naam</label><input type="text" id="invName" class="field" placeholder="e.g. Notebook 100 Pages"></div>
+          <div><label class="lbl">Item name</label><input type="text" id="invName" class="field" placeholder="e.g. Notebook 100 Pages"></div>
           <div><label class="lbl">Details</label><input type="text" id="invDetails" class="field" placeholder="brand, size, color"></div>
-          <div><label class="lbl">Kitni quantity aayi (pieces)</label><input type="number" id="invQty" class="field" inputmode="decimal" oninput="calcInventoryRate()"></div>
-          <div><label class="lbl">Total rate jo mila (Rs.)</label><input type="number" id="invTotalCost" class="field" inputmode="decimal" oninput="calcInventoryRate()"></div>
-          <div><label class="lbl">Karaya / Freight (Rs.)</label><input type="number" id="invFreight" class="field" inputmode="decimal" placeholder="0" oninput="calcInventoryRate()"></div>
-          <div><label class="lbl">Munafa %</label><input type="number" id="invMargin" class="field" value="10" oninput="calcInventoryRate()"></div>
+          <div><label class="lbl">Quantity received (pieces)</label><input type="number" id="invQty" class="field" inputmode="decimal" oninput="calcInventoryRate()"></div>
+          <div><label class="lbl">Total cost paid (Rs.)</label><input type="number" id="invTotalCost" class="field" inputmode="decimal" oninput="calcInventoryRate()"></div>
+          <div><label class="lbl">Freight / Transport (Rs.)</label><input type="number" id="invFreight" class="field" inputmode="decimal" placeholder="0" oninput="calcInventoryRate()"></div>
+          <div><label class="lbl">Profit margin %</label><input type="number" id="invMargin" class="field" value="10" oninput="calcInventoryRate()"></div>
         </div>
         <div class="stats" style="margin-top:12px;grid-template-columns:1fr 1fr">
           <div class="stat b"><small>Per piece cost</small><b id="invUnitCostPreview">Rs. 0</b></div>
           <div class="stat p"><small>Sale rate (auto)</small><b id="invSaleRatePreview">Rs. 0</b></div>
         </div>
-        <label class="lbl">Bill ki photo (camera ya gallery)</label>
+        <label class="lbl">Bill photo (camera or gallery)</label>
         <input type="file" id="invBillPhoto" accept="image/*" class="field" style="padding:6px">
         <div class="pbar" id="invUploadProgress"><i><b id="invUploadBarFill"></b></i><span id="invUploadPercent" class="muted" style="font-size:11px">0%</span></div>
         <button class="btn ok block" id="invSaveBtn" style="min-height:46px;margin-top:12px" onclick="addInventoryItem()">+ Save Entry</button>
@@ -575,32 +556,41 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
   </section>
 
   <section class="view" id="v-wasooli">
-    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>💸 Wasooli List</h1></header>
+    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>💸 Collections List</h1></header>
     <div class="scroll"><div class="wrap">
       <div class="kpis" id="wsKpis"></div>
       <div class="row" style="margin-bottom:10px;align-items:center">
         <input class="field" id="wsSearch" placeholder="🔍 Customer search..." oninput="renderWasooli()" style="flex:2">
-        <select class="field" id="wsSort" onchange="renderWasooli()"><option value="bal">Zyada baqaya</option><option value="days">Purana udhaar</option><option value="promise">Wada date</option><option value="name">Naam (A-Z)</option></select>
+        <select class="field" id="wsSort" onchange="renderWasooli()"><option value="bal">Highest balance</option><option value="days">Oldest credit</option><option value="promise">Promise date</option><option value="name">Name (A-Z)</option></select>
       </div>
       <div class="card" style="padding:0" id="wsList"></div>
     </div></div>
   </section>
 
   <section class="view" id="v-cashbook">
-    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>🧾 Rozana Hisab</h1><button class="btn" onclick="openExpense()">+ Entry</button></header>
+    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>🧾 Daily Cash Book</h1><button class="btn" onclick="openExpense()">+ Entry</button></header>
     <div class="scroll"><div class="wrap">
       <div class="row" style="align-items:flex-end;margin-bottom:12px">
-        <div><label class="lbl">Tareekh</label><input type="date" id="cbDate" class="field" onchange="renderCashbook()"></div>
-        <div class="chips" style="flex:2"><button class="chip" onclick="cbShift(-1)">← Pichla din</button><button class="chip" onclick="cbToday()">Aaj</button><button class="chip" onclick="cbShift(1)">Agla din →</button></div>
+        <div><label class="lbl">Date</label><input type="date" id="cbDate" class="field" onchange="renderCashbook()"></div>
+        <div class="chips" style="flex:2"><button class="chip" onclick="cbShift(-1)">← Previous day</button><button class="chip" onclick="cbToday()">Today</button><button class="chip" onclick="cbShift(1)">Next day →</button><button class="chip" onclick="shareCashSummary()">📤 Share summary</button></div>
       </div>
       <div id="cbBody"></div>
     </div></div>
   </section>
 
-  <section class="view" id="v-trash">
-    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>♻️ Recycle Bin</h1><button class="btn" onclick="emptyTrash()">Khali karo</button></header>
+  <section class="view" id="v-aging">
+    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>⏳ Aging Report</h1></header>
     <div class="scroll"><div class="wrap">
-      <p class="muted" style="margin-top:0">Jo entry delete hoti hai wo yahan aa jati hai. Wapas lane ke liye "Restore" dabayein.</p>
+      <p class="muted" style="margin-top:0">How old is the money you still have to collect? Payments are matched against the oldest credit first.</p>
+      <div class="kpis" id="agKpis"></div>
+      <div class="tscroll"><table class="tbl" style="min-width:600px"><thead><tr><th>Customer</th><th>0–30 days</th><th>31–60</th><th>61–90</th><th>90+</th><th>Total</th><th></th></tr></thead><tbody id="agBody"></tbody></table></div>
+    </div></div>
+  </section>
+
+  <section class="view" id="v-trash">
+    <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>♻️ Recycle Bin</h1><button class="btn" onclick="emptyTrash()">Empty bin</button></header>
+    <div class="scroll"><div class="wrap">
+      <p class="muted" style="margin-top:0">Deleted entries land here. Press "Restore" to bring one back.</p>
       <div class="card" style="padding:0" id="trashList"></div>
     </div></div>
   </section>
@@ -609,13 +599,13 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
     <header class="appbar"><button class="btn" onclick="goHome()">← Home</button><h1>💾 Backup &amp; Restore</h1></header>
     <div class="scroll"><div class="wrap">
       <div class="card" style="margin-bottom:12px">
-        <h3 style="font-size:16px;margin-bottom:6px">Poora data download</h3>
-        <p class="muted" style="margin:0 0 10px">Customers, khatta, stock aur Rozana Hisab sab ek file mein. <span id="lastBackupTxt"></span></p>
-        <div class="row"><button class="btn" onclick="downloadJsonBackup()">⬇ JSON Backup (restore ke liye)</button><button class="btn ghost" onclick="exportToExcel()">⬇ Excel (padhne ke liye)</button></div>
+        <h3 style="font-size:16px;margin-bottom:6px">Download all data</h3>
+        <p class="muted" style="margin:0 0 10px">Customers, ledger, stock and Daily Cash Book in one file. <span id="lastBackupTxt"></span></p>
+        <div class="row"><button class="btn" onclick="downloadJsonBackup()">⬇ JSON Backup (for restore)</button><button class="btn ghost" onclick="exportToExcel()">⬇ Excel (for reading)</button></div>
       </div>
       <div class="card">
-        <h3 style="font-size:16px;margin-bottom:6px">Backup se wapas laayein</h3>
-        <p class="muted" style="margin:0 0 10px">Restore sirf wo cheezein <b>add</b> karta hai jo abhi app mein nahi hain. Maujooda data kabhi overwrite ya delete nahi hota.</p>
+        <h3 style="font-size:16px;margin-bottom:6px">Restore from backup</h3>
+        <p class="muted" style="margin:0 0 10px">Restore only <b>adds</b> items that are not in the app yet. Existing data is never overwritten or deleted.</p>
         <input type="file" id="restoreFile" accept=".json,application/json" class="field" style="padding:6px" onchange="readRestoreFile(this)">
         <div id="restoreInfo" class="muted" style="margin-top:10px"></div>
       </div>
@@ -628,44 +618,44 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
       <div class="card" style="margin-bottom:12px">
         <h3 style="font-size:16px;margin-bottom:8px">Look</h3>
         <label class="lbl">Theme</label>
-        <select id="setTheme" class="field" onchange="setTheme(this.value)"><option value="auto">Phone ke mutabiq</option><option value="light">Light</option><option value="dark">Dark</option></select>
+        <select id="setTheme" class="field" onchange="setTheme(this.value)"><option value="auto">Match phone</option><option value="light">Light</option><option value="dark">Dark</option></select>
       </div>
       <div class="card" style="margin-bottom:12px">
-        <h3 style="font-size:16px;margin-bottom:8px">PIN aur Lock</h3>
+        <h3 style="font-size:16px;margin-bottom:8px">PIN &amp; Lock</h3>
         <div class="grid2">
-          <div><label class="lbl">Purana PIN</label><input type="password" id="pinOld" class="field" inputmode="numeric" autocomplete="off"></div>
-          <div><label class="lbl">Naya PIN (4-12 digits)</label><input type="password" id="pinNew" class="field" inputmode="numeric" autocomplete="off"></div>
+          <div><label class="lbl">Current PIN</label><input type="password" id="pinOld" class="field" inputmode="numeric" autocomplete="off"></div>
+          <div><label class="lbl">New PIN (4-12 digits)</label><input type="password" id="pinNew" class="field" inputmode="numeric" autocomplete="off"></div>
         </div>
-        <button class="btn ok" style="margin-top:10px" onclick="changePin()">PIN badlein</button>
-        <p class="muted" style="font-size:12px;margin:6px 0 12px">Ye PIN sirf is device par save hota hai.</p>
-        <label class="lbl">Auto-lock (kuch na karne par)</label>
-        <select id="setAutoLock" class="field" onchange="setAutoLock(this.value)"><option value="0">Band</option><option value="2">2 minute</option><option value="5">5 minute</option><option value="10">10 minute</option><option value="30">30 minute</option></select>
+        <button class="btn ok" style="margin-top:10px" onclick="changePin()">Change PIN</button>
+        <p class="muted" style="font-size:12px;margin:6px 0 12px">This PIN is saved on this device only.</p>
+        <label class="lbl">Auto-lock (when idle)</label>
+        <select id="setAutoLock" class="field" onchange="setAutoLock(this.value)"><option value="0">Off</option><option value="2">2 minute</option><option value="5">5 minute</option><option value="10">10 minute</option><option value="30">30 minute</option></select>
       </div>
       <div class="card" style="margin-bottom:12px">
-        <h3 style="font-size:16px;margin-bottom:6px">WhatsApp message ki akhri line</h3>
-        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Jo line chunengi wo har khatte ke message ke end mein jayegi. "Koi line nahi" chunein to sirf hisab jayega. Bhejte waqt bhi har customer ke liye line badal ya hata sakte hain.</p>
+        <h3 style="font-size:16px;margin-bottom:6px">WhatsApp message closing line</h3>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">The line you choose is added at the end of every ledger message. Choose "No line" to send the balance only. You can also change or remove the line per customer while sending.</p>
         <div id="waLines"></div>
-        <div class="row" style="margin-top:10px;align-items:flex-end"><div style="flex:3"><label class="lbl">Apni nayi line</label><input id="waNew" class="field" placeholder="e.g. Jald payment kar dein, mehrbani!" onkeydown="if(event.key==='Enter')waAddLine()"></div><button class="btn ok" style="flex:none" onclick="waAddLine()">+ Add</button></div>
-        <label class="lbl" style="margin-top:14px">Message aisa dikhega</label>
+        <div class="row" style="margin-top:10px;align-items:flex-end"><div style="flex:3"><label class="lbl">Your own new line</label><input id="waNew" class="field" placeholder="e.g. Please clear your balance soon, thank you!" onkeydown="if(event.key==='Enter')waAddLine()"></div><button class="btn ok" style="flex:none" onclick="waAddLine()">+ Add</button></div>
+        <label class="lbl" style="margin-top:14px">Message preview</label>
         <pre id="waPreview" style="white-space:pre-wrap;font-family:var(--font);font-size:12.5px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px;margin:0 0 10px"></pre>
-        <button class="btn ghost sm" onclick="waReset()">Shuru wali lines wapas laayein</button>
+        <button class="btn ghost sm" onclick="waReset()">Restore default lines</button>
       </div>
       <div class="card">
         <h3 style="font-size:16px;margin-bottom:8px">Cloudinary (photo upload)</h3>
-        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Set na ho to photo chhoti karke Firebase mein hi save hoti hai. Cloudinary set karne se photos wahan jati hain aur database halka rehta hai.</p>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">If not set, photos are shrunk and saved inside Firebase. With Cloudinary set, photos go there and the database stays light.</p>
         <label class="lbl">Cloud Name</label><input type="text" id="settCloudName" class="field" placeholder="e.g. my-cloud-name" style="margin-bottom:8px">
         <label class="lbl">Upload Preset (Unsigned)</label><input type="text" id="settUploadPreset" class="field" placeholder="e.g. my_unsigned_preset">
-        <div class="row" style="margin-top:10px"><button class="btn ok" onclick="saveCloudinarySettings()">Save</button><button class="btn ghost" onclick="useCloudAppAccount()">Cloud app wala account use karein</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn ok" onclick="saveCloudinarySettings()">Save</button><button class="btn ghost" onclick="useCloudAppAccount()">Use Cloud app account</button></div>
       </div>
     </div></div>
   </section>
 
   <nav class="bottomnav" id="bottomNav" aria-label="Main">
     <button data-v="home" onclick="goHome()"><span>🏠</span>Home</button>
-    <button data-v="khatta" onclick="showView('khatta')"><span>📒</span>Khatta</button>
-    <button data-v="wasooli" onclick="showView('wasooli')"><span>💸</span>Wasooli</button>
+    <button data-v="khatta" onclick="showView('khatta')"><span>📒</span>Ledger</button>
+    <button data-v="wasooli" onclick="showView('wasooli')"><span>💸</span>Collections</button>
     <button data-v="archive" onclick="showView('archive')"><span>🗂️</span>Lifetime</button>
-    <button data-v="features" onclick="goFeatures()"><span>✨</span>Naye</button>
+    <button data-v="features" onclick="goFeatures()"><span>✨</span>New</button>
   </nav>
 </div>
 
@@ -695,7 +685,7 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 <div class="pdfm" id="archPdfModal">
   <div class="pdf-controls">
     <button class="btn red sm" onclick="closeModal('archPdfModal')">Close</button>
-    <span class="muted" style="font-size:12px">Filters (customer / date / search) wahi hain jo Lifetime Record mein laga rakhe hain</span>
+    <span class="muted" style="font-size:12px">Filters (customer / date / search) are the same ones set in Lifetime Record</span>
     <button class="btn ok sm" style="margin-left:auto" onclick="downloadArchPdf()">Download PDF</button>
   </div>
   <div id="archPrintable" class="pdf-paper"></div>
@@ -704,10 +694,10 @@ label.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin
 'use strict';
 /* =====================================================================
    HH Book Center - Pro Edition
-   DATA RULES (purana data safe rakhne ke liye):
-   - hh_data/{customers,transactions,items}  -> wahi format jo pehle tha
-   - hh_data/customCategories                -> sirf nayi category list (pehle bhi yahin thi)
-   - Naye features ka data alag: hh_extra/{expenses,trash,promises}
+   DATA RULES (to keep existing data safe):
+   - hh_data/{customers,transactions,items}  -> same format as before
+   - hh_data/customCategories                -> only the custom category list (was always here)
+   - New features keep separate data: hh_extra/{expenses,trash,promises}
    ===================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyBsAmYuS2kxo7r3MB35XczP1I7lqr-8hEM",
@@ -742,8 +732,8 @@ const rawOf = t => { if (t.rawDate) return t.rawDate; const d = String(t.date ||
 const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
 const custById = id => customers.find(c => String(c.id) === String(id));
 const tOf = (cid, s) => transactions.filter(t => t.custId === cid && !t.cleared && (s == null || (t.sectionId || 'main') === s));
-const secs = c => [{ id: 'main', name: 'Main Khatta' }].concat((c && c.sections) || []);
-const secName = (c, s) => (secs(c).find(x => x.id === s) || { name: 'Main Khatta' }).name;
+const secs = c => [{ id: 'main', name: 'Main Ledger' }].concat((c && c.sections) || []);
+const secName = (c, s) => (secs(c).find(x => x.id === s) || { name: 'Main Ledger' }).name;
 const sumT = l => { let u = 0, p = 0; l.forEach(t => t.type === 'Udhaar' ? u += num(t.total) : p += num(t.total)); return { u, p, b: u - p }; };
 function balMap(includeCleared) {
   const m = {};
@@ -751,6 +741,7 @@ function balMap(includeCleared) {
   return m;
 }
 const clean = o => JSON.parse(JSON.stringify(o));
+const typeLabel = t => t === 'Udhaar' ? 'Credit' : (t === 'Payment' ? 'Payment' : (t || ''));  // display only; stored value is unchanged
 
 function toast(msg, kind) {
   const el = document.createElement('div');
@@ -767,7 +758,7 @@ function closeModal(id) { $(id).classList.remove('on'); }
 let confirmCb = null;
 function showConfirm(title, message, onConfirm, yesLabel) {
   $('confirmTitle').textContent = title; $('confirmMsg').textContent = message;
-  $('confirmYes').textContent = yesLabel || 'Haan'; confirmCb = onConfirm;
+  $('confirmYes').textContent = yesLabel || 'Yes'; confirmCb = onConfirm;
   openModal('confirmModal');
 }
 $('confirmYes').onclick = () => { closeModal('confirmModal'); const f = confirmCb; confirmCb = null; if (f) f(); };
@@ -790,12 +781,12 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePhoto
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; $('installBanner').style.display = 'flex'; });
 function installPWA() {
-  if (!deferredPrompt) return toast('App already installed ya supported nahi hai');
+  if (!deferredPrompt) return toast('App is already installed or not supported');
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(r => { if (r.outcome === 'accepted') toast('✅ App install ho gaya!'); deferredPrompt = null; $('installBanner').style.display = 'none'; });
+  deferredPrompt.userChoice.then(r => { if (r.outcome === 'accepted') toast('✅ App installed!'); deferredPrompt = null; $('installBanner').style.display = 'none'; });
 }
 function dismissInstall() { $('installBanner').style.display = 'none'; }
-window.addEventListener('appinstalled', () => { $('installBanner').style.display = 'none'; toast('✅ App install ho gaya!'); });
+window.addEventListener('appinstalled', () => { $('installBanner').style.display = 'none'; toast('✅ App installed!'); });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 
 // ---------- theme ----------
@@ -813,18 +804,18 @@ const getPin = () => { try { return localStorage.getItem(PIN_KEY) || '4546'; } c
 let pinFails = 0, pinBlockUntil = 0, unlocked = false, resumeView = null, lastActive = Date.now();
 function checkPin() {
   const msg = $('pinMsg');
-  if (Date.now() < pinBlockUntil) { msg.textContent = 'Thora ruk kar dobara try karein (' + Math.ceil((pinBlockUntil - Date.now()) / 1000) + ' sec)'; return; }
+  if (Date.now() < pinBlockUntil) { msg.textContent = 'Please wait and try again (' + Math.ceil((pinBlockUntil - Date.now()) / 1000) + ' sec)'; return; }
   if ($('pinInput').value === getPin()) {
     pinFails = 0; msg.textContent = ''; unlocked = true; lastActive = Date.now();
     $('loginOverlay').style.display = 'none'; $('app').style.display = 'flex';
     const p = new URLSearchParams(location.search).get('view');
-    const map = { khatta: 'khatta', dashboard: 'dash', record: 'record', wasooli: 'wasooli' };
+    const map = { khatta: 'khatta', dashboard: 'dash', record: 'record', wasooli: 'wasooli', aging: 'aging' };
     const target = resumeView || (map[p] || 'home'); resumeView = null;
     showView(target, true);
   } else {
     pinFails++; $('pinInput').value = '';
-    if (pinFails >= 5) { pinFails = 0; pinBlockUntil = Date.now() + 30000; msg.textContent = 'Bohat ghalat PIN. 30 second baad try karein.'; }
-    else msg.textContent = 'Ghalat PIN (' + pinFails + '/5)';
+    if (pinFails >= 5) { pinFails = 0; pinBlockUntil = Date.now() + 30000; msg.textContent = 'Too many wrong PINs. Try again in 30 seconds.'; }
+    else msg.textContent = 'Wrong PIN (' + pinFails + '/5)';
   }
 }
 $('pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPin(); });
@@ -841,28 +832,15 @@ setInterval(() => {
 }, 15000);
 function changePin() {
   const o = $('pinOld').value, n = $('pinNew').value;
-  if (o !== getPin()) return toast('Purana PIN ghalat hai', 'err');
-  if (!/^\d{4,12}$/.test(n)) return toast('Naya PIN 4 se 12 digits ka hona chahiye', 'err');
-  try { localStorage.setItem(PIN_KEY, n); } catch (e) { return toast('PIN save nahi ho saka', 'err'); }
-  $('pinOld').value = ''; $('pinNew').value = ''; toast('✅ PIN badal gaya');
+  if (o !== getPin()) return toast('Current PIN is incorrect', 'err');
+  if (!/^\d{4,12}$/.test(n)) return toast('New PIN must be 4 to 12 digits', 'err');
+  try { localStorage.setItem(PIN_KEY, n); } catch (e) { return toast('Could not save PIN', 'err'); }
+  $('pinOld').value = ''; $('pinNew').value = ''; toast('✅ PIN changed');
 }
-function setAutoLock(v) { try { localStorage.setItem('hh_autolock', v); } catch (e) {} toast(v === '0' ? 'Auto-lock band' : 'Auto-lock ' + v + ' minute'); }
+function setAutoLock(v) { try { localStorage.setItem('hh_autolock', v); } catch (e) {} toast(v === '0' ? 'Auto-lock off' : 'Auto-lock ' + v + ' minutes'); }
 
-  // ---------- professional global search ----------
-  function openGlobalSearch() { openModal('globalSearchModal'); $('globalSearchInput').value = ''; $('globalSearchResults').innerHTML = '<div class="empty"><b>Search your complete business record</b>Customer, phone, school, item or note</div>'; setTimeout(() => $('globalSearchInput').focus(), 60); }
-  function renderGlobalSearch() {
-    const term = $('globalSearchInput').value.trim().toLowerCase();
-    if (!term) return $('globalSearchResults').innerHTML = '<div class="empty"><b>Search your complete business record</b>Customer, phone, school, item or note</div>';
-    const matched = customers.filter(c => [c.name, c.phone, c.org, c.owner, c.addr, c.note].join(' ').toLowerCase().includes(term));
-    const txMatches = transactions.filter(t => [t.item, t.desc, t.date, t.total].join(' ').toLowerCase().includes(term)).slice(0, 20);
-    const customerRows = matched.slice(0, 20).map(c => '<button class="tile" style="width:100%;text-align:left;margin-bottom:6px" onclick="closeModal(\'globalSearchModal\');openKhattaFor(' + JSON.stringify(c.id).replace(/"/g, '&quot;') + ')">' + avatar(c) + '<b>' + esc(c.name) + '</b><small>' + esc([c.phone, c.org].filter(Boolean).join(' · ') || 'Open ledger') + '</small></button>').join('');
-    const txRows = txMatches.map(t => { const c = custById(t.custId); return '<button class="tile" style="width:100%;text-align:left;margin-bottom:6px" onclick="closeModal(\'globalSearchModal\');openKhattaFor(' + JSON.stringify(t.custId).replace(/"/g, '&quot;') + ')"><b>' + esc(t.item || 'Entry') + ' · ' + money(t.total) + '</b><small>' + esc((c ? c.name + ' · ' : '') + (t.date || '') + (t.desc || '')) + '</small></button>'; }).join('');
-    $('globalSearchResults').innerHTML = (customerRows ? '<h4 style="margin:8px 0">Customers</h4>' + customerRows : '') + (txRows ? '<h4 style="margin:14px 0 8px">Transactions</h4>' + txRows : '') || '<div class="empty"><b>No results found</b>Try a different name, phone or item</div>';
-  }
-  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openGlobalSearch(); } });
-
-  // ---------- navigation ----------
-  const NAV_MAP = { home: 'home', khatta: 'khatta', wasooli: 'wasooli', archive: 'archive', dash: 'features', cashbook: 'features', trash: 'features', backup: 'features', settings: 'features' };
+// ---------- navigation ----------
+const NAV_MAP = { home: 'home', khatta: 'khatta', wasooli: 'wasooli', archive: 'archive', dash: 'features', cashbook: 'features', aging: 'features', trash: 'features', backup: 'features', settings: 'features' };
 function showView(v, replace) {
   currentView = v;
   document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === 'v-' + v));
@@ -885,6 +863,7 @@ function renderCurrent() {
     case 'dash': renderDash(); break;
     case 'wasooli': renderWasooli(); break;
     case 'cashbook': renderCashbook(); break;
+    case 'aging': renderAging(); break;
     case 'trash': renderTrash(); break;
     case 'settings': renderWaSettings(); break;
   }
@@ -897,12 +876,12 @@ window.addEventListener('popstate', () => {
   if (currentView === 'khatta' && activeCustId != null) { deselectCust(true); return; }
   if (currentView === 'record' && recordActiveCustId != null) { recordActiveCustId = null; $('rcSplit').classList.remove('has-active'); renderRecordCustomers(); $('recordCardArea').hidden = true; $('recordPlaceholder').hidden = false; return; }
   if (currentView !== 'home') { activeCustId = null; recordActiveCustId = null; $('khSplit').classList.remove('has-active'); showView('home', true); }
-  else { try { history.pushState({ v: 'home' }, ''); } catch (e) {} }  // home par back dabane se app band na ho
+  else { try { history.pushState({ v: 'home' }, ''); } catch (e) {} }  // pressing back on home must not close the app
 });
 
 // ---------- connection + data sync ----------
 function setSync(on) {
-  [$('syncStatus'), $('syncStatus2')].forEach(el => { if (!el) return; el.textContent = on ? '● Online' : '● Offline (changes baad mein sync honge)'; el.className = 'sync ' + (on ? 'on' : 'off'); });
+  [$('syncStatus'), $('syncStatus2')].forEach(el => { if (!el) return; el.textContent = on ? '● Online' : '● Offline (changes will sync later)'; el.className = 'sync ' + (on ? 'on' : 'off'); });
 }
 let seenCounts = { customers: 0, transactions: 0 };
 if (FB) {
@@ -915,24 +894,24 @@ if (FB) {
     } else { customers = []; transactions = []; items = []; customCategories = []; }
     seenCounts = { customers: customers.length, transactions: transactions.length };
     renderItemOptions(); renderCurrent(); renderHome();
-  }, err => toast('Data load nahi hua: ' + err.message, 'err'));
+  }, err => toast('Could not load data: ' + err.message, 'err'));
   db.ref('hh_extra').on('value', snap => {
     const d = snap.val() || {};
     extra = { expenses: toArr(d.expenses), trash: toArr(d.trash), promises: d.promises && typeof d.promises === 'object' ? d.promises : {}, wa: d.wa && typeof d.wa === 'object' ? { edited: !!d.wa.edited, lines: toArr(d.wa.lines), selected: d.wa.selected || '' } : { edited: false, lines: [], selected: '' } };
     extraLoaded = true; renderCurrent(); renderHome();
   });
-} else { setTimeout(() => toast('Firebase load nahi hua. Internet check karke page refresh karein.', 'err'), 2500); }
+} else { setTimeout(() => toast('Firebase failed to load. Check your internet and refresh the page.', 'err'), 2500); }
 
 function sync() {
-  if (!FB || !loaded) { toast('Data load ho raha hai, thora ruko', 'err'); return false; }
-  if (customers.length === 0 && seenCounts.customers > 0) { toast('Safety: customers list khali hai, save roka gaya. Page refresh karein.', 'err'); return false; }
+  if (!FB || !loaded) { toast('Data is still loading, please wait', 'err'); return false; }
+  if (customers.length === 0 && seenCounts.customers > 0) { toast('Safety: customer list is empty, save blocked. Please refresh the page.', 'err'); return false; }
   const payload = clean({ customers, transactions, items, customCategories });
   db.ref('hh_data').update(payload).catch(e => toast('Save fail: ' + e.message, 'err'));
   seenCounts = { customers: customers.length, transactions: transactions.length };
   return true;
 }
 function syncExtra() {
-  if (!FB || !extraLoaded) { toast('Data load ho raha hai, thora ruko', 'err'); return false; }
+  if (!FB || !extraLoaded) { toast('Data is still loading, please wait', 'err'); return false; }
   db.ref('hh_extra').update(clean({ expenses: extra.expenses, trash: extra.trash.slice(0, 500), promises: extra.promises, wa: extra.wa })).catch(e => toast('Save fail: ' + e.message, 'err'));
   return true;
 }
@@ -952,9 +931,9 @@ async function saveCloudinarySettings() {
   cloudCfg = { cloudName: cn, uploadPreset: up };
   try { localStorage.setItem('cloudinary_cloud_name', cn); localStorage.setItem('cloudinary_upload_preset', up); } catch (e) {}
   try { await fetch('/.netlify/functions/cloudinary-config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cloudName: cn, uploadPreset: up }) }); } catch (e) {}
-  toast(cn ? 'Cloudinary settings save ho gayi' : 'Cloudinary settings clear ho gayi');
+  toast(cn ? 'Cloudinary settings saved' : 'Cloudinary settings cleared');
 }
-function useCloudAppAccount() { $('settCloudName').value = 'pukij92j'; $('settUploadPreset').value = 'h-h book center'; toast('Fields bhar di gayi hain — ab Save dabayein'); }
+function useCloudAppAccount() { $('settCloudName').value = 'pukij92j'; $('settUploadPreset').value = 'h-h book center'; toast('Fields filled in — now press Save'); }
 
 function shrinkImage(file, max, q) {
   return new Promise((resolve, reject) => {
@@ -962,7 +941,7 @@ function shrinkImage(file, max, q) {
     rd.onerror = reject;
     rd.onload = () => {
       const img = new Image();
-      img.onerror = () => reject(new Error('Image padhi nahi ja saki'));
+      img.onerror = () => reject(new Error('Could not read the image'));
       img.onload = () => {
         let w = img.width, h = img.height; const s = Math.min(1, max / Math.max(w, h)); w = Math.round(w * s); h = Math.round(h * s);
         const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
@@ -989,8 +968,8 @@ async function uploadImage(file, ids) {
     const x = new XMLHttpRequest(); x.open('POST', 'https://api.cloudinary.com/v1_1/' + encodeURIComponent(c.cloudName) + '/image/upload');
     x.upload.onprogress = e => { if (e.lengthComputable) { const p = Math.round(e.loaded / e.total * 100); fill.style.width = p + '%'; pct.textContent = p + '%'; } };
     const fallback = msg => { done(); toast(msg, 'err'); fileToBase64Fallback(file).then(resolve).catch(() => resolve('')); };
-    x.onload = () => { if (x.status === 200) { done(); try { resolve(JSON.parse(x.responseText).secure_url); } catch (e) { fallback('Upload response ghalat, locally save ho rahi hai'); } } else fallback('Cloudinary upload fail, locally save ho rahi hai'); };
-    x.onerror = () => fallback('Upload error, locally save ho rahi hai');
+    x.onload = () => { if (x.status === 200) { done(); try { resolve(JSON.parse(x.responseText).secure_url); } catch (e) { fallback('Bad upload response, saving locally'); } } else fallback('Cloudinary upload failed, saving locally'); };
+    x.onerror = () => fallback('Upload error, saving locally');
     x.send(fd);
   });
 }
@@ -998,29 +977,32 @@ async function uploadImage(file, ids) {
 // ---------- WhatsApp helpers ----------
 function waNumber(p) { let d = String(p || '').replace(/\D/g, ''); if (d.startsWith('00')) d = d.slice(2); if (d.startsWith('92')) return d; if (d.startsWith('0')) return '92' + d.slice(1); return '92' + d; }
 function openWhatsApp(phone, text) { window.open('https://wa.me/' + waNumber(phone) + '?text=' + encodeURIComponent(text), '_blank'); }
+// Payment account shown in every ledger message that has a balance due. Edit here to change.
+const PAY_ACCOUNT = { method: 'EasyPaisa', number: '03448706991', name: 'Muhammad Hussain' };
 const WA_DEFAULTS = [
-  { id: 'd1', text: 'Kindly apna balance jald az jald clear karwaein. Shukriya!' },
-  { id: 'd2', text: 'Meherbani farma kar baqaya raqam is hafte tak ada kar dein. Shukriya!' },
-  { id: 'd3', text: 'Aap ka sath hamare liye qeemti hai. Baqaya ada karne ki meherbani karein.' },
-  { id: 'd4', text: 'Agar payment ho chuki hai to is message ko nazar-andaz karein. Shukriya!' },
-  { id: 'd5', text: 'Naye session ki kitabein aa gayi hain, tashreef layein. Purana baqaya ada kar dein to meherbani.' }
+  { id: 'd1', text: 'Kindly clear your balance as soon as possible. Thank you!' },
+  { id: 'd2', text: 'Please pay the outstanding amount by the end of this week. Thank you!' },
+  { id: 'd3', text: 'Your support means a lot to us. Kindly clear the outstanding balance.' },
+  { id: 'd4', text: 'If you have already paid, please ignore this message. Thank you!' },
+  { id: 'd5', text: 'Books for the new session have arrived, please visit us. Kindly clear your old balance.' }
 ];
 const waLines = () => extra.wa.edited ? extra.wa.lines : WA_DEFAULTS;
 function waSelected() { const ls = waLines(), s = extra.wa.selected; if (s === 'none') return 'none'; return ls.some(l => l.id === s) ? s : (ls[0] ? ls[0].id : 'none'); }
 function waLineText() { const s = waSelected(); if (s === 'none') return ''; const l = waLines().find(x => x.id === s); return l ? l.text : ''; }
-// line === undefined -> settings wali default line; '' -> koi line nahi
+// line === undefined -> use the line chosen in settings; '' -> no line
 function khataMsg(c, u, p, label, line) {
   if (line === undefined) line = waLineText();
   const pr = extra.promises[c.id];
-  return ('*HASSAN HUSSAIN BOOK CENTER*\n------------------------------\n*Customer:* ' + c.name + (label ? '\n*Khatta:* ' + label : '') + '\n*Total Udhaar:* Rs. ' + u + '\n*Total Paid:* Rs. ' + p + '\n------------------------------\n*Net Balance:* Rs. ' + (u - p) + '\n------------------------------\n' +
-    (pr && pr.date && u - p > 0 ? '_Aap ne ' + fmtDate(pr.date) + ' tak payment ka wada kiya tha._\n' : '') + (line ? '_' + line + '_' : '')).trim();
+  return ('*HASSAN HUSSAIN BOOK CENTER*\n------------------------------\n*Customer:* ' + c.name + (label ? '\n*Ledger:* ' + label : '') + '\n*Total Credit:* Rs. ' + u + '\n*Total Paid:* Rs. ' + p + '\n------------------------------\n*Net Balance:* Rs. ' + (u - p) + '\n------------------------------\n' +
+    (u - p > 0 ? '*Pay via account*\n' + PAY_ACCOUNT.method + ': ' + PAY_ACCOUNT.number + '\nAccount Name: ' + PAY_ACCOUNT.name + '\n------------------------------\n' : '') +
+    (pr && pr.date && u - p > 0 ? '_You promised to pay by ' + fmtDate(pr.date) + '._\n' : '') + (line ? '_' + line + '_' : '')).trim();
 }
 let waCtx = null;
 function openWaModal(c, u, p, label) {
-  if (!c.phone) return toast('WhatsApp number missing hai — Edit mein number likhein', 'err');
+  if (!c.phone) return toast('WhatsApp number is missing — add it via Edit', 'err');
   waCtx = { c, u, p, label };
   $('waCust').textContent = c.name + ' — ' + c.phone;
-  $('waSel').innerHTML = waLines().map(l => '<option value="' + esc(l.id) + '">' + esc(l.text) + '</option>').join('') + '<option value="none">❌ Koi line nahi (sirf hisab)</option>';
+  $('waSel').innerHTML = waLines().map(l => '<option value="' + esc(l.id) + '">' + esc(l.text) + '</option>').join('') + '<option value="none">❌ No line (balance only)</option>';
   $('waSel').value = waSelected(); waRebuild(); openModal('waModal');
 }
 function waRebuild() { const v = $('waSel').value, l = v === 'none' ? null : waLines().find(x => x.id === v); $('waText').value = khataMsg(waCtx.c, waCtx.u, waCtx.p, waCtx.label, l ? l.text : ''); }
@@ -1031,7 +1013,7 @@ function waSave(lines, selected) { extra.wa = { edited: true, lines, selected };
 function renderWaSettings() {
   const sel = waSelected(), ls = waLines();
   $('waLines').innerHTML = ls.map(l => '<div class="wa-row"><label><input type="radio" name="waLine" value="' + esc(l.id) + '"' + (sel === l.id ? ' checked' : '') + '><span>' + esc(l.text) + '</span></label><button class="btn ghost sm" data-e="' + esc(l.id) + '" aria-label="Edit">✎</button><button class="btn ghost sm" data-d="' + esc(l.id) + '" aria-label="Delete">🗑</button></div>').join('') +
-    '<div class="wa-row"><label><input type="radio" name="waLine" value="none"' + (sel === 'none' ? ' checked' : '') + '><span><b>Koi line nahi</b> — message mein sirf hisab jaye</span></label></div>';
+    '<div class="wa-row"><label><input type="radio" name="waLine" value="none"' + (sel === 'none' ? ' checked' : '') + '><span><b>No line</b> — send the balance only</span></label></div>';
   const c = customers[0] || { id: 0, name: 'Customer Name' };
   $('waPreview').textContent = khataMsg(c, 8500, 2000, '');
 }
@@ -1039,40 +1021,26 @@ $('waLines').addEventListener('change', e => { if (e.target.name === 'waLine') w
 $('waLines').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const ls = waLines().slice(), sel = waSelected();
-  if (b.dataset.e) { const l = ls.find(x => x.id === b.dataset.e); askText('Line badlein', l.text, t => waSave(ls.map(x => x.id === l.id ? { id: x.id, text: t } : x), sel)); }
+  if (b.dataset.e) { const l = ls.find(x => x.id === b.dataset.e); askText('Edit line', l.text, t => waSave(ls.map(x => x.id === l.id ? { id: x.id, text: t } : x), sel)); }
   else if (b.dataset.d) { const rest = ls.filter(x => x.id !== b.dataset.d); waSave(rest, sel === b.dataset.d ? (rest[0] ? rest[0].id : 'none') : sel); }
 });
-function waAddLine() { const t = $('waNew').value.trim(); if (!t) return toast('Pehle line likhein', 'err'); const id = 'c' + newId(); $('waNew').value = ''; waSave(waLines().concat({ id, text: t }), id); toast('✅ Line add ho gai'); }
-function waReset() { showConfirm('Lines reset karein', 'Aapki likhi hui lines hat jayengi aur shuru wali lines wapas aa jayengi.', () => { extra.wa = { edited: false, lines: [], selected: '' }; if (syncExtra()) renderWaSettings(); }, 'Haan, reset'); }
+function waAddLine() { const t = $('waNew').value.trim(); if (!t) return toast('Write a line first', 'err'); const id = 'c' + newId(); $('waNew').value = ''; waSave(waLines().concat({ id, text: t }), id); toast('✅ Line added'); }
+function waReset() { showConfirm('Reset lines', 'Your own lines will be removed and the default lines will come back.', () => { extra.wa = { edited: false, lines: [], selected: '' }; if (syncExtra()) renderWaSettings(); }, 'Yes, reset'); }
 
 // ---------- HOME ----------
-function renderSmartInsights() {
-  const box = $('smartInsights'); if (!box) return;
-  const today = localRaw(), balances = balMap(false);
-  const overdue = customers.filter(c => { const p = extra.promises[c.id]; return p && p.date && p.date < today && (balances[c.id] || 0) > 0; });
-  const top = customers.filter(c => (balances[c.id] || 0) > 0).sort((a, b) => (balances[b.id] || 0) - (balances[a.id] || 0))[0];
-  const recent = transactions.filter(t => rawOf(t) === today).length;
-  const cards = [];
-  if (overdue.length) cards.push('<div class="smart-item"><span class="si">!</span><div><b>' + overdue.length + ' overdue follow-up' + (overdue.length === 1 ? '' : 's') + '</b><small>Open Wasooli List to contact customers.</small></div></div>');
-  if (top) cards.push('<div class="smart-item"><span class="si">↗</span><div><b>Highest balance: ' + esc(top.name) + '</b><small>' + money(balances[top.id]) + ' currently outstanding.</small></div></div>');
-  cards.push('<div class="smart-item"><span class="si">✓</span><div><b>' + recent + ' transaction' + (recent === 1 ? '' : 's') + ' today</b><small>Your ledger activity is up to date.</small></div></div>');
-  if (!customers.length) cards.push('<div class="smart-item"><span class="si">+</span><div><b>Start your first ledger</b><small>Add a customer to unlock business insights.</small></div></div>');
-  box.innerHTML = cards.join('') || '<div class="smart-empty">Everything looks clear. No urgent actions right now.</div>';
-}
 function renderHome() {
   const act = transactions.filter(t => !t.cleared), a = sumT(act), today = localRaw();
   $('hBal').textContent = money(a.b); $('hU').textContent = money(a.u); $('hP').textContent = money(a.p); $('hC').textContent = customers.length;
   $('hToday').textContent = money(sumT(transactions.filter(t => t.type === 'Payment' && rawOf(t) === today)).p);
-  renderSmartInsights();
   let last = null; try { last = localStorage.getItem('hh_last_backup'); } catch (e) {}
   const days = last ? daysBetween(last, today) : null;
   const show = (loaded && (customers.length || transactions.length)) && (days === null || days >= 7);
   $('backupNotice').hidden = !show;
-  if (show) $('backupNoticeTxt').textContent = days === null ? 'Abhi tak is device se koi backup nahi liya gaya.' : 'Aakhri backup ' + days + ' din pehle liya tha.';
+  if (show) $('backupNoticeTxt').textContent = days === null ? 'No backup has been taken from this device yet.' : 'Last backup was ' + days + ' days ago.';
 }
 
 // =====================================================================
-// KHATTA
+// LEDGER
 // =====================================================================
 const initial = c => esc((c.name || '?').trim().charAt(0).toUpperCase() || '?');
 const avatar = c => '<div class="av">' + (c.photo ? '<img src="' + esc(c.photo) + '" alt="" loading="lazy">' : initial(c)) + '</div>';
@@ -1082,7 +1050,7 @@ function renderItemOptions() {
   const cur = sel.value;
   const fromTx = [...new Set(transactions.filter(t => t.type === 'Udhaar' && t.item).map(t => t.item))];
   const all = [...new Set([...baseCategories, ...customCategories, ...fromTx])];
-  sel.innerHTML = all.map(x => '<option value="' + esc(x) + '">' + esc(x) + '</option>').join('') + '<option value="__new__">➕ Nayi category...</option>';
+  sel.innerHTML = all.map(x => '<option value="' + esc(x) + '">' + esc(x) + '</option>').join('') + '<option value="__new__">➕ New category...</option>';
   if (cur && [...sel.options].some(o => o.value === cur)) sel.value = cur;
   handleItemTypeChange();
 }
@@ -1095,11 +1063,11 @@ function renderCustomers() {
   let list = customers.filter(c => !term || [c.name, c.org, c.phone, c.owner].join(' ').toLowerCase().includes(term));
   if (custDue) list = list.filter(c => (bm[c.id] || 0) > 0);
   list.sort((a, b) => custSort === 'bal' ? (bm[b.id] || 0) - (bm[a.id] || 0) : custSort === 'recent' ? (lastId[b.id] || 0) - (lastId[a.id] || 0) : String(a.name || '').localeCompare(String(b.name || '')));
-  $('custChips').innerHTML = [['name', 'A-Z'], ['bal', 'Zyada baqaya'], ['recent', 'Recent']].map(x => '<span class="chip ' + (custSort === x[0] ? 'on' : '') + '" data-sort="' + x[0] + '">' + x[1] + '</span>').join('') + '<span class="chip ' + (custDue ? 'on' : '') + '" data-due="1">Sirf baqaya wale</span>';
+  $('custChips').innerHTML = [['name', 'A-Z'], ['bal', 'Highest balance'], ['recent', 'Recent']].map(x => '<span class="chip ' + (custSort === x[0] ? 'on' : '') + '" data-sort="' + x[0] + '">' + x[1] + '</span>').join('') + '<span class="chip ' + (custDue ? 'on' : '') + '" data-due="1">Only with balance</span>';
   $('customerList').innerHTML = list.map(c => {
     const b = bm[c.id] || 0;
     return '<div class="cust ' + (activeCustId === c.id ? 'act' : '') + '" data-id="' + esc(c.id) + '">' + avatar(c) + '<div class="nm">' + esc(c.name) + '<small>' + esc(c.org || c.phone || '') + '</small></div><div class="bal ' + (b > 0 ? 'r' : 'g') + ' num">' + money(b) + '</div></div>';
-  }).join('') || '<div class="empty"><b>' + (customers.length ? 'Koi customer nahi mila' : 'Abhi koi customer nahi') + '</b>' + (customers.length ? 'Search ya filter badal kar dekhein.' : '"+ Naya Customer" dabakar shuru karein.') + '</div>';
+  }).join('') || '<div class="empty"><b>' + (customers.length ? 'No customers found' : 'No customers yet') + '</b>' + (customers.length ? 'Try changing the search or filter.' : 'Press "+ New Customer" to get started.') + '</div>';
 }
 $('custChips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
@@ -1131,7 +1099,7 @@ function updateCustomerHeader() {
   $('profBox').innerHTML = (c.photo || info) ? '<div class="prof"><div class="av ' + (c.photo ? 'zoomable-wrap' : '') + '">' + (c.photo ? '<img class="zoomable" src="' + esc(c.photo) + '" alt="">' : initial(c)) + '</div><div>' + info + '</div></div>' : '';
   const pr = extra.promises[c.id], bal = sumT(tOf(c.id, null)).b;
   const late = pr && pr.date && bal > 0 && pr.date < localRaw();
-  $('promiseChip').innerHTML = '<button class="chip" onclick="openPromise(activeCustId)" style="' + (late ? 'border-color:var(--red);color:var(--red)' : '') + '">📅 ' + (pr && pr.date ? 'Wada: ' + fmtDate(pr.date) + (late ? ' (guzar gayi)' : '') + (pr.note ? ' — ' + esc(pr.note) : '') : 'Wada date lagayein') + '</button>';
+  $('promiseChip').innerHTML = '<button class="chip" onclick="openPromise(activeCustId)" style="' + (late ? 'border-color:var(--red);color:var(--red)' : '') + '">📅 ' + (pr && pr.date ? 'Promise: ' + fmtDate(pr.date) + (late ? ' (overdue)' : '') + (pr.note ? ' — ' + esc(pr.note) : '') : 'Set promise date') + '</button>';
 }
 
 // ---- sections ----
@@ -1139,7 +1107,7 @@ function renderSecBar() {
   const c = custById(activeCustId); if (!c) return;
   const hasTx = transactions.some(t => t.custId === c.id && (t.sectionId || 'main') === sid);
   $('secBar').innerHTML = secs(c).map(x => '<span class="chip ' + (x.id === sid ? 'on' : '') + '" data-sec="' + esc(x.id) + '">' + esc(x.name) + '</span>').join('') +
-    '<span class="chip" data-act="add">+ Naya Section</span>' + (sid !== 'main' ? '<span class="chip" data-act="rename">✎ Rename</span>' : '') + (sid !== 'main' && !hasTx ? '<span class="chip" data-act="del">🗑 Section hatao</span>' : '');
+    '<span class="chip" data-act="add">+ New Section</span>' + (sid !== 'main' ? '<span class="chip" data-act="rename">✎ Rename</span>' : '') + (sid !== 'main' && !hasTx ? '<span class="chip" data-act="del">🗑 Delete section</span>' : '');
 }
 $('secBar').addEventListener('click', e => {
   const el = e.target.closest('.chip'); if (!el) return;
@@ -1149,7 +1117,7 @@ $('secBar').addEventListener('click', e => {
   else if (el.dataset.act === 'del') deleteSection();
 });
 function addSection() {
-  askText('Naye section ka naam', '', n => {
+  askText('New section name', '', n => {
     const c = custById(activeCustId); c.sections = c.sections || [];
     const s = { id: 's' + Date.now(), name: n }; c.sections.push(s); sid = s.id;
     if (sync()) renderTransactions();
@@ -1157,12 +1125,12 @@ function addSection() {
 }
 function renameSection() {
   const c = custById(activeCustId), s = (c.sections || []).find(x => x.id === sid); if (!s) return;
-  askText('Section ka naya naam', s.name, n => { s.name = n; if (sync()) renderTransactions(); });
+  askText('New section name', s.name, n => { s.name = n; if (sync()) renderTransactions(); });
 }
 function deleteSection() {
   const c = custById(activeCustId);
-  if (transactions.some(t => t.custId === c.id && (t.sectionId || 'main') === sid)) return toast('Is section mein entries hain, hata nahi sakte', 'err');
-  showConfirm('Section hatayein', 'Ye khali section hata diya jayega.', () => { c.sections = (c.sections || []).filter(x => x.id !== sid); sid = 'main'; if (sync()) renderTransactions(); }, 'Haan, hatao');
+  if (transactions.some(t => t.custId === c.id && (t.sectionId || 'main') === sid)) return toast('This section has entries and cannot be deleted', 'err');
+  showConfirm('Delete section', 'This empty section will be deleted.', () => { c.sections = (c.sections || []).filter(x => x.id !== sid); sid = 'main'; if (sync()) renderTransactions(); }, 'Yes, delete');
 }
 
 // ---- entry form ----
@@ -1172,39 +1140,39 @@ function setEntryMode(m) {
   $('itemType').parentElement.hidden = pay; $('qtyWrap').hidden = pay; $('totWrap').hidden = pay;
   $('rateLbl').textContent = pay ? 'Amount (Rs.)' : 'Rate';
   $('entryDesc').placeholder = pay ? 'Details (e.g. Easypaisa, cash)' : 'Details / Remarks';
-  const b = $('addBtn'); b.textContent = pay ? '+ Payment Receive Karein' : '+ Udhaar Add Karein'; b.className = 'btn block ' + (pay ? 'ok' : 'red'); b.style.minHeight = '46px'; b.style.marginTop = '6px';
+  const b = $('addBtn'); b.textContent = pay ? '+ Receive Payment' : '+ Add Credit'; b.className = 'btn block ' + (pay ? 'ok' : 'red'); b.style.minHeight = '46px'; b.style.marginTop = '6px';
   if (pay) $('customCategoryRow').hidden = true; else handleItemTypeChange();
 }
 function calcTotal() { $('entryTotal').value = num($('entryQty').value) * num($('entryRate').value) || ''; }
 
 async function addTransaction(type) {
   if (busy) return;
-  if (activeCustId == null) return toast('Pehle customer select karein', 'err');
+  if (activeCustId == null) return toast('Select a customer first', 'err');
   const mDate = $('manualDate').value, qty = num($('entryQty').value), rate = num($('entryRate').value);
   const total = type === 'Payment' ? rate : qty * rate;
-  if (!(total > 0)) return toast(type === 'Payment' ? 'Amount likhein' : 'Qty aur Rate likhein', 'err');
-  if (!mDate) return toast('Date select karein', 'err');
+  if (!(total > 0)) return toast(type === 'Payment' ? 'Enter the amount' : 'Enter quantity and rate', 'err');
+  if (!mDate) return toast('Select a date', 'err');
   let item = 'Cash Received';
   if (type !== 'Payment') {
     item = $('itemType').value;
     if (item === '__new__') {
       item = $('customCategoryInput').value.trim();
-      if (!item) return toast('Nayi category ka naam likhein', 'err');
+      if (!item) return toast('Enter the new category name', 'err');
     }
-    if (!item) return toast('Item / category chunein', 'err');
+    if (!item) return toast('Choose an item / category', 'err');
   }
   busy = true; $('addBtn').disabled = true;
   try {
     let photo = '';
     const f = $('proofPhoto').files[0];
-    if (f) { $('photoStatus').textContent = 'Photo upload ho rahi hai...'; try { photo = await uploadImage(f, ['uploadProgress', 'uploadBarFill', 'uploadPercent']); } catch (e) { toast('Photo upload fail, entry bina photo ke save ho rahi hai', 'err'); } $('photoStatus').textContent = ''; }
+    if (f) { $('photoStatus').textContent = 'Uploading photo...'; try { photo = await uploadImage(f, ['uploadProgress', 'uploadBarFill', 'uploadPercent']); } catch (e) { toast('Photo upload failed, saving the entry without a photo', 'err'); } $('photoStatus').textContent = ''; }
     if (type !== 'Payment' && !baseCategories.includes(item) && !customCategories.includes(item)) customCategories.push(item);
     transactions.push({ id: newId(), custId: activeCustId, sectionId: sid, date: fmtDate(mDate), rawDate: mDate, item, desc: $('entryDesc').value.trim(), qty: type === 'Payment' ? 0 : qty, rate, total, type, photo });
     if (sync()) {
       ['entryQty', 'entryRate', 'entryDesc', 'entryTotal', 'customCategoryInput'].forEach(i => $(i).value = ''); $('proofPhoto').value = '';
       renderItemOptions(); if (type !== 'Payment') $('itemType').value = item;
       renderTransactions(); renderCustomers();
-      toast(type === 'Udhaar' ? '✅ Udhaar entry add ho gai' : '✅ Payment record ho gai');
+      toast(type === 'Udhaar' ? '✅ Credit entry added' : '✅ Payment recorded');
     } else transactions.pop();
   } finally { busy = false; $('addBtn').disabled = false; }
 }
@@ -1218,19 +1186,19 @@ function renderTransactions() {
   if (txFilter !== 'all') list = list.filter(t => t.type === txFilter);
   if (term) list = list.filter(t => [t.item, t.desc, t.date, t.qty, t.rate, t.total].join(' ').toLowerCase().includes(term));
   list.sort((a, b) => rawOf(b).localeCompare(rawOf(a)) || num(b.id) - num(a.id));
-  $('txChips').innerHTML = [['all', 'Sab'], ['Udhaar', 'Udhaar'], ['Payment', 'Payments']].map(x => '<span class="chip ' + (txFilter === x[0] ? 'on' : '') + '" data-f="' + x[0] + '">' + x[1] + '</span>').join('');
+  $('txChips').innerHTML = [['all', 'All'], ['Udhaar', 'Credit'], ['Payment', 'Payments']].map(x => '<span class="chip ' + (txFilter === x[0] ? 'on' : '') + '" data-f="' + x[0] + '">' + x[1] + '</span>').join('');
   $('searchEntryNoResult').hidden = !((term || txFilter !== 'all') && !list.length);
   $('transBody').innerHTML = list.map(t => {
     const u = t.type === 'Udhaar';
     return '<div class="tx"><div class="ico ' + (u ? 'u' : 'p') + '">' + (u ? '📕' : '📗') + '</div><div class="mid"><b>' + esc(t.item) + '</b><small>' + esc(t.desc || '-') + '</small><small>' + esc(t.date) + '</small></div>' +
       '<div class="amt num" style="color:' + (u ? 'var(--red)' : 'var(--ok)') + '">' + (u ? '' : '+ ') + money(t.total) + '<small>' + (u ? (t.qty || '-') + ' × ' + t.rate : 'Payment') + '</small></div>' +
       (t.photo ? '<img class="thumb zoomable" src="' + esc(t.photo) + '" alt="Proof" loading="lazy">' : '') +
-      '<div class="acts"><button class="btn ghost sm" data-act="edit" data-id="' + esc(t.id) + '" aria-label="Edit">✎</button><button class="btn ghost sm" data-act="del" data-id="' + esc(t.id) + '" aria-label="Delete">🗑</button></div></div>';
-  }).join('') || (all.length ? '' : '<div class="empty"><b>Is khatte mein abhi koi entry nahi</b>Upar se pehli entry add karein.</div>');
+      '<div class="acts">' + (u ? '' : '<button class="btn ghost sm" data-act="receipt" data-id="' + esc(t.id) + '" aria-label="Send receipt" title="Send receipt on WhatsApp">🧾</button>') + '<button class="btn ghost sm" data-act="edit" data-id="' + esc(t.id) + '" aria-label="Edit">✎</button><button class="btn ghost sm" data-act="del" data-id="' + esc(t.id) + '" aria-label="Delete">🗑</button></div></div>';
+  }).join('') || (all.length ? '' : '<div class="empty"><b>No entries in this ledger yet</b>Add the first entry above.</div>');
   const s = sumT(all);
   $('sumUdhaar').textContent = money(s.u); $('sumPaid').textContent = money(s.p); $('sumBalance').textContent = money(s.b);
   const c = custById(activeCustId), tot = sumT(tOf(activeCustId, null)).b;
-  $('allSecInfo').hidden = !(c && (c.sections || []).length); $('allSecInfo').textContent = 'Sab sections ka mila kar baqaya: ' + money(tot);
+  $('allSecInfo').hidden = !(c && (c.sections || []).length); $('allSecInfo').textContent = 'Combined balance of all sections: ' + money(tot);
   $('clearAllSection').hidden = !all.length;
   updateCustomerHeader();
 }
@@ -1238,15 +1206,23 @@ $('txChips').addEventListener('click', e => { const c = e.target.closest('.chip'
 $('transBody').addEventListener('click', e => {
   const b = e.target.closest('button[data-act]'); if (!b) return;
   const id = b.dataset.id;
-  if (b.dataset.act === 'edit') openEdit(id); else deleteTrans(id);
+  if (b.dataset.act === 'edit') openEdit(id); else if (b.dataset.act === 'receipt') sendReceipt(id); else deleteTrans(id);
 });
+
+// ---- payment receipt (read-only, opens WhatsApp) ----
+function sendReceipt(id) {
+  const t = txById(id), c = t && custById(t.custId); if (!t || !c) return;
+  if (!c.phone) return toast('WhatsApp number is missing — add it via Edit', 'err');
+  const bal = sumT(tOf(c.id, null)).b;
+  openWhatsApp(c.phone, ('*HASSAN HUSSAIN BOOK CENTER*\n------------------------------\n*PAYMENT RECEIPT*\n*Customer:* ' + c.name + '\n*Date:* ' + fmtDate(rawOf(t)) + '\n*Amount received:* Rs. ' + t.total + (t.desc ? '\n*Details:* ' + t.desc : '') + '\n------------------------------\n*Remaining balance:* Rs. ' + bal + '\n------------------------------\n_Thank you!_'));
+}
 
 // ---- edit / delete ----
 let editId = null;
 const txById = id => transactions.find(t => String(t.id) === String(id));
 function openEdit(id) {
   const t = txById(id); if (!t) return; editId = t.id; const pay = t.type === 'Payment';
-  $('etTitle').textContent = pay ? 'Payment edit karein' : 'Udhaar entry edit karein';
+  $('etTitle').textContent = pay ? 'Edit payment' : 'Edit credit entry';
   $('etItemWrap').hidden = pay; $('etQtyWrap').hidden = pay; $('etRateLbl').textContent = pay ? 'Amount' : 'Rate';
   $('etItem').value = t.item || ''; $('etDesc').value = t.desc || ''; $('etDate').value = rawOf(t);
   $('etQty').value = t.qty || ''; $('etRate').value = t.rate || ''; $('etTotal').value = t.total || '';
@@ -1255,41 +1231,41 @@ function openEdit(id) {
 function etCalc() { const t = txById(editId); if (!t) return; $('etTotal').value = t.type === 'Payment' ? num($('etRate').value) : num($('etQty').value) * num($('etRate').value); }
 function saveEdit() {
   const t = txById(editId); if (!t) return;
-  const tot = num($('etTotal').value); if (!(tot > 0)) return toast('Total sahi likhein', 'err');
-  const d = $('etDate').value; if (!d) return toast('Date select karein', 'err');
-  if (t.type !== 'Payment') { if (!$('etItem').value.trim()) return toast('Item likhein', 'err'); t.item = $('etItem').value.trim(); t.qty = num($('etQty').value); }
+  const tot = num($('etTotal').value); if (!(tot > 0)) return toast('Enter a valid total', 'err');
+  const d = $('etDate').value; if (!d) return toast('Select a date', 'err');
+  if (t.type !== 'Payment') { if (!$('etItem').value.trim()) return toast('Enter the item', 'err'); t.item = $('etItem').value.trim(); t.qty = num($('etQty').value); }
   t.rate = num($('etRate').value); t.total = tot; t.desc = $('etDesc').value.trim(); t.rawDate = d; t.date = fmtDate(d);
-  if (sync()) { closeModal('editModal'); renderTransactions(); renderCustomers(); toast('✅ Entry update ho gai'); }
+  if (sync()) { closeModal('editModal'); renderTransactions(); renderCustomers(); toast('✅ Entry updated'); }
 }
 function trashPush(kind, data) { extra.trash.unshift({ id: newId(), kind, data, at: new Date().toISOString() }); }
 function deleteTrans(id) {
   const t = txById(id); if (!t) return;
-  showConfirm('Entry delete karein', money(t.total) + ' ki ye entry delete hogi. Recycle Bin se wapas aa sakti hai.', () => {
+  showConfirm('Delete entry', 'This ' + money(t.total) + ' entry will be deleted. You can restore it from the Recycle Bin.', () => {
     trashPush('transaction', t); syncExtra();
     const tid = t.id; transactions = transactions.filter(x => x.id !== tid);
-    if (sync()) { renderTransactions(); renderCustomers(); toast('Entry Recycle Bin mein chali gai'); }
-  }, 'Haan, delete');
+    if (sync()) { renderTransactions(); renderCustomers(); toast('Entry moved to the Recycle Bin'); }
+  }, 'Yes, delete');
 }
 function clearAllEntries() {
   const c = custById(activeCustId);
-  showConfirm('Clear All Entries', c.name + ' (' + secName(c, sid) + ') ki SAARI entries khatte se clear ho jayengi. Lifetime Record mein hamesha safe rahengi. Kya aap sure hain?', () => {
+  showConfirm('Clear All Entries', c.name + ' (' + secName(c, sid) + '): ALL entries will be cleared from the ledger. They stay safe forever in Lifetime Record. Are you sure?', () => {
     const cd = new Date().toISOString();
     transactions.forEach(t => { if (t.custId === activeCustId && !t.cleared && (t.sectionId || 'main') === sid) { t.cleared = true; t.clearDate = cd; } });
-    if (sync()) { renderTransactions(); renderCustomers(); toast('✅ Khatta clear ho gaya. Lifetime Record mein safe hai.'); }
-  }, 'Haan, Clear Karein');
+    if (sync()) { renderTransactions(); renderCustomers(); toast('✅ Ledger cleared. Entries are safe in Lifetime Record.'); }
+  }, 'Yes, Clear');
 }
 
 // ---- customer profile ----
 let profEditId = null;
 function openProfile(id) {
   profEditId = id == null ? null : id; const c = id == null ? {} : (custById(id) || {});
-  $('pmTitle').textContent = id == null ? 'Naya Customer' : 'Profile Edit';
+  $('pmTitle').textContent = id == null ? 'New Customer' : 'Edit Profile';
   [['pmName', 'name'], ['pmPhone', 'phone'], ['pmOrg', 'org'], ['pmOwner', 'owner'], ['pmAddr', 'addr'], ['pmNote', 'note']].forEach(f => $(f[0]).value = c[f[1]] || '');
   $('pmPhoto').value = ''; openModal('profModal');
 }
 async function saveProfile() {
   const n = $('pmName').value.trim(), p = $('pmPhone').value.trim();
-  if (!n || !p) return toast('Name aur WhatsApp number zaroori hain', 'err');
+  if (!n || !p) return toast('Name and WhatsApp number are required', 'err');
   if (profEditId == null && customers.some(c => String(c.name).trim().toLowerCase() === n.toLowerCase() && !confirmDup(n))) return;
   const b = $('pmSave'); b.disabled = true; b.textContent = 'Saving...';
   try {
@@ -1299,20 +1275,25 @@ async function saveProfile() {
     let c;
     if (profEditId != null) { c = custById(profEditId); Object.assign(c, d); } else { c = Object.assign({ id: newId() }, d); customers.push(c); }
     if (photo) c.photo = photo;
-    if (sync()) { closeModal('profModal'); toast('✅ Save ho gaya'); if (profEditId != null) { updateCustomerHeader(); } else selectCustomer(c.id); renderCustomers(); renderHome(); }
+    if (sync()) { closeModal('profModal'); toast('✅ Saved'); if (profEditId != null) { updateCustomerHeader(); } else selectCustomer(c.id); renderCustomers(); renderHome(); }
     else if (profEditId == null) customers = customers.filter(x => x.id !== c.id);
   } finally { b.disabled = false; b.textContent = 'Save'; }
 }
-function confirmDup(n) { return window.confirm('"' + n + '" naam ka customer pehle se maujood hai. Phir bhi naya banayein?'); }
-function deleteCustomer(id) {
-  const c = custById(id); if (!c) return;
-  const related = transactions.filter(t => t.custId === id);
-  showConfirm('Delete ledger?', c.name + ' and all related entries will be moved to the Recycle Bin. Nothing is permanently deleted.', () => {
-    trashPush('customer', { customer: c, transactions: related });
-    customers = customers.filter(x => x.id !== id);
-    transactions = transactions.filter(t => t.custId !== id);
-    if (sync() && syncExtra()) { activeCustId = null; sid = 'main'; deselectCust(); renderCustomers(); renderHome(); toast('Ledger moved to Recycle Bin'); }
-  }, 'Delete ledger');
+function confirmDup(n) { return window.confirm('"' + n + '" already exists. Create another customer with this name?'); }
+
+// ---- delete whole customer (goes to Recycle Bin, can be restored) ----
+function deleteCustomer() {
+  const c = custById(activeCustId); if (!c) return;
+  const txs = transactions.filter(t => t.custId === c.id), bal = sumT(txs.filter(t => !t.cleared)).b;
+  showConfirm('Delete customer', 'Delete "' + c.name + '" with all ' + txs.length + ' entries (balance ' + money(bal) + ', including Lifetime Record entries)? It moves to the Recycle Bin and can be restored from there.', () => {
+    const cid = c.id;
+    trashPush('customer', { customer: clean(c), transactions: clean(txs) });
+    if (!syncExtra()) return;                       // never remove anything until the bin copy is saved
+    customers = customers.filter(x => x.id !== cid);
+    transactions = transactions.filter(t => t.custId !== cid);
+    if (!customers.length) seenCounts.customers = 0;  // deliberate delete of the last customer, not a load error
+    if (sync()) { deselectCust(); renderCustomers(); renderHome(); toast('Customer moved to the Recycle Bin'); }
+  }, 'Yes, delete');
 }
 
 // ---- WhatsApp / promise ----
@@ -1324,13 +1305,13 @@ function sendWhatsAppKhata() {
 let promiseCust = null;
 function openPromise(id) {
   const c = custById(id); if (!c) return; promiseCust = c.id; const p = extra.promises[c.id] || {};
-  $('prCust').textContent = c.name + ' — baqaya ' + money(sumT(tOf(c.id, null)).b);
+  $('prCust').textContent = c.name + ' — balance ' + money(sumT(tOf(c.id, null)).b);
   $('prDate').value = p.date || ''; $('prNote').value = p.note || ''; openModal('promiseModal');
 }
 function savePromise() {
-  if (!$('prDate').value) return toast('Date select karein', 'err');
+  if (!$('prDate').value) return toast('Select a date', 'err');
   extra.promises[promiseCust] = { date: $('prDate').value, note: $('prNote').value.trim() };
-  if (syncExtra()) { closeModal('promiseModal'); toast('✅ Wada date save ho gayi'); renderCurrent(); }
+  if (syncExtra()) { closeModal('promiseModal'); toast('✅ Promise date saved'); renderCurrent(); }
 }
 function clearPromise() { delete extra.promises[promiseCust]; if (syncExtra()) { closeModal('promiseModal'); renderCurrent(); } }
 
@@ -1342,7 +1323,7 @@ function renderRecordCustomers() {
   $('recordCustomerList').innerHTML = customers.filter(c => String(c.name || '').toLowerCase().includes(term)).map(c => {
     const b = bm[c.id] || 0;
     return '<div class="cust ' + (recordActiveCustId === c.id ? 'act' : '') + '" data-id="' + esc(c.id) + '">' + avatar(c) + '<div class="nm">' + esc(c.name) + '</div><div class="bal ' + (b > 0 ? 'r' : 'g') + ' num">' + money(b) + '</div></div>';
-  }).join('') || '<div class="empty"><b>Koi customer nahi</b></div>';
+  }).join('') || '<div class="empty"><b>No customers</b></div>';
 }
 $('recordCustomerList').addEventListener('click', e => { const el = e.target.closest('[data-id]'); if (el) { recordActiveCustId = custById(el.dataset.id).id; $('rcSplit').classList.add('has-active'); renderRecordCustomers(); renderRecordCard(recordActiveCustId); } });
 function renderRecordCard(cid) {
@@ -1353,12 +1334,12 @@ function renderRecordCard(cid) {
   const tx = all.slice().sort((x, y) => rawOf(y).localeCompare(rawOf(x)) || num(y.id) - num(x.id)).map(t => {
     const u = t.type === 'Udhaar';
     return '<div class="tx" style="' + (t.cleared ? 'opacity:.6' : '') + '"><div class="ico ' + (u ? 'u' : 'p') + '">' + (u ? '📕' : '📗') + '</div><div class="mid"><b>' + esc(t.item) + (t.cleared ? ' <span class="tag">Cleared</span>' : '') + '</b><small>' + esc(t.date) + ' · ' + esc(t.desc || 'No details') + ' · ' + esc(secName(c, t.sectionId || 'main')) + '</small></div><div class="amt num" style="color:' + (u ? 'var(--red)' : 'var(--ok)') + '">' + (u ? '- ' : '+ ') + money(t.total) + '</div>' + (t.photo ? '<img class="thumb zoomable" src="' + esc(t.photo) + '" alt="Proof" loading="lazy">' : '') + '</div>';
-  }).join('') || '<div class="empty"><b>Koi transaction nahi</b></div>';
+  }).join('') || '<div class="empty"><b>No transactions</b></div>';
   $('recordCardArea').innerHTML = '<button class="btn ghost sm backlink" onclick="recordActiveCustId=null;$(\'rcSplit\').classList.remove(\'has-active\');$(\'recordCardArea\').hidden=true;$(\'recordPlaceholder\').hidden=false;renderRecordCustomers()" style="margin-bottom:8px">← Customers</button>' +
     '<div class="rcard"><div class="head">' + avatar(c) + '<h2>' + esc(c.name) + '</h2><div class="muted">' + (c.phone ? 'WhatsApp: ' + esc(c.phone) : 'Phone not set') + '</div>' + (c.org ? '<div>' + esc(c.org) + '</div>' : '') + (c.addr ? '<div class="muted">' + esc(c.addr) + '</div>' : '') + '</div>' +
-    '<div class="stats"><div class="stat u"><small>Total Udhaar</small><b class="num">' + money(a.u) + '</b></div><div class="stat p"><small>Total Paid</small><b class="num">' + money(a.p) + '</b></div><div class="stat b"><small>All-time Balance</small><b class="num">' + money(a.b) + '</b></div></div>' +
-    (cleared ? '<div class="stats"><div class="stat u"><small>Active Udhaar</small><b class="num">' + money(act.u) + '</b></div><div class="stat p"><small>Active Paid</small><b class="num">' + money(act.p) + '</b></div><div class="stat b"><small>Active Balance</small><b class="num">' + money(act.b) + '</b></div></div>' : '') +
-    '<div class="row" style="margin-bottom:10px"><button class="btn sm" onclick="openKhattaFor(' + JSON.stringify(c.id).replace(/"/g, '&quot;') + ')">📒 Khatta kholein</button></div>' +
+    '<div class="stats"><div class="stat u"><small>Total Credit</small><b class="num">' + money(a.u) + '</b></div><div class="stat p"><small>Total Paid</small><b class="num">' + money(a.p) + '</b></div><div class="stat b"><small>All-time Balance</small><b class="num">' + money(a.b) + '</b></div></div>' +
+    (cleared ? '<div class="stats"><div class="stat u"><small>Active Credit</small><b class="num">' + money(act.u) + '</b></div><div class="stat p"><small>Active Paid</small><b class="num">' + money(act.p) + '</b></div><div class="stat b"><small>Active Balance</small><b class="num">' + money(act.b) + '</b></div></div>' : '') +
+    '<div class="row" style="margin-bottom:10px"><button class="btn sm" onclick="openKhattaFor(' + JSON.stringify(c.id).replace(/"/g, '&quot;') + ')">📒 Open Ledger</button></div>' +
     '<h3 style="font-size:15px;margin:6px 0">All Transactions (' + all.length + ')' + (cleared ? ' <small class="muted" style="font-weight:500">' + cleared + ' cleared, ' + (all.length - cleared) + ' active</small>' : '') + '</h3>' + tx + '</div>';
 }
 function openKhattaFor(id) { showView('khatta'); selectCustomer(custById(id).id); }
@@ -1369,7 +1350,7 @@ function openKhattaFor(id) { showView('khatta'); selectCustomer(custById(id).id)
 const fmtClear = t => t.clearDate ? new Date(t.clearDate).toLocaleDateString('en-GB') : '-';
 function renderArchCustomers() {
   const term = $('archSearchCust').value.toLowerCase(), cleared = transactions.filter(t => t.cleared);
-  let h = '<div class="cust ' + (archCustId === null ? 'act' : '') + '" data-id="__all"><div class="av">📚</div><div class="nm">Sab Customers<small>' + cleared.length + ' entries</small></div></div>';
+  let h = '<div class="cust ' + (archCustId === null ? 'act' : '') + '" data-id="__all"><div class="av">📚</div><div class="nm">All Customers<small>' + cleared.length + ' entries</small></div></div>';
   customers.forEach(c => {
     if (!String(c.name || '').toLowerCase().includes(term)) return;
     const l = cleared.filter(t => t.custId === c.id); if (!l.length) return; const b = sumT(l).b;
@@ -1389,28 +1370,28 @@ function getArchList() {
 }
 function renderArchive() {
   const c = custById(archCustId);
-  $('archTitle').textContent = (c ? c.name : 'Sab Customers') + ' — Lifetime Record';
+  $('archTitle').textContent = (c ? c.name : 'All Customers') + ' — Lifetime Record';
   const act = transactions.filter(t => !t.cleared), z0 = sumT(transactions.filter(t => t.cleared)), a = sumT(act);
   const card = (l, v) => '<div class="kpi"><small>' + l + '</small><b class="num">' + money(v) + '</b></div>';
-  $('dashBox').innerHTML = card('Active baqaya', a.b) + card('Clear shuda udhaar', z0.u) + card('Clear shuda wasool', z0.p) + card('Lifetime baqaya', sumT(transactions).b);
+  $('dashBox').innerHTML = card('Active balance', a.b) + card('Cleared credit', z0.u) + card('Cleared collected', z0.p) + card('Lifetime balance', sumT(transactions).b);
   const l = getArchList(), z = sumT(l);
-  $('archStats').innerHTML = '<div class="stat u"><small>Udhaar</small><b class="num">' + money(z.u) + '</b></div><div class="stat p"><small>Paid</small><b class="num">' + money(z.p) + '</b></div><div class="stat b"><small>Balance</small><b class="num">' + money(z.b) + '</b></div>';
-  $('archBody').innerHTML = l.map(t => { const cu = custById(t.custId); return '<tr><td>' + esc(t.date || '-') + '</td><td>' + esc(cu ? cu.name : 'Unknown') + '</td><td>' + esc(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td><td><b>' + esc(t.item || '') + '</b><br><small class="muted">' + esc(t.desc || '-') + '</small></td><td class="num" style="font-weight:800;color:var(--' + (t.type === 'Udhaar' ? 'red' : 'ok') + ')">' + money(t.total) + '</td><td>' + (t.photo ? '<img class="thumb zoomable" src="' + esc(t.photo) + '" alt="Proof" loading="lazy">' : '-') + '</td><td>' + esc(fmtClear(t)) + '</td></tr>'; }).join('') || '<tr><td colspan="7" class="empty">Koi entry nahi mili</td></tr>';
+  $('archStats').innerHTML = '<div class="stat u"><small>Credit</small><b class="num">' + money(z.u) + '</b></div><div class="stat p"><small>Paid</small><b class="num">' + money(z.p) + '</b></div><div class="stat b"><small>Balance</small><b class="num">' + money(z.b) + '</b></div>';
+  $('archBody').innerHTML = l.map(t => { const cu = custById(t.custId); return '<tr><td>' + esc(t.date || '-') + '</td><td>' + esc(cu ? cu.name : 'Unknown') + '</td><td>' + esc(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td><td><b>' + esc(t.item || '') + '</b><br><small class="muted">' + esc(t.desc || '-') + '</small></td><td class="num" style="font-weight:800;color:var(--' + (t.type === 'Udhaar' ? 'red' : 'ok') + ')">' + money(t.total) + '</td><td>' + (t.photo ? '<img class="thumb zoomable" src="' + esc(t.photo) + '" alt="Proof" loading="lazy">' : '-') + '</td><td>' + esc(fmtClear(t)) + '</td></tr>'; }).join('') || '<tr><td colspan="7" class="empty">No entries found</td></tr>';
 }
 function buildArchPdf() {
   const l = getArchList().slice().reverse(), z = sumT(l), c = custById(archCustId), from = $('archFrom').value, to = $('archTo').value, td = 'border:1px solid #000;padding:4px;';
   const rows = l.map(t => { const cu = custById(t.custId); return '<tr><td style="' + td + '">' + esc(t.date || '-') + '</td>' + (c ? '' : '<td style="' + td + '">' + esc(cu ? cu.name : 'Unknown') + '</td>') + '<td style="' + td + '">' + esc(cu ? secName(cu, t.sectionId || 'main') : '-') + '</td><td style="' + td + '">' + esc(t.item || '') + '</td><td style="' + td + '">' + esc(t.desc || '-') + '</td><td style="' + td + '">' + (t.qty || '-') + '</td><td style="' + td + '">' + t.rate + '</td><td style="' + td + 'font-weight:bold;color:' + (t.type === 'Udhaar' ? 'red' : 'green') + '">' + t.total + '</td></tr>'; }).join('');
   $('archPrintable').innerHTML = '<div style="text-align:center;border-bottom:2px solid #000;padding-bottom:10px"><h2 style="margin:0;color:#0b4a3d;font-family:Arial">HASSAN HUSSAIN BOOK CENTER</h2><p style="margin:5px 0">Lifetime Record (Cleared Entries)</p></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-top:15px"><div><b>Customer:</b> ' + (c ? esc(c.name) + '<br><b>Phone:</b> ' + esc(c.phone || '-') : 'Sab Customers') + '</div><div style="text-align:right"><b>Statement Date:</b> ' + new Date().toLocaleDateString('en-GB') + (from || to ? '<br><b>Period:</b> ' + (from ? fmtDate(from) : 'Start') + ' - ' + (to ? fmtDate(to) : 'Today') : '') + '</div></div>' +
+    '<div style="display:flex;justify-content:space-between;margin-top:15px"><div><b>Customer:</b> ' + (c ? esc(c.name) + '<br><b>Phone:</b> ' + esc(c.phone || '-') : 'All Customers') + '</div><div style="text-align:right"><b>Statement Date:</b> ' + new Date().toLocaleDateString('en-GB') + (from || to ? '<br><b>Period:</b> ' + (from ? fmtDate(from) : 'Start') + ' - ' + (to ? fmtDate(to) : 'Today') : '') + '</div></div>' +
     '<table style="width:100%;border-collapse:collapse;margin-top:15px;border:1px solid #000"><thead><tr style="background:#eee">' + ['Date'].concat(c ? [] : ['Customer']).concat(['Section', 'Item', 'Details', 'Qty', 'Rate', 'Amount']).map(h => '<th style="' + td + '">' + h + '</th>').join('') + '</tr></thead><tbody style="text-align:center">' + rows + '</tbody></table>' +
-    '<div style="float:right;width:200px;margin-top:15px;border:1px solid #000;padding:8px">Total Udhaar: ' + z.u + '<br>Total Paid: ' + z.p + '<hr><b>Net Balance: ' + z.b + '</b></div><div style="clear:both"></div>';
+    '<div style="float:right;width:200px;margin-top:15px;border:1px solid #000;padding:8px">Total Credit: ' + z.u + '<br>Total Paid: ' + z.p + '<hr><b>Net Balance: ' + z.b + '</b></div><div style="clear:both"></div>';
 }
 function openArchPdf() { buildArchPdf(); $('archPdfModal').classList.add('on'); }
-function pdfOpts(name, el) { if (typeof html2pdf === 'undefined') { toast('PDF library load nahi hui — internet check karein', 'err'); return null; } return html2pdf().set({ margin: 0, filename: name, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el); }
+function pdfOpts(name, el) { if (typeof html2pdf === 'undefined') { toast('PDF library did not load — check your internet', 'err'); return null; } return html2pdf().set({ margin: 0, filename: name, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(el); }
 function downloadArchPdf() { const c = custById(archCustId), j = pdfOpts('Lifetime_Record_' + (c ? String(c.name).replace(/[^\w]+/g, '_') : 'All') + '.pdf', $('archPrintable')); if (j) j.save(); }
 
 // =====================================================================
-// STATEMENT PDF (khatta)
+// STATEMENT PDF (ledger)
 // =====================================================================
 function getFilteredTransactions() {
   const f = $('pdfDateFrom').value, t2 = $('pdfDateTo').value, ps = $('pdfSec').value;
@@ -1420,17 +1401,17 @@ function getFilteredTransactions() {
 }
 function buildPdfContent(list) {
   const c = custById(activeCustId), ps = $('pdfSec').value, f = $('pdfDateFrom').value, t2 = $('pdfDateTo').value;
-  $('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + esc(c.name) + '<br><b>Phone:</b> ' + esc(c.phone || '-') + (c.org ? '<br><b>School/Business:</b> ' + esc(c.org) : '') + (c.owner ? '<br><b>Owner:</b> ' + esc(c.owner) : '') + (c.addr ? '<br><b>Address:</b> ' + esc(c.addr) : '') + '<br><b>Khatta:</b> ' + (ps === '*' ? 'Sab sections' : esc(secName(c, ps)));
+  $('pdfCustInfo').innerHTML = '<b>Customer:</b> ' + esc(c.name) + '<br><b>Phone:</b> ' + esc(c.phone || '-') + (c.org ? '<br><b>School/Business:</b> ' + esc(c.org) : '') + (c.owner ? '<br><b>Owner:</b> ' + esc(c.owner) : '') + (c.addr ? '<br><b>Address:</b> ' + esc(c.addr) : '') + '<br><b>Ledger:</b> ' + (ps === '*' ? 'All sections' : esc(secName(c, ps)));
   $('pdfDate').innerHTML = '<b>Statement Date:</b> ' + new Date().toLocaleDateString('en-GB') + (f || t2 ? '<br><b>Period:</b> ' + (f ? fmtDate(f) : 'Start') + ' - ' + (t2 ? fmtDate(t2) : 'Today') : '');
   let h = '', tu = 0, tp = 0; const td = 'border:1px solid #000;padding:4px;';
   list.forEach(t => { const u = t.type === 'Udhaar'; if (u) tu += num(t.total); else tp += num(t.total);
     h += '<tr><td style="' + td + '">' + esc(t.date) + '</td><td style="' + td + '">' + esc(t.item) + '</td><td style="' + td + '">' + esc(t.desc || '-') + '</td><td style="' + td + '">' + (t.qty || '-') + '</td><td style="' + td + '">' + t.rate + '</td><td style="' + td + 'font-weight:bold;color:' + (u ? 'red' : 'green') + '">' + t.total + '</td><td style="' + td + '">' + (t.photo ? '<img src="' + esc(t.photo) + '" crossorigin="anonymous" style="width:50px;height:50px;object-fit:cover;border-radius:3px">' : '-') + '</td></tr>'; });
-  $('pdfRows').innerHTML = h || '<tr><td colspan="7" style="padding:14px">Is selection mein koi entry nahi</td></tr>';
+  $('pdfRows').innerHTML = h || '<tr><td colspan="7" style="padding:14px">No entries in this selection</td></tr>';
   $('pdfSummary').innerHTML = 'Total Bill: ' + tu + '<br>Total Paid: ' + tp + '<hr><b>Net Balance: ' + (tu - tp) + '</b>';
 }
 function openPdfPreview() {
   $('pdfDateFrom').value = ''; $('pdfDateTo').value = ''; const c = custById(activeCustId);
-  $('pdfSec').innerHTML = secs(c).map(x => '<option value="' + esc(x.id) + '"' + (x.id === sid ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '<option value="*">Sab sections</option>';
+  $('pdfSec').innerHTML = secs(c).map(x => '<option value="' + esc(x.id) + '"' + (x.id === sid ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '<option value="*">All sections</option>';
   buildPdfContent(getFilteredTransactions()); $('pdfModal').classList.add('on');
 }
 function refreshPdfPreview() { buildPdfContent(getFilteredTransactions()); }
@@ -1438,7 +1419,7 @@ function clearDateFilter() { $('pdfDateFrom').value = ''; $('pdfDateTo').value =
 function downloadPdf() { const c = custById(activeCustId), j = pdfOpts('Ledger_' + (c ? String(c.name).replace(/[^\w]+/g, '_') : '') + '_' + localRaw() + '.pdf', $('printableArea')); if (j) j.save(); }
 
 // =====================================================================
-// INVENTORY (Saman / Stock)
+// INVENTORY (Stock)
 // =====================================================================
 function calcInventoryRate() {
   const qty = num($('invQty').value) || 1, totalCost = num($('invTotalCost').value), freight = num($('invFreight').value);
@@ -1450,28 +1431,28 @@ function calcInventoryRate() {
 async function addInventoryItem() {
   if (busy) return;
   const name = $('invName').value.trim(), details = $('invDetails').value.trim();
-  if (!name) return toast('Item ka naam likhein', 'err');
-  if (!(num($('invQty').value) > 0)) return toast('Quantity likhein', 'err');
-  const calc = calcInventoryRate(); if (!(calc.totalCost > 0)) return toast('Total rate / amount likhein', 'err');
+  if (!name) return toast('Enter the item name', 'err');
+  if (!(num($('invQty').value) > 0)) return toast('Enter the quantity', 'err');
+  const calc = calcInventoryRate(); if (!(calc.totalCost > 0)) return toast('Enter the total cost', 'err');
   busy = true; $('invSaveBtn').disabled = true;
   try {
     let billPhoto = ''; const f = $('invBillPhoto').files[0];
     if (f) { try { billPhoto = await uploadImage(f, ['invUploadProgress', 'invUploadBarFill', 'invUploadPercent']); } catch (e) { toast('Bill photo upload fail', 'err'); } }
     const now = new Date();
     items.push({ id: String(newId()), name, details, qty: calc.qty, totalCost: calc.totalCost, freight: calc.freight, marginPct: calc.marginPct, unitCost: Math.round(calc.unitCost * 100) / 100, saleRate: Math.round(calc.saleRate * 100) / 100, billPhoto, date: now.toLocaleDateString('en-GB'), rawDate: localRaw(now) });
-    if (sync()) { ['invName', 'invDetails', 'invQty', 'invTotalCost', 'invFreight'].forEach(i => $(i).value = ''); $('invMargin').value = '10'; $('invBillPhoto').value = ''; calcInventoryRate(); renderInventory(); toast('✅ Stock entry save ho gai'); } else items.pop();
+    if (sync()) { ['invName', 'invDetails', 'invQty', 'invTotalCost', 'invFreight'].forEach(i => $(i).value = ''); $('invMargin').value = '10'; $('invBillPhoto').value = ''; calcInventoryRate(); renderInventory(); toast('✅ Stock entry saved'); } else items.pop();
   } finally { busy = false; $('invSaveBtn').disabled = false; }
 }
 function renderInventory() {
   const s = ($('invSearch').value || '').toLowerCase();
   const list = items.filter(it => !s || String(it.name || '').toLowerCase().includes(s) || String(it.details || '').toLowerCase().includes(s)).sort((a, b) => String(b.rawDate || '').localeCompare(String(a.rawDate || '')) || num(b.id) - num(a.id));
   $('invCount').textContent = '(' + list.length + ')';
-  $('inventoryTableBody').innerHTML = list.map(it => '<tr><td>' + esc(it.date || '-') + '</td><td><b>' + esc(it.name) + '</b></td><td>' + esc(it.details || '-') + '</td><td class="num">' + esc(it.qty) + '</td><td class="num">' + money(it.unitCost) + '</td><td class="num okc" style="font-weight:800">' + money(it.saleRate) + '</td><td>' + (it.billPhoto ? '<img class="thumb zoomable" src="' + esc(it.billPhoto) + '" alt="Bill" loading="lazy">' : '-') + '</td><td><div style="display:flex;gap:5px">' + (it.billPhoto ? '<a class="btn ghost sm" href="' + esc(it.billPhoto) + '" download="Bill_' + esc(it.name) + '.jpg" target="_blank" rel="noopener" aria-label="Download bill">⬇</a>' : '') + '<button class="btn red sm" data-id="' + esc(it.id) + '" aria-label="Delete">✕</button></div></td></tr>').join('') || '<tr><td colspan="8" class="empty">Koi stock entry nahi hai</td></tr>';
+  $('inventoryTableBody').innerHTML = list.map(it => '<tr><td>' + esc(it.date || '-') + '</td><td><b>' + esc(it.name) + '</b></td><td>' + esc(it.details || '-') + '</td><td class="num">' + esc(it.qty) + '</td><td class="num">' + money(it.unitCost) + '</td><td class="num okc" style="font-weight:800">' + money(it.saleRate) + '</td><td>' + (it.billPhoto ? '<img class="thumb zoomable" src="' + esc(it.billPhoto) + '" alt="Bill" loading="lazy">' : '-') + '</td><td><div style="display:flex;gap:5px">' + (it.billPhoto ? '<a class="btn ghost sm" href="' + esc(it.billPhoto) + '" download="Bill_' + esc(it.name) + '.jpg" target="_blank" rel="noopener" aria-label="Download bill">⬇</a>' : '') + '<button class="btn red sm" data-id="' + esc(it.id) + '" aria-label="Delete">✕</button></div></td></tr>').join('') || '<tr><td colspan="8" class="empty">No stock entries yet</td></tr>';
 }
 $('inventoryTableBody').addEventListener('click', e => {
   const b = e.target.closest('button[data-id]'); if (!b) return;
   const it = items.find(x => String(x.id) === b.dataset.id); if (!it) return;
-  showConfirm('Stock entry delete karein', it.name + ' ki entry delete hogi. Recycle Bin se wapas aa sakti hai.', () => { trashPush('item', it); syncExtra(); const iid = String(it.id); items = items.filter(x => String(x.id) !== iid); if (sync()) { renderInventory(); toast('Entry Recycle Bin mein chali gai'); } }, 'Haan, delete');
+  showConfirm('Delete stock entry', 'The entry for ' + it.name + ' will be deleted. You can restore it from the Recycle Bin.', () => { trashPush('item', it); syncExtra(); const iid = String(it.id); items = items.filter(x => String(x.id) !== iid); if (sync()) { renderInventory(); toast('Entry moved to the Recycle Bin'); } }, 'Yes, delete');
 });
 
 // =====================================================================
@@ -1493,24 +1474,24 @@ function renderDash() {
   const kpi = (l, v, cls) => '<div class="kpi"><small>' + l + '</small><b class="num ' + (cls || '') + '">' + v + '</b></div>';
   // chart
   const W = 560, H = 190, pl = 8, bw = 22, gap = (W - pl * 2) / months.length, max = Math.max(1, ...months.map(m => Math.max(m.u, m.p)));
-  let svg = '<svg viewBox="0 0 ' + W + ' ' + (H + 26) + '" width="100%" role="img" aria-label="Pichle 6 mahine ka udhaar aur wasooli chart">';
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + (H + 26) + '" width="100%" role="img" aria-label="Credit and collections chart for the last 6 months">';
   months.forEach((m, i) => {
     const x = pl + i * gap + gap / 2, hu = m.u / max * H, hp = m.p / max * H;
-    svg += '<rect x="' + (x - bw - 2) + '" y="' + (H - hu) + '" width="' + bw + '" height="' + hu + '" rx="4" style="fill:var(--red)"><title>' + m.label + ' udhaar: ' + money(m.u) + '</title></rect>' +
-      '<rect x="' + (x + 2) + '" y="' + (H - hp) + '" width="' + bw + '" height="' + hp + '" rx="4" style="fill:var(--ok)"><title>' + m.label + ' wasooli: ' + money(m.p) + '</title></rect>' +
+    svg += '<rect x="' + (x - bw - 2) + '" y="' + (H - hu) + '" width="' + bw + '" height="' + hu + '" rx="4" style="fill:var(--red)"><title>' + m.label + ' credit: ' + money(m.u) + '</title></rect>' +
+      '<rect x="' + (x + 2) + '" y="' + (H - hp) + '" width="' + bw + '" height="' + hp + '" rx="4" style="fill:var(--ok)"><title>' + m.label + ' collected: ' + money(m.p) + '</title></rect>' +
       '<text x="' + x + '" y="' + (H + 18) + '" text-anchor="middle" font-size="12" style="fill:var(--muted)">' + m.label + '</text>';
   });
   svg += '<line x1="0" y1="' + H + '" x2="' + W + '" y2="' + H + '" style="stroke:var(--line)"/></svg>';
   $('dashBody').innerHTML =
-    '<div class="kpis">' + kpi('Kul baqaya', money(a.b), 'red') + kpi('Is mahine udhaar', money(cur.u)) + kpi('Is mahine wasooli', money(cur.p), 'okc') + kpi('Wasooli rate (is mahine)', rate === null ? '-' : rate + '%') + kpi('Baqaya wale customers', top.length + ' / ' + customers.length) + '</div>' +
-    '<div class="card" style="margin-bottom:14px"><h3 style="font-size:15px">Pichle 6 mahine</h3><div class="legend"><span><i style="background:var(--red)"></i>Udhaar</span><span><i style="background:var(--ok)"></i>Wasooli</span></div>' + svg + '</div>' +
-    '<div class="row" style="align-items:flex-start"><div class="card" style="flex:1;min-width:280px"><h3 style="font-size:15px;margin-bottom:6px">Sab se zyada baqaya</h3>' +
-    (top.slice(0, 8).map(x => '<div class="bar-line"><span class="n">' + esc(x.c.name) + '</span><span class="t"><i style="width:' + Math.max(3, x.b / top[0].b * 100) + '%"></i></span><span class="v num">' + money(x.b) + '</span></div>').join('') || '<div class="empty"><b>Kisi ka baqaya nahi</b>Sab hisab saaf hai.</div>') + '</div>' +
-    '<div class="card" style="flex:1;min-width:280px"><h3 style="font-size:15px;margin-bottom:6px">Category-wise udhaar (active)</h3>' +
-    (cats.map(x => '<div class="bar-line"><span class="n">' + esc(x[0]) + '</span><span class="t"><i style="width:' + Math.max(3, x[1] / cats[0][1] * 100) + '%;background:var(--blue)"></i></span><span class="v num">' + money(x[1]) + '</span></div>').join('') || '<div class="empty"><b>Abhi koi udhaar entry nahi</b></div>') + '</div></div>';
+    '<div class="kpis">' + kpi('Total outstanding', money(a.b), 'red') + kpi('Credit this month', money(cur.u)) + kpi('Collected this month', money(cur.p), 'okc') + kpi('Collection rate (this month)', rate === null ? '-' : rate + '%') + kpi('Customers with balance', top.length + ' / ' + customers.length) + '</div>' +
+    '<div class="card" style="margin-bottom:14px"><h3 style="font-size:15px">Last 6 months</h3><div class="legend"><span><i style="background:var(--red)"></i>Credit</span><span><i style="background:var(--ok)"></i>Collected</span></div>' + svg + '</div>' +
+    '<div class="row" style="align-items:flex-start"><div class="card" style="flex:1;min-width:280px"><h3 style="font-size:15px;margin-bottom:6px">Highest balances</h3>' +
+    (top.slice(0, 8).map(x => '<div class="bar-line"><span class="n">' + esc(x.c.name) + '</span><span class="t"><i style="width:' + Math.max(3, x.b / top[0].b * 100) + '%"></i></span><span class="v num">' + money(x.b) + '</span></div>').join('') || '<div class="empty"><b>No outstanding balances</b>All accounts are clear.</div>') + '</div>' +
+    '<div class="card" style="flex:1;min-width:280px"><h3 style="font-size:15px;margin-bottom:6px">Credit by category (active)</h3>' +
+    (cats.map(x => '<div class="bar-line"><span class="n">' + esc(x[0]) + '</span><span class="t"><i style="width:' + Math.max(3, x[1] / cats[0][1] * 100) + '%;background:var(--blue)"></i></span><span class="v num">' + money(x[1]) + '</span></div>').join('') || '<div class="empty"><b>No credit entries yet</b></div>') + '</div></div>';
 }
 
-// ---------- 2. Wasooli List ----------
+// ---------- 2. Collections List ----------
 function renderWasooli() {
   const term = $('wsSearch').value.trim().toLowerCase(), sort = $('wsSort').value, today = localRaw(), bm = balMap(false);
   const rows = customers.map(c => {
@@ -1525,15 +1506,15 @@ function renderWasooli() {
   }).filter(x => x && (!term || String(x.c.name).toLowerCase().includes(term)));
   rows.sort((x, y) => sort === 'days' ? y.days - x.days : sort === 'name' ? String(x.c.name).localeCompare(String(y.c.name)) : sort === 'promise' ? (x.pr ? x.pr.date : '9999') .localeCompare(y.pr ? y.pr.date : '9999') : y.b - x.b);
   const tot = rows.reduce((s, x) => s + x.b, 0), late = rows.filter(x => x.late);
-  $('wsKpis').innerHTML = '<div class="kpi"><small>Wasool karna baqi</small><b class="num red">' + money(tot) + '</b></div><div class="kpi"><small>Customers</small><b class="num">' + rows.length + '</b></div><div class="kpi"><small>Wada guzar gaya</small><b class="num ' + (late.length ? 'red' : '') + '">' + late.length + '</b></div>';
+  $('wsKpis').innerHTML = '<div class="kpi"><small>Left to collect</small><b class="num red">' + money(tot) + '</b></div><div class="kpi"><small>Customers</small><b class="num">' + rows.length + '</b></div><div class="kpi"><small>Promise overdue</small><b class="num ' + (late.length ? 'red' : '') + '">' + late.length + '</b></div>';
   $('wsList').innerHTML = rows.map(x => {
     const c = x.c;
-    return '<div class="due ' + (x.late ? 'late' : '') + '" data-id="' + esc(c.id) + '">' + avatar(c) + '<div class="mid"><b>' + esc(c.name) + '</b><small>' + (x.lastPay ? 'Aakhri payment: ' + fmtDate(x.lastPay) : 'Abhi tak koi payment nahi') + ' · ' + x.days + ' din' + '</small>' +
-      '<small style="' + (x.late ? 'color:var(--red);font-weight:700' : '') + '">' + (x.pr && x.pr.date ? '📅 Wada: ' + fmtDate(x.pr.date) + (x.late ? ' (guzar gayi)' : '') + (x.pr.note ? ' — ' + esc(x.pr.note) : '') : '') + '</small></div>' +
+    return '<div class="due ' + (x.late ? 'late' : '') + '" data-id="' + esc(c.id) + '">' + avatar(c) + '<div class="mid"><b>' + esc(c.name) + '</b><small>' + (x.lastPay ? 'Last payment: ' + fmtDate(x.lastPay) : 'No payment yet') + ' · ' + x.days + ' days' + '</small>' +
+      '<small style="' + (x.late ? 'color:var(--red);font-weight:700' : '') + '">' + (x.pr && x.pr.date ? '📅 Promise: ' + fmtDate(x.pr.date) + (x.late ? ' (overdue)' : '') + (x.pr.note ? ' — ' + esc(x.pr.note) : '') : '') + '</small></div>' +
       '<div class="amt num">' + money(x.b) + '</div><div class="go">' +
-      '<button class="btn wa sm" data-act="wa" title="WhatsApp yaad-dehani">WhatsApp</button>' + (c.phone ? '<a class="btn ghost sm" href="tel:' + esc(String(c.phone).replace(/[^\d+]/g, '')) + '">📞 Call</a>' : '') +
-      '<button class="btn ghost sm" data-act="promise" title="Wada date">📅 Wada</button><button class="btn ghost sm" data-act="open" title="Khatta kholein">📒 Khatta</button></div></div>';
-  }).join('') || '<div class="empty"><b>' + (term ? 'Koi customer nahi mila' : 'Kisi se paisay lene baqi nahi') + '</b>' + (term ? '' : 'Sab ka hisab saaf hai.') + '</div>';
+      '<button class="btn wa sm" data-act="wa" title="WhatsApp reminder">WhatsApp</button>' + (c.phone ? '<a class="btn ghost sm" href="tel:' + esc(String(c.phone).replace(/[^\d+]/g, '')) + '">📞 Call</a>' : '') +
+      '<button class="btn ghost sm" data-act="promise" title="Promise date">📅 Promise</button><button class="btn ghost sm" data-act="open" title="Open ledger">📒 Ledger</button></div></div>';
+  }).join('') || '<div class="empty"><b>' + (term ? 'No customers found' : 'Nobody owes you money') + '</b>' + (term ? '' : 'All accounts are clear.') + '</div>';
 }
 $('wsList').addEventListener('click', e => {
   const b = e.target.closest('button[data-act]'); if (!b) return;
@@ -1545,17 +1526,22 @@ $('wsList').addEventListener('click', e => {
   }
 });
 
-// ---------- 3. Rozana Hisab (daily cash book) ----------
-let expKind = 'kharch';
+// ---------- 3. Daily Cash Book ----------
+let expKind = 'kharch', cbLast = null;
 const cbToday = () => { $('cbDate').value = localRaw(); renderCashbook(); };
 function cbShift(n) { const d = new Date(($('cbDate').value || localRaw()) + 'T00:00:00'); d.setDate(d.getDate() + n); $('cbDate').value = localRaw(d); renderCashbook(); }
 function setExpKind(k) { expKind = k; document.querySelectorAll('#expSeg button').forEach(b => { const on = b.dataset.k === k; b.classList.toggle('on', on); }); }
 function openExpense() { setExpKind('kharch'); $('expAmt').value = ''; $('expDesc').value = ''; $('expDate').value = $('cbDate').value || localRaw(); openModal('expModal'); setTimeout(() => $('expAmt').focus(), 50); }
 function saveExpense() {
   const amt = num($('expAmt').value), d = $('expDate').value;
-  if (!(amt > 0)) return toast('Amount likhein', 'err'); if (!d) return toast('Date select karein', 'err');
+  if (!(amt > 0)) return toast('Enter the amount', 'err'); if (!d) return toast('Select a date', 'err');
   extra.expenses.push({ id: newId(), kind: expKind, amount: amt, desc: $('expDesc').value.trim(), rawDate: d });
-  if (syncExtra()) { closeModal('expModal'); $('cbDate').value = d; renderCashbook(); toast('✅ Entry save ho gai'); }
+  if (syncExtra()) { closeModal('expModal'); $('cbDate').value = d; renderCashbook(); toast('✅ Entry saved'); }
+}
+function shareCashSummary() {
+  renderCashbook(); const x = cbLast; if (!x) return;
+  const txt = '*HASSAN HUSSAIN BOOK CENTER*\n*Daily summary — ' + fmtDate(x.d) + '*\n------------------------------\nCredit collected: Rs. ' + x.w + '\nCash sales: Rs. ' + x.nk + '\nExpenses: Rs. ' + x.kh + '\nNew credit given: Rs. ' + x.u + '\n------------------------------\n*Net cash: Rs. ' + x.net + '*';
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
 }
 function renderCashbook() {
   const d = $('cbDate').value || localRaw(), mk = d.slice(0, 7);
@@ -1563,67 +1549,103 @@ function renderCashbook() {
   const ex = extra.expenses.filter(e => e.rawDate === d);
   const w = sumT(pays).p, u = sumT(sold).u, nk = ex.filter(e => e.kind === 'nakad').reduce((s, e) => s + num(e.amount), 0), kh = ex.filter(e => e.kind === 'kharch').reduce((s, e) => s + num(e.amount), 0);
   const net = w + nk - kh;
+  cbLast = { d, w, nk, kh, u, net };
   const mPay = sumT(transactions.filter(t => t.type === 'Payment' && rawOf(t).slice(0, 7) === mk)).p, mUd = sumT(transactions.filter(t => t.type === 'Udhaar' && rawOf(t).slice(0, 7) === mk)).u;
   const mEx = extra.expenses.filter(e => e.rawDate.slice(0, 7) === mk), mNk = mEx.filter(e => e.kind === 'nakad').reduce((s, e) => s + num(e.amount), 0), mKh = mEx.filter(e => e.kind === 'kharch').reduce((s, e) => s + num(e.amount), 0);
   const sm = (l, v, cls) => '<div class="kpi"><small>' + l + '</small><b class="num ' + (cls || '') + '">' + money(v) + '</b></div>';
   const line = (ico, title, sub, amt, color, id) => '<div class="tx"><div class="ico" style="background:var(--field)">' + ico + '</div><div class="mid"><b>' + esc(title) + '</b><small>' + esc(sub) + '</small></div><div class="amt num" style="color:' + color + '">' + money(amt) + '</div>' + (id ? '<button class="btn ghost sm" data-del="' + id + '" aria-label="Delete">🗑</button>' : '') + '</div>';
   $('cbBody').innerHTML =
-    '<div class="card" style="margin-bottom:12px;text-align:center"><div class="muted" style="font-weight:700">' + fmtDate(d) + ' ka nakad hisab (wasooli + nakad bikri − kharcha)</div><div class="net num ' + (net >= 0 ? 'okc' : 'red') + '" style="margin-top:6px">' + money(net) + '</div></div>' +
-    '<div class="cb-sum">' + sm('Udhaar wasooli', w, 'okc') + sm('Nakad bikri', nk, 'okc') + sm('Kharcha', kh, 'red') + sm('Aaj naya udhaar diya', u) + '</div>' +
-    '<div class="card" style="margin-bottom:12px"><h3 style="font-size:15px">Aaj ki entries</h3>' +
-    (pays.map(t => { const c = custById(t.custId); return line('📗', (c ? c.name : 'Unknown') + ' se payment', t.desc || 'Cash received', t.total, 'var(--ok)'); }).join('') +
-      ex.map(e => line(e.kind === 'nakad' ? '💵' : '🧾', e.kind === 'nakad' ? 'Nakad bikri' : 'Kharcha', e.desc || '-', e.amount, e.kind === 'nakad' ? 'var(--ok)' : 'var(--red)', e.id)).join('') ||
-      '') + ((pays.length + ex.length) ? '' : '<div class="empty"><b>Is din ki koi entry nahi</b>Upar "+ Entry" se kharcha ya nakad bikri likhein. Customers ki payments khud yahan aa jati hain.</div>') + '</div>' +
-    '<div class="card"><h3 style="font-size:15px;margin-bottom:8px">Is mahine ka khulasa</h3><div class="cb-sum" style="margin:0">' + sm('Udhaar wasooli', mPay, 'okc') + sm('Nakad bikri', mNk, 'okc') + sm('Kharcha', mKh, 'red') + sm('Naya udhaar diya', mUd) + sm('Net nakad', mPay + mNk - mKh, (mPay + mNk - mKh) >= 0 ? 'okc' : 'red') + '</div></div>';
+    '<div class="card" style="margin-bottom:12px;text-align:center"><div class="muted" style="font-weight:700">' + fmtDate(d) + ' cash summary (collections + cash sales − expenses)</div><div class="net num ' + (net >= 0 ? 'okc' : 'red') + '" style="margin-top:6px">' + money(net) + '</div></div>' +
+    '<div class="cb-sum">' + sm('Credit collected', w, 'okc') + sm('Cash sale', nk, 'okc') + sm('Expense', kh, 'red') + sm('New credit given today', u) + '</div>' +
+    '<div class="card" style="margin-bottom:12px"><h3 style="font-size:15px">Entries for this day</h3>' +
+    (pays.map(t => { const c = custById(t.custId); return line('📗', (c ? c.name : 'Unknown') + ' — payment received', t.desc || 'Cash received', t.total, 'var(--ok)'); }).join('') +
+      ex.map(e => line(e.kind === 'nakad' ? '💵' : '🧾', e.kind === 'nakad' ? 'Cash sale' : 'Expense', e.desc || '-', e.amount, e.kind === 'nakad' ? 'var(--ok)' : 'var(--red)', e.id)).join('') ||
+      '') + ((pays.length + ex.length) ? '' : '<div class="empty"><b>No entries for this day</b>Use "+ Entry" above to add an expense or cash sale. Customer payments appear here automatically.</div>') + '</div>' +
+    '<div class="card"><h3 style="font-size:15px;margin-bottom:8px">Summary for this month</h3><div class="cb-sum" style="margin:0">' + sm('Credit collected', mPay, 'okc') + sm('Cash sale', mNk, 'okc') + sm('Expense', mKh, 'red') + sm('New credit given', mUd) + sm('Net cash', mPay + mNk - mKh, (mPay + mNk - mKh) >= 0 ? 'okc' : 'red') + '</div></div>';
 }
 $('cbBody').addEventListener('click', e => {
   const b = e.target.closest('button[data-del]'); if (!b) return;
   const x = extra.expenses.find(v => String(v.id) === b.dataset.del); if (!x) return;
-  showConfirm('Entry delete karein', money(x.amount) + ' ki ye entry delete hogi.', () => { const xid = x.id; trashPush('expense', x); extra.expenses = extra.expenses.filter(v => v.id !== xid); if (syncExtra()) { renderCashbook(); toast('Entry Recycle Bin mein chali gai'); } }, 'Haan, delete');
+  showConfirm('Delete entry', 'This ' + money(x.amount) + ' entry will be deleted.', () => { const xid = x.id; trashPush('expense', x); extra.expenses = extra.expenses.filter(v => v.id !== xid); if (syncExtra()) { renderCashbook(); toast('Entry moved to the Recycle Bin'); } }, 'Yes, delete');
+});
+
+// ---------- 3b. Aging report (read-only, calculated from existing entries) ----------
+function agingRows() {
+  const today = localRaw(), rows = [];
+  customers.forEach(c => {
+    const act = transactions.filter(t => t.custId === c.id && !t.cleared);
+    let paid = sumT(act).p;
+    const bk = [0, 0, 0, 0];
+    act.filter(t => t.type === 'Udhaar').sort((a, b) => rawOf(a).localeCompare(rawOf(b)) || num(a.id) - num(b.id)).forEach(t => {
+      let amt = num(t.total); const use = Math.min(paid, amt); paid -= use; amt -= use;
+      if (amt > 0) { const d = rawOf(t) ? Math.max(0, daysBetween(rawOf(t), today)) : 0; bk[d <= 30 ? 0 : d <= 60 ? 1 : d <= 90 ? 2 : 3] += amt; }
+    });
+    const total = bk[0] + bk[1] + bk[2] + bk[3];
+    if (total > 0) rows.push({ c, bk, total });
+  });
+  return rows.sort((x, y) => y.bk[3] - x.bk[3] || y.bk[2] - x.bk[2] || y.total - x.total);
+}
+function renderAging() {
+  const rows = agingRows(), tot = [0, 0, 0, 0];
+  rows.forEach(r => r.bk.forEach((v, i) => tot[i] += v));
+  const names = ['0–30 days', '31–60 days', '61–90 days', '90+ days'];
+  $('agKpis').innerHTML = tot.map((v, i) => '<div class="kpi"><small>' + names[i] + '</small><b class="num ' + (i === 3 && v > 0 ? 'red' : '') + '">' + money(v) + '</b></div>').join('');
+  const cell = v => '<td class="num">' + (v > 0 ? money(v) : '-') + '</td>';
+  $('agBody').innerHTML = rows.map(r => '<tr data-id="' + esc(r.c.id) + '"><td><b>' + esc(r.c.name) + '</b></td>' + r.bk.map(cell).join('') + '<td class="num" style="font-weight:800">' + money(r.total) + '</td><td><div style="display:flex;gap:5px"><button class="btn wa sm" data-act="wa">WhatsApp</button><button class="btn ghost sm" data-act="open">📒</button></div></td></tr>').join('') || '<tr><td colspan="7" class="empty"><b>Nothing outstanding</b>All accounts are clear.</td></tr>';
+}
+$('agBody').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const c = custById(b.closest('tr').dataset.id); if (!c) return;
+  if (b.dataset.act === 'open') openKhattaFor(c.id);
+  else { const x = sumT(tOf(c.id, null)); openWaModal(c, x.u, x.p, ''); }
 });
 
 // ---------- 4. Recycle Bin ----------
 function trashLabel(t) {
   const d = t.data || {};
-  if (t.kind === 'customer') return { ico: '👤', title: 'Ledger: ' + d.customer.name, sub: d.transactions.length + ' related entries', amt: sumT(d.transactions).b };
-  if (t.kind === 'transaction') { const c = custById(d.custId); return { ico: d.type === 'Udhaar' ? '📕' : '📗', title: (c ? c.name : 'Unknown') + ' — ' + (d.item || ''), sub: (d.type || '') + ' · ' + (d.date || '') + (d.desc ? ' · ' + d.desc : ''), amt: d.total }; }
+  if (t.kind === 'transaction') { const c = custById(d.custId); return { ico: d.type === 'Udhaar' ? '📕' : '📗', title: (c ? c.name : 'Unknown') + ' — ' + (d.item || ''), sub: typeLabel(d.type) + ' · ' + (d.date || '') + (d.desc ? ' · ' + d.desc : ''), amt: d.total }; }
+  if (t.kind === 'customer') { const cu = d.customer || {}, tl = toArr(d.transactions); return { ico: '👤', title: 'Customer: ' + (cu.name || 'Unknown'), sub: tl.length + ' entries · whole ledger', amt: sumT(tl.filter(x => !x.cleared)).b }; }
   if (t.kind === 'item') return { ico: '📦', title: 'Stock: ' + d.name, sub: (d.date || '') + ' · qty ' + d.qty, amt: d.totalCost };
-  return { ico: '🧾', title: (d.kind === 'nakad' ? 'Nakad bikri' : 'Kharcha') + (d.desc ? ' — ' + d.desc : ''), sub: fmtDate(d.rawDate), amt: d.amount };
+  return { ico: '🧾', title: (d.kind === 'nakad' ? 'Cash sale' : 'Expense') + (d.desc ? ' — ' + d.desc : ''), sub: fmtDate(d.rawDate), amt: d.amount };
 }
 function renderTrash() {
-  $('trashList').innerHTML = extra.trash.map(t => { const l = trashLabel(t); return '<div class="tx" style="padding:12px"><div class="ico" style="background:var(--field)">' + l.ico + '</div><div class="mid"><b>' + esc(l.title) + '</b><small>' + esc(l.sub) + '</small><small>Delete hui: ' + esc(new Date(t.at).toLocaleString('en-GB')) + '</small></div><div class="amt num">' + money(l.amt) + '</div><div class="acts"><button class="btn ok sm" data-r="' + t.id + '">Restore</button><button class="btn ghost sm" data-x="' + t.id + '">✕</button></div></div>'; }).join('') || '<div class="empty"><b>Recycle Bin khali hai</b>Delete ki hui entries yahan aayengi.</div>';
+  $('trashList').innerHTML = extra.trash.map(t => { const l = trashLabel(t); return '<div class="tx" style="padding:12px"><div class="ico" style="background:var(--field)">' + l.ico + '</div><div class="mid"><b>' + esc(l.title) + '</b><small>' + esc(l.sub) + '</small><small>Deleted: ' + esc(new Date(t.at).toLocaleString('en-GB')) + '</small></div><div class="amt num">' + money(l.amt) + '</div><div class="acts"><button class="btn ok sm" data-r="' + t.id + '">Restore</button><button class="btn ghost sm" data-x="' + t.id + '">✕</button></div></div>'; }).join('') || '<div class="empty"><b>Recycle Bin is empty</b>Deleted entries will appear here.</div>';
 }
 $('trashList').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   const id = b.dataset.r || b.dataset.x, t = extra.trash.find(x => String(x.id) === String(id)); if (!t) return;
-  if (b.dataset.x) return showConfirm('Hamesha ke liye delete', 'Ye entry phir wapas nahi aayegi.', () => { const tid = t.id; extra.trash = extra.trash.filter(x => x.id !== tid); if (syncExtra()) renderTrash(); }, 'Haan, delete');
+  if (b.dataset.x) return showConfirm('Delete permanently', 'This entry cannot be restored afterwards.', () => { const tid = t.id; extra.trash = extra.trash.filter(x => x.id !== tid); if (syncExtra()) renderTrash(); }, 'Yes, delete');
   const d = t.data;
-  if (t.kind === 'customer') { if (!customers.some(x => x.id === d.customer.id)) customers.push(d.customer); d.transactions.forEach(x => { if (!transactions.some(y => y.id === x.id)) transactions.push(x); }); if (!sync()) return; }
-  else if (t.kind === 'transaction') { if (!transactions.some(x => x.id === d.id)) transactions.push(d); if (!sync()) return; }
+  if (t.kind === 'transaction') { if (!transactions.some(x => x.id === d.id)) transactions.push(d); if (!sync()) return; }
+  else if (t.kind === 'customer') {
+    const cu = d.customer; if (cu && !customers.some(x => String(x.id) === String(cu.id))) customers.push(cu);
+    toArr(d.transactions).forEach(x => { if (!transactions.some(y => String(y.id) === String(x.id))) transactions.push(x); });
+    if (!sync()) return;
+  }
   else if (t.kind === 'item') { if (!items.some(x => String(x.id) === String(d.id))) items.push(d); if (!sync()) return; }
   else { if (!extra.expenses.some(x => x.id === d.id)) extra.expenses.push(d); }
-  extra.trash = extra.trash.filter(x => x.id !== t.id); syncExtra(); renderTrash(); toast('✅ Entry wapas aa gai');
+  extra.trash = extra.trash.filter(x => x.id !== t.id); syncExtra(); renderTrash(); toast('✅ Entry restored');
 });
-function emptyTrash() { if (!extra.trash.length) return; showConfirm('Recycle Bin khali karein', 'Sab entries hamesha ke liye delete ho jayengi.', () => { extra.trash = []; if (syncExtra()) renderTrash(); }, 'Haan, khali karo'); }
+function emptyTrash() { if (!extra.trash.length) return; showConfirm('Empty Recycle Bin', 'All entries will be deleted permanently.', () => { extra.trash = []; if (syncExtra()) renderTrash(); }, 'Yes, empty it'); }
 
 // ---------- 5. Backup & Restore ----------
 function markBackup() { try { localStorage.setItem('hh_last_backup', localRaw()); } catch (e) {} renderHome(); renderBackupInfo(); }
-function renderBackupInfo() { let l = null; try { l = localStorage.getItem('hh_last_backup'); } catch (e) {} $('lastBackupTxt').textContent = l ? 'Aakhri backup: ' + fmtDate(l) + '.' : 'Is device se abhi tak backup nahi liya.'; }
+function renderBackupInfo() { let l = null; try { l = localStorage.getItem('hh_last_backup'); } catch (e) {} $('lastBackupTxt').textContent = l ? 'Last backup: ' + fmtDate(l) + '.' : 'No backup has been taken from this device yet.'; }
 function saveBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
 function downloadJsonBackup() {
-  if (!loaded) return toast('Data load ho raha hai, thora ruko', 'err');
+  if (!loaded) return toast('Data is still loading, please wait', 'err');
   const data = { app: 'hh-book-center', version: 2, exportedAt: new Date().toISOString(), data: clean({ customers, transactions, items, customCategories }), extra: clean({ expenses: extra.expenses, promises: extra.promises }) };
-  saveBlob(new Blob([JSON.stringify(data)], { type: 'application/json' }), 'HH_BookCenter_Backup_' + localRaw() + '.json'); markBackup(); toast('✅ Backup download ho gaya');
+  saveBlob(new Blob([JSON.stringify(data)], { type: 'application/json' }), 'HH_BookCenter_Backup_' + localRaw() + '.json'); markBackup(); toast('✅ Backup downloaded');
 }
 function exportToExcel() {
-  if (typeof XLSX === 'undefined') return toast('Excel library load nahi hui — internet check karein', 'err');
-  if (!transactions.length && !customers.length) return toast('Export ke liye data nahi hai', 'err');
+  if (typeof XLSX === 'undefined') return toast('Excel library did not load — check your internet', 'err');
+  if (!transactions.length && !customers.length) return toast('No data to export', 'err');
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(transactions.map(t => { const c = custById(t.custId); return { Date: t.date, 'Customer Name': c ? c.name : 'Unknown', Section: c ? secName(c, t.sectionId || 'main') : '', Item: t.item, Description: t.desc || '-', Qty: t.qty || 1, Rate: t.rate, 'Total Amount': t.total, Type: t.type, Status: t.cleared ? 'Cleared' : 'Active' }; })), 'BookCenter_Backup');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(transactions.map(t => { const c = custById(t.custId); return { Date: t.date, 'Customer Name': c ? c.name : 'Unknown', Section: c ? secName(c, t.sectionId || 'main') : '', Item: t.item, Description: t.desc || '-', Qty: t.qty || 1, Rate: t.rate, 'Total Amount': t.total, Type: typeLabel(t.type), Status: t.cleared ? 'Cleared' : 'Active' }; })), 'BookCenter_Backup');
   const bm = balMap(false);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(customers.map(c => ({ Name: c.name, Phone: c.phone || '', 'School/Business': c.org || '', Owner: c.owner || '', Address: c.addr || '', Note: c.note || '', 'Active Balance': bm[c.id] || 0 }))), 'Customers');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(items.map(i => ({ Date: i.date, Item: i.name, Details: i.details || '', Qty: i.qty, 'Total Cost': i.totalCost, Freight: i.freight, 'Unit Cost': i.unitCost, 'Margin %': i.marginPct, 'Sale Rate': i.saleRate }))), 'Stock');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(extra.expenses.map(e => ({ Date: fmtDate(e.rawDate), Type: e.kind === 'nakad' ? 'Nakad bikri' : 'Kharcha', Details: e.desc || '', Amount: e.amount }))), 'Rozana Hisab');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(extra.expenses.map(e => ({ Date: fmtDate(e.rawDate), Type: e.kind === 'nakad' ? 'Cash sale' : 'Expense', Details: e.desc || '', Amount: e.amount }))), 'Daily Cash Book');
   XLSX.writeFile(wb, 'HH_BookCenter_Backup_' + localRaw() + '.xlsx'); markBackup();
 }
 let pendingRestore = null;
@@ -1631,23 +1653,23 @@ function readRestoreFile(inp) {
   const f = inp.files[0]; if (!f) return; const info = $('restoreInfo'); pendingRestore = null;
   const rd = new FileReader();
   rd.onload = () => {
-    let j; try { j = JSON.parse(rd.result); } catch (e) { info.textContent = 'Ye file sahi JSON backup nahi hai.'; return; }
+    let j; try { j = JSON.parse(rd.result); } catch (e) { info.textContent = 'This is not a valid JSON backup file.'; return; }
     const d = j.data || j, ex = j.extra || {};
-    if (!d || !(Array.isArray(d.customers) || Array.isArray(d.transactions) || Array.isArray(d.items))) { info.textContent = 'Is file mein customers / transactions nahi mile.'; return; }
+    if (!d || !(Array.isArray(d.customers) || Array.isArray(d.transactions) || Array.isArray(d.items))) { info.textContent = 'No customers / transactions found in this file.'; return; }
     const miss = (arr, cur, key) => toArr(arr).filter(x => x && !cur.some(c => String(c[key || 'id']) === String(x[key || 'id'])));
     pendingRestore = { customers: miss(d.customers, customers), transactions: miss(d.transactions, transactions), items: miss(d.items, items), expenses: miss(ex.expenses, extra.expenses), cats: toArr(d.customCategories).filter(x => !customCategories.includes(x)), promises: ex.promises || {} };
     const p = pendingRestore, n = p.customers.length + p.transactions.length + p.items.length + p.expenses.length;
-    info.innerHTML = n ? 'Naya mila: <b>' + p.customers.length + '</b> customers, <b>' + p.transactions.length + '</b> entries, <b>' + p.items.length + '</b> stock, <b>' + p.expenses.length + '</b> hisab entries.<br><button class="btn ok" style="margin-top:8px" onclick="applyRestore()">Ye add kar dein</button>' : 'Is backup ka sab kuch pehle se app mein maujood hai. Kuch add karne ki zaroorat nahi.';
+    info.innerHTML = n ? 'New items found: <b>' + p.customers.length + '</b> customers, <b>' + p.transactions.length + '</b> entries, <b>' + p.items.length + '</b> stock, <b>' + p.expenses.length + '</b> cash book entries.<br><button class="btn ok" style="margin-top:8px" onclick="applyRestore()">Add these</button>' : 'Everything in this backup is already in the app. Nothing to add.';
   };
   rd.readAsText(f);
 }
 function applyRestore() {
   const p = pendingRestore; if (!p) return;
-  showConfirm('Backup se add karein', 'Sirf wo cheezein add hongi jo abhi nahi hain. Maujooda data nahi badlega.', () => {
+  showConfirm('Add from backup', 'Only items that are not in the app yet will be added. Existing data will not change.', () => {
     customers.push(...p.customers); transactions.push(...p.transactions); items.push(...p.items); p.cats.forEach(c => customCategories.push(c));
     extra.expenses.push(...p.expenses); Object.keys(p.promises).forEach(k => { if (!extra.promises[k]) extra.promises[k] = p.promises[k]; });
-    if (sync()) { syncExtra(); pendingRestore = null; $('restoreInfo').textContent = '✅ Restore mukammal.'; $('restoreFile').value = ''; toast('✅ Restore ho gaya'); }
-  }, 'Haan, add karo');
+    if (sync()) { syncExtra(); pendingRestore = null; $('restoreInfo').textContent = '✅ Restore complete.'; $('restoreFile').value = ''; toast('✅ Restored'); }
+  }, 'Yes, add them');
 }
 
 // =====================================================================
