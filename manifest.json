@@ -52,8 +52,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Khatta",
-      "short_name": "Khatta",
+      "name": "Ledger",
+      "short_name": "Ledger",
       "description": "View and manage customer ledgers",
       "url": "/?view=khatta",
       "icons": [
@@ -64,9 +64,9 @@
       ]
     },
     {
-      "name": "Wasooli List",
-      "short_name": "Wasooli",
-      "description": "Kis se paisay lene hain",
+      "name": "Collections List",
+      "short_name": "Collections",
+      "description": "Who owes you money",
       "url": "/?view=wasooli",
       "icons": [
         {
