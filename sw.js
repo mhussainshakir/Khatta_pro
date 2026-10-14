@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hh-book-center-v2';
+const CACHE_NAME = 'hh-book-center-v3';
 const urlsToCache = ['/', '/index.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -19,13 +19,13 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network first, cache fallback (offline). Sirf apni site ki GET requests.
+// Network first, cache fallback (offline). Only this site's GET requests.
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;           // Firebase / CDN ko na chheden
-  if (url.pathname.startsWith('/.netlify/')) return;          // config API cache na karein
+  if (url.origin !== self.location.origin) return;           // leave Firebase / CDN alone
+  if (url.pathname.startsWith('/.netlify/')) return;          // do not cache the config API
 
   event.respondWith(
     fetch(req)
