@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -442,7 +442,7 @@
     <div class="stamp-logo">HH</div>
     <div class="lock-title">
       <h1>H-H Book Photo State &amp; Book Center</h1>
-      <span id="lockSubtitle">APNA PIN DAALEIN</span>
+      <span id="lockSubtitle">ENTER YOUR PIN</span>
     </div>
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
@@ -473,7 +473,7 @@
     <div class="search-row">
       <div class="search-box">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8FAE9E" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Naam se search karein...">
+        <input type="text" id="searchInput" placeholder="Search by name...">
       </div>
       <button class="date-btn" id="dateBtn">
         📅
@@ -501,7 +501,7 @@
 <div class="modal-overlay" id="uploadOverlay">
   <div class="modal-sheet">
     <div class="sheet-handle"></div>
-    <h2>Nayi File Upload Karein</h2>
+    <h2>Upload New Files</h2>
 
     <label class="filedrop" id="filedropLabel">
       <input type="file" id="fileInput" multiple>
@@ -509,8 +509,8 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A5 5 0 0 1 16.5 7.5 4.5 4.5 0 0 1 17 18H7Z"/><path d="M12 12v6"/><path d="m9.5 14.5 2.5-2.5 2.5 2.5"/></svg>
       </div>
       <div class="filedrop-body">
-        <div class="filedrop-title" id="filedropTitle">Files choose karein</div>
-        <div class="filedrop-sub" id="filedropSub">Ek se zyada photos/files ek sath select ho sakti hain</div>
+        <div class="filedrop-title" id="filedropTitle">Choose files</div>
+        <div class="filedrop-sub" id="filedropSub">You can select several photos/files at once</div>
       </div>
       <span class="filedrop-browse" id="filedropBrowse">Browse</span>
     </label>
@@ -518,15 +518,15 @@
     <div class="file-chip-list" id="fileChipList"></div>
 
     <div class="field">
-      <label class="field-label">Customer Naam</label>
+      <label class="field-label">Customer Name</label>
       <input type="text" id="custName" placeholder="e.g. Ahmed Ali">
     </div>
     <div class="field">
-      <label class="field-label">Phone Number (optional — WhatsApp ke liye)</label>
+      <label class="field-label">Phone Number (optional — for WhatsApp)</label>
       <input type="tel" id="custPhone" placeholder="03XXXXXXXXX">
     </div>
 
-    <button class="btn-primary" id="uploadBtn">Upload Karein</button>
+    <button class="btn-primary" id="uploadBtn">Upload</button>
     <button class="btn-ghost" id="cancelUploadBtn">Cancel</button>
 
     <div class="progress-wrap" id="progressWrap">
@@ -549,8 +549,8 @@
       <button id="viewStatusBtn">✅ Printed</button>
       <button id="viewWaBtn" style="display:none;">💬 WhatsApp</button>
     </div>
-    <button class="btn-ghost" id="viewDeleteBtn" style="color:var(--stamp-red); border-color:var(--stamp-red);">🗑️ Delete Karein</button>
-    <button class="btn-ghost" id="closeViewBtn">Band Karein</button>
+    <button class="btn-ghost" id="viewDeleteBtn" style="color:var(--stamp-red); border-color:var(--stamp-red);">🗑️ Delete</button>
+    <button class="btn-ghost" id="closeViewBtn">Close</button>
   </div>
 </div>
 
@@ -563,9 +563,9 @@
     <div class="select-bar" id="groupSelectBar" style="margin:14px -18px 0 -18px; border-radius:0;">
       <button id="groupMergeBtn" disabled><span>📎</span>Merge PDF</button>
       <button id="groupPhotosPdfBtn" disabled><span>🖼️</span>Photos→PDF</button>
-      <button id="groupZipBtn" disabled><span>🗜️</span>Zip Banao</button>
+      <button id="groupZipBtn" disabled><span>🗜️</span>Create Zip</button>
     </div>
-    <button class="btn-ghost" id="closeGroupBtn" style="margin:14px 0 20px 0;">Band Karein</button>
+    <button class="btn-ghost" id="closeGroupBtn" style="margin:14px 0 20px 0;">Close</button>
   </div>
 </div>
 
@@ -578,39 +578,39 @@
     <div class="tool-card">
       <div class="tool-icon">📎</div>
       <div class="tool-body">
-        <div class="t-title">PDFs Merge Karein</div>
-        <div class="t-sub" id="mergeFilesSub">2 ya zyada PDF files select karein</div>
+        <div class="t-title">Merge PDFs</div>
+        <div class="t-sub" id="mergeFilesSub">Select 2 or more PDF files</div>
       </div>
       <label class="tool-pick-btn">Select<input type="file" id="mergeFileInput" accept="application/pdf" multiple style="display:none;"></label>
     </div>
-    <button class="btn-primary" id="mergeRunBtn" style="margin-bottom:18px;" disabled>Merge Karein &amp; Download</button>
+    <button class="btn-primary" id="mergeRunBtn" style="margin-bottom:18px;" disabled>Merge &amp; Download</button>
 
     <div class="tool-card">
       <div class="tool-icon">🖼️</div>
       <div class="tool-body">
-        <div class="t-title">Photos ko PDF Banayein</div>
-        <div class="t-sub" id="p2pFilesSub">Ek ya zyada photos select karein</div>
+        <div class="t-title">Photos to PDF</div>
+        <div class="t-sub" id="p2pFilesSub">Select one or more photos</div>
       </div>
       <label class="tool-pick-btn">Select<input type="file" id="p2pFileInput" accept="image/*" multiple style="display:none;"></label>
     </div>
-    <button class="btn-primary" id="p2pRunBtn" style="margin-bottom:18px;" disabled>PDF Banayein &amp; Download</button>
+    <button class="btn-primary" id="p2pRunBtn" style="margin-bottom:18px;" disabled>Create PDF &amp; Download</button>
 
     <div class="tool-card">
       <div class="tool-icon">🗜️</div>
       <div class="tool-body">
-        <div class="t-title">Zip Banayein</div>
-        <div class="t-sub" id="zipFilesSub">Koi bhi files select karein</div>
+        <div class="t-title">Create Zip</div>
+        <div class="t-sub" id="zipFilesSub">Select any files</div>
       </div>
       <label class="tool-pick-btn">Select<input type="file" id="zipFileInput" multiple style="display:none;"></label>
     </div>
-    <button class="btn-primary" id="zipRunBtn" style="margin-bottom:6px;" disabled>Zip Banayein &amp; Download</button>
+    <button class="btn-primary" id="zipRunBtn" style="margin-bottom:6px;" disabled>Create Zip &amp; Download</button>
 
     <div class="progress-wrap" id="toolsProgressWrap">
       <div class="progress-bar"><div class="progress-fill" id="toolsProgressFill"></div></div>
-      <div class="progress-text" id="toolsProgressText">Kaam ho raha hai...</div>
+      <div class="progress-text" id="toolsProgressText">Working...</div>
     </div>
 
-    <button class="btn-ghost" id="closeToolsBtn">Band Karein</button>
+    <button class="btn-ghost" id="closeToolsBtn">Close</button>
   </div>
 </div>
 
@@ -618,7 +618,7 @@
 <div class="drag-drop-overlay" id="dragDropOverlay">
   <div class="drag-drop-inner">
     <div class="dd-icon">📥</div>
-    <span>Files yahan chhod dein — upload shuru ho jayega</span>
+    <span>Drop files here — the upload will start</span>
   </div>
 </div>
 
@@ -666,7 +666,7 @@ const lockError = document.getElementById('lockError');
 const lockSubtitle = document.getElementById('lockSubtitle');
 let pinBuffer = "";
 let settingNewPin = !localStorage.getItem('hh_pin');
-if(settingNewPin){ lockSubtitle.textContent = "NAYA PIN SET KAREIN (4 digit)"; }
+if(settingNewPin){ lockSubtitle.textContent = "SET A NEW PIN (4 digits)"; }
 let confirmPinStage = false;
 let firstPinTemp = "";
 
@@ -703,16 +703,16 @@ function handlePinComplete(){
       pinBuffer = "";
       updateDots();
       confirmPinStage = true;
-      lockSubtitle.textContent = "PIN DOBARA DAALEIN";
+      lockSubtitle.textContent = "ENTER PIN AGAIN";
     } else {
       if(pinBuffer === firstPinTemp){
         localStorage.setItem('hh_pin', firstPinTemp);
         unlockApp();
       } else {
-        lockError.textContent = "PIN match nahi hua, dobara try karein";
+        lockError.textContent = "PINs do not match, try again";
         pinBuffer = ""; firstPinTemp = ""; confirmPinStage = false;
         updateDots();
-        lockSubtitle.textContent = "NAYA PIN SET KAREIN (4 digit)";
+        lockSubtitle.textContent = "SET A NEW PIN (4 digits)";
       }
     }
   } else {
@@ -720,7 +720,7 @@ function handlePinComplete(){
     if(pinBuffer === savedPin){
       unlockApp();
     } else {
-      lockError.textContent = "Galat PIN, dobara try karein";
+      lockError.textContent = "Wrong PIN, try again";
       shakeLock();
       pinBuffer = "";
       updateDots();
@@ -751,7 +751,7 @@ function updateViewToggleIcon(){
   viewToggleBtn.innerHTML = viewMode === 'list'
     ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>`
     : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>`;
-  viewToggleBtn.title = viewMode === 'list' ? 'Grid view pe switch karein' : 'List view pe switch karein';
+  viewToggleBtn.title = viewMode === 'list' ? 'Switch to grid view' : 'Switch to list view';
 }
 updateViewToggleIcon();
 viewToggleBtn.addEventListener('click', ()=>{
@@ -828,8 +828,8 @@ function formatDayLabel(dateStr){
   const today = new Date();
   const yest = new Date(); yest.setDate(today.getDate()-1);
   const same = (a,b)=> a.toDateString() === b.toDateString();
-  if(same(d, today)) return 'Aaj';
-  if(same(d, yest)) return 'Kal';
+  if(same(d, today)) return 'Today';
+  if(same(d, yest)) return 'Yesterday';
   return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
 
@@ -859,7 +859,7 @@ function renderList(){
     container.innerHTML = `
       <div class="empty-state">
         <div class="stamp-logo">HH</div>
-        <p>Abhi koi ${currentTab==='photo'?'photo':'file'} nahi hai.<br>Neeche + button se upload karein.</p>
+        <p>No ${currentTab==='photo'?'photo':'file'} yet.<br>Use the + button below to upload.</p>
       </div>`;
     return;
   }
@@ -876,7 +876,7 @@ function renderGroupsView(container){
   // Group ALL records (photos + files) by customerName — same name = same group/folder
   const groups = {}; // key: lowercase name -> { name, items: [], latest: 0 }
   allRecords.forEach(r=>{
-    const rawName = (r.customerName || 'Naam nahi').trim();
+    const rawName = (r.customerName || 'No name').trim();
     const key = rawName.toLowerCase();
     if(searchTerm && !key.includes(searchTerm)) return;
     if(filterDate && (r.dateKey || '') !== filterDate) return;
@@ -892,7 +892,7 @@ function renderGroupsView(container){
     container.innerHTML = `
       <div class="empty-state">
         <div class="stamp-logo">HH</div>
-        <p>Abhi koi group nahi bana.<br>Jab bhi kisi naam se file upload hogi, wo yahan group ban jayegi.</p>
+        <p>No groups yet.<br>Whenever files are uploaded under a customer name, a group appears here.</p>
       </div>`;
     return;
   }
@@ -924,7 +924,7 @@ let groupSelectedIds = new Set();
 let currentGroupItems = [];
 
 function openGroupDetail(name){
-  currentGroupItems = allRecords.filter(r => (r.customerName || 'Naam nahi').trim() === name);
+  currentGroupItems = allRecords.filter(r => (r.customerName || 'No name').trim() === name);
   groupSelectedIds = new Set();
   document.getElementById('groupTitle').textContent = name;
   renderGroupList();
@@ -1015,13 +1015,13 @@ async function fetchRecordBlob(rec){
       if(data.success) return base64ToBlob(data.base64, data.mimeType);
     } catch(e){ /* try next relay */ }
   }
-  throw new Error('File cloud se fetch nahi ho payi');
+  throw new Error('Could not fetch the file from the cloud');
 }
 
 document.getElementById('groupMergeBtn').addEventListener('click', async ()=>{
   const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
   if(selected.length<2) return;
-  showToast('PDFs merge ho rahi hain...');
+  showToast('Merging PDFs...');
   try{
     const merged = await PDFLib.PDFDocument.create();
     for(const r of selected){
@@ -1033,25 +1033,25 @@ document.getElementById('groupMergeBtn').addEventListener('click', async ()=>{
     }
     const outBytes = await merged.save();
     downloadBlob(new Blob([outBytes], {type:'application/pdf'}), `${document.getElementById('groupTitle').textContent}-merged.pdf`);
-    showToast('Merge ho gaya ✅');
-  }catch(err){ console.error(err); showToast('Merge fail hui — files check karein'); }
+    showToast('Merged ✅');
+  }catch(err){ console.error(err); showToast('Merge failed — please check the files'); }
 });
 
 document.getElementById('groupPhotosPdfBtn').addEventListener('click', async ()=>{
   const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
   if(selected.length===0) return;
-  showToast('Photos se PDF ban raha hai...');
+  showToast('Creating PDF from photos...');
   try{
     const pdfBytes = await photosToPdfBytes(await Promise.all(selected.map(r=>fetchRecordBlob(r))));
     downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), `${document.getElementById('groupTitle').textContent}-photos.pdf`);
-    showToast('PDF ban gayi ✅');
-  }catch(err){ console.error(err); showToast('PDF banane mein masla hua'); }
+    showToast('PDF created ✅');
+  }catch(err){ console.error(err); showToast('Problem creating the PDF'); }
 });
 
 document.getElementById('groupZipBtn').addEventListener('click', async ()=>{
   const selected = currentGroupItems.filter(r=>groupSelectedIds.has(r.id));
   if(selected.length===0) return;
-  showToast('Zip ban raha hai...');
+  showToast('Creating zip...');
   try{
     const zip = new JSZip();
     for(const r of selected){
@@ -1061,7 +1061,7 @@ document.getElementById('groupZipBtn').addEventListener('click', async ()=>{
     const zipBlob = await zip.generateAsync({type:'blob'});
     downloadBlob(zipBlob, `${document.getElementById('groupTitle').textContent}.zip`);
     showToast('Zip ready ✅');
-  }catch(err){ console.error(err); showToast('Zip banane mein masla hua'); }
+  }catch(err){ console.error(err); showToast('Problem creating the zip'); }
 });
 
 async function photosToPdfBytes(blobs){
@@ -1096,12 +1096,12 @@ document.getElementById('mergeFileInput').addEventListener('change', (e)=>{
   mergePickedFiles = Array.from(e.target.files || []);
   document.getElementById('mergeFilesSub').textContent = mergePickedFiles.length
     ? `${mergePickedFiles.length} file(s): ${mergePickedFiles.map(f=>f.name).join(', ')}`
-    : '2 ya zyada PDF files select karein';
+    : 'Select 2 or more PDF files';
   document.getElementById('mergeRunBtn').disabled = mergePickedFiles.length < 2;
 });
 document.getElementById('mergeRunBtn').addEventListener('click', async ()=>{
   if(mergePickedFiles.length<2) return;
-  toolsProgress(true, 'PDFs merge ho rahi hain...');
+  toolsProgress(true, 'Merging PDFs...');
   try{
     const merged = await PDFLib.PDFDocument.create();
     for(const f of mergePickedFiles){
@@ -1112,8 +1112,8 @@ document.getElementById('mergeRunBtn').addEventListener('click', async ()=>{
     }
     const outBytes = await merged.save();
     downloadBlob(new Blob([outBytes], {type:'application/pdf'}), 'merged.pdf');
-    showToast('Merge ho gaya ✅');
-  }catch(err){ console.error(err); showToast('Merge fail hui — sahi PDF files select karein'); }
+    showToast('Merged ✅');
+  }catch(err){ console.error(err); showToast('Merge failed — select valid PDF files'); }
   toolsProgress(false);
 });
 
@@ -1122,17 +1122,17 @@ document.getElementById('p2pFileInput').addEventListener('change', (e)=>{
   p2pPickedFiles = Array.from(e.target.files || []);
   document.getElementById('p2pFilesSub').textContent = p2pPickedFiles.length
     ? `${p2pPickedFiles.length} photo(s) selected`
-    : 'Ek ya zyada photos select karein';
+    : 'Select one or more photos';
   document.getElementById('p2pRunBtn').disabled = p2pPickedFiles.length < 1;
 });
 document.getElementById('p2pRunBtn').addEventListener('click', async ()=>{
   if(p2pPickedFiles.length<1) return;
-  toolsProgress(true, 'Photos se PDF ban raha hai...');
+  toolsProgress(true, 'Creating PDF from photos...');
   try{
     const pdfBytes = await photosToPdfBytes(p2pPickedFiles);
     downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), 'photos.pdf');
-    showToast('PDF ban gayi ✅');
-  }catch(err){ console.error(err); showToast('PDF banane mein masla hua'); }
+    showToast('PDF created ✅');
+  }catch(err){ console.error(err); showToast('Problem creating the PDF'); }
   toolsProgress(false);
 });
 
@@ -1141,19 +1141,19 @@ document.getElementById('zipFileInput').addEventListener('change', (e)=>{
   zipPickedFiles = Array.from(e.target.files || []);
   document.getElementById('zipFilesSub').textContent = zipPickedFiles.length
     ? `${zipPickedFiles.length} file(s) selected`
-    : 'Koi bhi files select karein';
+    : 'Select any files';
   document.getElementById('zipRunBtn').disabled = zipPickedFiles.length < 1;
 });
 document.getElementById('zipRunBtn').addEventListener('click', async ()=>{
   if(zipPickedFiles.length<1) return;
-  toolsProgress(true, 'Zip ban raha hai...');
+  toolsProgress(true, 'Creating zip...');
   try{
     const zip = new JSZip();
     zipPickedFiles.forEach(f=> zip.file(f.name, f));
     const zipBlob = await zip.generateAsync({type:'blob'});
     downloadBlob(zipBlob, 'files.zip');
     showToast('Zip ready ✅');
-  }catch(err){ console.error(err); showToast('Zip banane mein masla hua'); }
+  }catch(err){ console.error(err); showToast('Problem creating the zip'); }
   toolsProgress(false);
 });
 
@@ -1180,7 +1180,7 @@ function renderListView(container, filtered){
       <div class="card" data-id="${r.id}">
         ${thumb}
         <div class="card-info">
-          <div class="name">${escapeHtml(r.customerName || 'Naam nahi')}</div>
+          <div class="name">${escapeHtml(r.customerName || 'No name')}</div>
           <div class="meta">
             <span>${r.timeLabel || ''}</span>
             <span class="status-badge ${statusClass}" data-toggle-status="${r.id}">${statusText}</span>
@@ -1213,7 +1213,7 @@ function renderGridView(container, filtered){
     html += `
       <div class="grid-tile" data-view="${r.id}">
         <div class="grid-icon">${icon}<span class="status-dot ${statusClass}"></span></div>
-        <div class="grid-name">${escapeHtml(r.customerName || 'Naam nahi')}</div>
+        <div class="grid-name">${escapeHtml(r.customerName || 'No name')}</div>
         <div class="grid-sub">${r.timeLabel || ''}</div>
       </div>`;
   });
@@ -1228,7 +1228,7 @@ function escapeHtml(s){
 
 function shareToWhatsApp(rec){
   if(!rec) return;
-  const msg = encodeURIComponent(`Assalam o Alaikum ${rec.customerName || ''}, aapki file ready hai: ${rec.fileUrl}`);
+  const msg = encodeURIComponent(`Hello ${rec.customerName || ''}, your file is ready: ${rec.fileUrl}`);
   if(rec.phone){
     let phone = rec.phone.replace(/[^0-9]/g,'');
     if(phone.startsWith('0')) phone = '92' + phone.slice(1);
@@ -1260,12 +1260,12 @@ document.getElementById('listContainer').addEventListener('click', async (e)=>{
     return;
   }
   if(delBtn){
-    if(confirm('Ye record delete karna hai? File cloud storage se bhi hamesha ke liye hat jayegi.')){
+    if(confirm('Delete this record? The file will also be removed permanently from cloud storage.')){
       const rec = allRecords.find(r=>r.id===delBtn.dataset.del);
       await deleteDoc(doc(db,'records',delBtn.dataset.del));
-      showToast('Delete ho gaya, storage clean ho rahi hai...');
+      showToast('Deleted, cleaning up storage...');
       cleanupCloudStorage(rec).then((ok)=>{
-        if(!ok) showToast('Storage se delete nahi ho payi — dekh lena');
+        if(!ok) showToast('Could not delete from storage — please check');
       }).catch(()=>{});
     }
     return;
@@ -1333,7 +1333,7 @@ function openViewModal(id){
   }
 
   const statusBtn = document.getElementById('viewStatusBtn');
-  statusBtn.textContent = rec.status === 'printed' ? '↺ Pending Karein' : '✅ Printed Karein';
+  statusBtn.textContent = rec.status === 'printed' ? '↺ Mark Pending' : '✅ Mark Printed';
 
   const waBtn = document.getElementById('viewWaBtn');
   waBtn.style.display = 'flex';
@@ -1356,20 +1356,20 @@ document.getElementById('viewStatusBtn').addEventListener('click', async ()=>{
   const newStatus = currentViewRec.status === 'printed' ? 'pending' : 'printed';
   await updateDoc(doc(db,'records',currentViewRec.id), { status: newStatus });
   currentViewRec.status = newStatus;
-  document.getElementById('viewStatusBtn').textContent = newStatus === 'printed' ? '↺ Pending Karein' : '✅ Printed Karein';
+  document.getElementById('viewStatusBtn').textContent = newStatus === 'printed' ? '↺ Mark Pending' : '✅ Mark Printed';
 });
 document.getElementById('viewWaBtn').addEventListener('click', ()=>{
   shareToWhatsApp(currentViewRec);
 });
 document.getElementById('viewDeleteBtn').addEventListener('click', async ()=>{
   if(!currentViewRec) return;
-  if(confirm('Ye record delete karna hai? File cloud storage se bhi hamesha ke liye hat jayegi.')){
+  if(confirm('Delete this record? The file will also be removed permanently from cloud storage.')){
     const rec = currentViewRec;
     viewOverlay.classList.remove('open');
     await deleteDoc(doc(db,'records',rec.id));
-    showToast('Delete ho gaya, storage clean ho rahi hai...');
+    showToast('Deleted, cleaning up storage...');
     cleanupCloudStorage(rec).then((ok)=>{
-      if(!ok) showToast('Storage se delete nahi ho payi — dekh lena');
+      if(!ok) showToast('Could not delete from storage — please check');
     }).catch(()=>{});
   }
 });
@@ -1475,15 +1475,15 @@ function renderFileState(){
   if(count === 0){
     filedropLabel.classList.remove('has-file');
     filedropIcon.innerHTML = DEFAULT_ICON_SVG;
-    filedropTitle.textContent = 'Files choose karein';
-    filedropSub.textContent = 'Ek se zyada photos/files ek sath select ho sakti hain';
+    filedropTitle.textContent = 'Choose files';
+    filedropSub.textContent = 'You can select several photos/files at once';
     filedropBrowse.textContent = 'Browse';
   } else {
     filedropLabel.classList.add('has-file');
     const first = selectedFiles[0];
     if(first.previewUrl){ filedropIcon.innerHTML = `<img src="${first.previewUrl}" alt="">`; }
     else { filedropIcon.innerHTML = fileIconFor(first.file.name); }
-    filedropTitle.textContent = count === 1 ? first.file.name : `${count} files select ki hain`;
+    filedropTitle.textContent = count === 1 ? first.file.name : `${count} files selected`;
     const totalKb = selectedFiles.reduce((s,x)=> s + x.file.size, 0) / 1024;
     filedropSub.textContent = `${totalKb.toFixed(0)} KB total`;
     filedropBrowse.textContent = 'Add more';
@@ -1523,14 +1523,14 @@ function resetUploadModal(){
   document.getElementById('progressWrap').style.display = 'none';
   document.getElementById('progressFill').style.width = '0%';
   document.getElementById('uploadBtn').disabled = false;
-  document.getElementById('uploadBtn').textContent = 'Upload Karein';
+  document.getElementById('uploadBtn').textContent = 'Upload';
 }
 
 document.getElementById('uploadBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
-  if(selectedFiles.length === 0){ showToast('Pehle file(s) choose karein'); return; }
-  if(!name){ showToast('Customer ka naam likhein'); return; }
+  if(selectedFiles.length === 0){ showToast('Choose file(s) first'); return; }
+  if(!name){ showToast('Enter the customer name'); return; }
 
   const progressWrap = document.getElementById('progressWrap');
   const progressFill = document.getElementById('progressFill');
@@ -1552,7 +1552,7 @@ document.getElementById('uploadBtn').addEventListener('click', async ()=>{
       let cloudinaryCloudName = null, cloudinaryPublicId = null, cloudinaryResourceType = null;
       let driveFileId = null;
       if(isImage){
-        progressText.textContent = `(${i+1}/${total}) Photo upload ho rahi hai: ${file.name}`;
+        progressText.textContent = `(${i+1}/${total}) Uploading photo: ${file.name}`;
         const result = await uploadToCloudinary(file, (pct)=>{
           const overall = ((i + pct/100) / total) * 100;
           progressFill.style.width = overall + '%';
@@ -1564,7 +1564,7 @@ document.getElementById('uploadBtn').addEventListener('click', async ()=>{
         cloudinaryPublicId = result.public_id;
         cloudinaryResourceType = result.resource_type || 'image';
       } else {
-        progressText.textContent = `(${i+1}/${total}) File upload ho rahi hai: ${file.name}`;
+        progressText.textContent = `(${i+1}/${total}) Uploading file: ${file.name}`;
         progressFill.style.width = (((i + 0.4) / total) * 100) + '%';
         const result = await uploadToDrive(file);
         fileUrl = result.fileUrl;
@@ -1598,13 +1598,13 @@ document.getElementById('uploadBtn').addEventListener('click', async ()=>{
   }
 
   if(failedCount === 0){
-    progressText.textContent = `Sab ${uploadedCount} file(s) upload ho gayen! ✅`;
+    progressText.textContent = `All ${uploadedCount} file(s) uploaded! ✅`;
   } else {
-    progressText.textContent = `${uploadedCount} ho gayen, ${failedCount} fail hui — dobara try karein`;
+    progressText.textContent = `${uploadedCount} uploaded, ${failedCount} failed — please try again`;
   }
   setTimeout(()=>{
     resetUploadModal();
-    showToast(failedCount === 0 ? 'Upload complete' : `${failedCount} file(s) fail hui`);
+    showToast(failedCount === 0 ? 'Upload complete' : `${failedCount} file(s) failed`);
   }, 900);
 });
 
@@ -1615,7 +1615,7 @@ function uploadToCloudinary(file, onProgress){
 function tryCloudinaryAccount(file, onProgress, accountIndex){
   return new Promise((resolve, reject)=>{
     if(accountIndex >= CLOUDINARY_ACCOUNTS.length){
-      reject(new Error('Sab accounts full hain ya offline hain'));
+      reject(new Error('All accounts are full or offline'));
       return;
     }
     const account = CLOUDINARY_ACCOUNTS[accountIndex];
@@ -1667,7 +1667,7 @@ function uploadToDrive(file){
 
 async function tryDriveAccount(base64, file, accountIndex){
   if(accountIndex >= DRIVE_SCRIPT_URLS.length){
-    throw new Error('Sab Drive accounts full hain ya offline hain');
+    throw new Error('All Drive accounts are full or offline');
   }
   try{
     const res = await fetch(DRIVE_SCRIPT_URLS[accountIndex], {
@@ -1729,14 +1729,14 @@ if(!isStandalone()){
 
 installBtn?.addEventListener('click', async ()=>{
   if(!deferredInstallPrompt){
-    showToast('App pehle se installed ho sakta hai, ya browser install support nahi karta');
+    showToast('The app may already be installed, or this browser does not support installing');
     return;
   }
   installBtn.style.display = 'none';
   deferredInstallPrompt.prompt();
   const choice = await deferredInstallPrompt.userChoice;
   if(choice.outcome === 'accepted'){
-    showToast('App install ho rahi hai...');
+    showToast('Installing app...');
   }
   deferredInstallPrompt = null;
 });
@@ -1744,7 +1744,7 @@ installBtn?.addEventListener('click', async ()=>{
 window.addEventListener('appinstalled', ()=>{
   installBtn.style.display = 'none';
   deferredInstallPrompt = null;
-  showToast('App install ho gayi ✅');
+  showToast('App installed ✅');
 });
 </script>
 </body>
