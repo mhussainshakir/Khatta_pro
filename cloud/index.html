@@ -1396,7 +1396,7 @@ document.getElementById('viewPrintBtn').addEventListener('click', ()=>{
 // It never touches 'records' and has no link back to this app.
 // Public share page lives on a SEPARATE Vercel project/domain (folder: share-site/).
 // Deploy share-site/ as its own project, then paste its URL here (with trailing slash).
-const SHARE_SITE_URL = 'https://https://hh-files-blue.vercel.app/';
+const SHARE_SITE_URL = 'https://hh-files-blue.vercel.app/';
 function shareBaseUrl(){ return SHARE_SITE_URL; }
 function newShareToken(){
   const a = new Uint8Array(16); crypto.getRandomValues(a);
