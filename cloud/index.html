@@ -1394,7 +1394,10 @@ document.getElementById('viewPrintBtn').addEventListener('click', ()=>{
 // ================= PUBLIC SHARE LINK =================
 // Public page (share.html) only reads a tiny copy of the file info from the 'shares' collection.
 // It never touches 'records' and has no link back to this app.
-function shareBaseUrl(){ return new URL('../share.html', location.href).href; }
+// Public share page lives on a SEPARATE Vercel project/domain (folder: share-site/).
+// Deploy share-site/ as its own project, then paste its URL here (with trailing slash).
+const SHARE_SITE_URL = 'https://https://hh-files-blue.vercel.app/';
+function shareBaseUrl(){ return SHARE_SITE_URL; }
 function newShareToken(){
   const a = new Uint8Array(16); crypto.getRandomValues(a);
   return Array.from(a, b => b.toString(16).padStart(2,'0')).join('');
@@ -1409,6 +1412,7 @@ async function copyText(t){
 document.getElementById('viewShareBtn').addEventListener('click', async ()=>{
   const rec = currentViewRec; if(!rec) return;
   const btn = document.getElementById('viewShareBtn');
+  if(SHARE_SITE_URL.includes('PASTE-SHARE-SITE-URL-HERE')){ showToast('Pehle share-site deploy karke URL set karo'); return; }
   try{
     if(!rec.shareId){
       btn.disabled = true; btn.textContent = 'Creating...';
